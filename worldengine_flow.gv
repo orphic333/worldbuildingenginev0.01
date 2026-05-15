@@ -1,0 +1,72 @@
+digraph G {
+concentrate=true;
+splines="ortho";
+rankdir="LR";
+subgraph legend{
+    rank = min;
+    label = "legend";
+    Legend [shape=none, margin=0, label = <
+        <table cellspacing="0" cellpadding="0" border="1"><tr><td>Code2flow Legend</td></tr><tr><td>
+        <table cellspacing="0">
+        <tr><td>Regular function</td><td width="50px" bgcolor='#cccccc'></td></tr>
+        <tr><td>Trunk function (nothing calls this)</td><td bgcolor='#966F33'></td></tr>
+        <tr><td>Leaf function (this calls nothing else)</td><td bgcolor='#6db33f'></td></tr>
+        <tr><td>Function call</td><td><font color='black'>&#8594;</font></td></tr>
+        </table></td></tr></table>
+        >];
+}node_531e40f8 [label="0: (global)()" name="worldengine::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_ea99c949 [label="44: calculate_aether_density()" name="worldengine::calculate_aether_density" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_cb635f58 [label="51: calculate_guardian_power()" name="worldengine::calculate_guardian_power" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_a9f6e8e8 [label="69: create_level_data()" name="worldengine::create_level_data" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_185231d8 [label="183: create_new_world()" name="worldengine::create_new_world" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_e647f75c [label="287: display_level_summary()" name="worldengine::display_level_summary" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_f768d6a5 [label="321: display_random_level()" name="worldengine::display_random_level" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_06b3361c [label="165: display_save_files()" name="worldengine::display_save_files" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_35ff94f9 [label="348: display_specific_level()" name="worldengine::display_specific_level" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_fe31a8c8 [label="310: display_world_overview()" name="worldengine::display_world_overview" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_d8eb41e5 [label="91: ensure_save_directory_exists()" name="worldengine::ensure_save_directory_exists" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_87641901 [label="79: generate_dungeon_world()" name="worldengine::generate_dungeon_world" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_e967e8be [label="60: generate_level_name()" name="worldengine::generate_level_name" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_aff11ba9 [label="100: get_save_path()" name="worldengine::get_save_path" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_d52db8a6 [label="243: initialize_world()" name="worldengine::initialize_world" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_9fb102df [label="111: list_save_files()" name="worldengine::list_save_files" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_2cf338f0 [label="140: load_dungeon_world()" name="worldengine::load_dungeon_world" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_7d666ccd [label="464: main()" name="worldengine::main" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_cecf0f99 [label="385: process_user_command()" name="worldengine::process_user_command" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_ddab8672 [label="432: run_oracle_system()" name="worldengine::run_oracle_system" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_c59b4a12 [label="127: save_dungeon_world()" name="worldengine::save_dungeon_world" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_20524223 [label="210: select_existing_world()" name="worldengine::select_existing_world" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_531e40f8 -> node_7d666ccd [color="#000000" penwidth="2"];
+node_a9f6e8e8 -> node_ea99c949 [color="#000000" penwidth="2"];
+node_a9f6e8e8 -> node_cb635f58 [color="#000000" penwidth="2"];
+node_a9f6e8e8 -> node_e967e8be [color="#000000" penwidth="2"];
+node_185231d8 -> node_185231d8 [color="#000000" penwidth="2"];
+node_185231d8 -> node_87641901 [color="#000000" penwidth="2"];
+node_185231d8 -> node_c59b4a12 [color="#000000" penwidth="2"];
+node_fe31a8c8 -> node_e647f75c [color="#000000" penwidth="2"];
+node_87641901 -> node_a9f6e8e8 [color="#E69F00" penwidth="2"];
+node_d52db8a6 -> node_185231d8 [color="#D55E00" penwidth="2"];
+node_d52db8a6 -> node_185231d8 [color="#D55E00" penwidth="2"];
+node_d52db8a6 -> node_06b3361c [color="#D55E00" penwidth="2"];
+node_d52db8a6 -> node_d52db8a6 [color="#D55E00" penwidth="2"];
+node_d52db8a6 -> node_9fb102df [color="#D55E00" penwidth="2"];
+node_d52db8a6 -> node_20524223 [color="#D55E00" penwidth="2"];
+node_9fb102df -> node_d8eb41e5 [color="#CC79A7" penwidth="2"];
+node_2cf338f0 -> node_aff11ba9 [color="#000000" penwidth="2"];
+node_7d666ccd -> node_fe31a8c8 [color="#0072B2" penwidth="2"];
+node_7d666ccd -> node_d52db8a6 [color="#0072B2" penwidth="2"];
+node_7d666ccd -> node_ddab8672 [color="#0072B2" penwidth="2"];
+node_cecf0f99 -> node_f768d6a5 [color="#E69F00" penwidth="2"];
+node_cecf0f99 -> node_35ff94f9 [color="#E69F00" penwidth="2"];
+node_ddab8672 -> node_cecf0f99 [color="#56B4E9" penwidth="2"];
+node_c59b4a12 -> node_aff11ba9 [color="#56B4E9" penwidth="2"];
+node_20524223 -> node_2cf338f0 [color="#009E73" penwidth="2"];
+node_20524223 -> node_20524223 [color="#009E73" penwidth="2"];
+subgraph cluster_4d3d1e76 {
+    node_ea99c949 node_cb635f58 node_e967e8be node_a9f6e8e8 node_87641901 node_d8eb41e5 node_aff11ba9 node_9fb102df node_c59b4a12 node_2cf338f0 node_06b3361c node_185231d8 node_20524223 node_d52db8a6 node_e647f75c node_fe31a8c8 node_f768d6a5 node_35ff94f9 node_cecf0f99 node_ddab8672 node_7d666ccd node_531e40f8;
+    label="File: worldengine";
+    name="worldengine";
+    style="filled";
+    graph[style=dotted];
+};
+}
