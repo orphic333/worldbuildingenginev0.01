@@ -1,0 +1,602 @@
+{
+    "Level 1": {
+        "level_id": 1,
+        "level_name": "The Radiant Aether-glass Spire",
+        "aether_density": 19.8,
+        "guardian_level": 1.1
+    },
+    "Level 2": {
+        "level_id": 2,
+        "level_name": "The Radiant Obsidian Crypt",
+        "aether_density": 27.2,
+        "guardian_level": 2.2
+    },
+    "Level 3": {
+        "level_id": 3,
+        "level_name": "The Shimmering Crystal Vault",
+        "aether_density": 38.2,
+        "guardian_level": 3.3
+    },
+    "Level 4": {
+        "level_id": 4,
+        "level_name": "The Radiant Silver Abyss",
+        "aether_density": 52.8,
+        "guardian_level": 4.4
+    },
+    "Level 5": {
+        "level_id": 5,
+        "level_name": "The Stygian Obsidian Vault",
+        "aether_density": 71.0,
+        "guardian_level": 5.5
+    },
+    "Level 6": {
+        "level_id": 6,
+        "level_name": "The Forgotten Shadow-matter Spire",
+        "aether_density": 92.8,
+        "guardian_level": 6.6
+    },
+    "Level 7": {
+        "level_id": 7,
+        "level_name": "The Forgotten Shadow-matter Abyss",
+        "aether_density": 118.2,
+        "guardian_level": 7.7
+    },
+    "Level 8": {
+        "level_id": 8,
+        "level_name": "The Radiant Crystal Abyss",
+        "aether_density": 147.2,
+        "guardian_level": 8.8
+    },
+    "Level 9": {
+        "level_id": 9,
+        "level_name": "The Pulsing Crystal Labyrinth",
+        "aether_density": 179.8,
+        "guardian_level": 9.9
+    },
+    "Level 10": {
+        "level_id": 10,
+        "level_name": "The Radiant Shadow-matter Labyrinth",
+        "aether_density": 216.0,
+        "guardian_level": 11.0
+    },
+    "Level 11": {
+        "level_id": 11,
+        "level_name": "The Stygian Crystal Crypt",
+        "aether_density": 255.8,
+        "guardian_level": 12.1
+    },
+    "Level 12": {
+        "level_id": 12,
+        "level_name": "The Stygian Bone Labyrinth",
+        "aether_density": 299.2,
+        "guardian_level": 13.2
+    },
+    "Level 13": {
+        "level_id": 13,
+        "level_name": "The Forgotten Shadow-matter Abyss",
+        "aether_density": 346.2,
+        "guardian_level": 14.3
+    },
+    "Level 14": {
+        "level_id": 14,
+        "level_name": "The Forgotten Crystal Labyrinth",
+        "aether_density": 396.8,
+        "guardian_level": 15.4
+    },
+    "Level 15": {
+        "level_id": 15,
+        "level_name": "The Radiant Bone Labyrinth",
+        "aether_density": 451.0,
+        "guardian_level": 16.5
+    },
+    "Level 16": {
+        "level_id": 16,
+        "level_name": "The Shimmering Crystal Vault",
+        "aether_density": 508.8,
+        "guardian_level": 17.6
+    },
+    "Level 17": {
+        "level_id": 17,
+        "level_name": "The Forgotten Bone Sanctum",
+        "aether_density": 570.2,
+        "guardian_level": 18.7
+    },
+    "Level 18": {
+        "level_id": 18,
+        "level_name": "The Stygian Shadow-matter Crypt",
+        "aether_density": 635.2,
+        "guardian_level": 19.8
+    },
+    "Level 19": {
+        "level_id": 19,
+        "level_name": "The Stygian Bone Crypt",
+        "aether_density": 703.8,
+        "guardian_level": 20.9
+    },
+    "Level 20": {
+        "level_id": 20,
+        "level_name": "The Forgotten Silver Labyrinth",
+        "aether_density": 776.0,
+        "guardian_level": 22.0
+    },
+    "Level 21": {
+        "level_id": 21,
+        "level_name": "The Pulsing Aether-glass Crypt",
+        "aether_density": 851.8,
+        "guardian_level": 23.1
+    },
+    "Level 22": {
+        "level_id": 22,
+        "level_name": "The Radiant Aether-glass Labyrinth",
+        "aether_density": 931.2,
+        "guardian_level": 24.2
+    },
+    "Level 23": {
+        "level_id": 23,
+        "level_name": "The Stygian Aether-glass Spire",
+        "aether_density": 1014.2,
+        "guardian_level": 25.3
+    },
+    "Level 24": {
+        "level_id": 24,
+        "level_name": "The Pulsing Silver Abyss",
+        "aether_density": 1100.8,
+        "guardian_level": 26.4
+    },
+    "Level 25": {
+        "level_id": 25,
+        "level_name": "The Stygian Crystal Abyss",
+        "aether_density": 1191.0,
+        "guardian_level": 27.5
+    },
+    "Level 26": {
+        "level_id": 26,
+        "level_name": "The Shimmering Obsidian Sanctum",
+        "aether_density": 1284.8,
+        "guardian_level": 28.6
+    },
+    "Level 27": {
+        "level_id": 27,
+        "level_name": "The Shimmering Shadow-matter Spire",
+        "aether_density": 1382.2,
+        "guardian_level": 29.7
+    },
+    "Level 28": {
+        "level_id": 28,
+        "level_name": "The Shimmering Obsidian Abyss",
+        "aether_density": 1483.2,
+        "guardian_level": 30.8
+    },
+    "Level 29": {
+        "level_id": 29,
+        "level_name": "The Radiant Obsidian Vault",
+        "aether_density": 1587.8,
+        "guardian_level": 31.9
+    },
+    "Level 30": {
+        "level_id": 30,
+        "level_name": "The Radiant Crystal Crypt",
+        "aether_density": 1696.0,
+        "guardian_level": 33.0
+    },
+    "Level 31": {
+        "level_id": 31,
+        "level_name": "The Void-Touched Obsidian Crypt",
+        "aether_density": 1807.8,
+        "guardian_level": 34.1
+    },
+    "Level 32": {
+        "level_id": 32,
+        "level_name": "The Stygian Obsidian Spire",
+        "aether_density": 1923.2,
+        "guardian_level": 35.2
+    },
+    "Level 33": {
+        "level_id": 33,
+        "level_name": "The Shimmering Aether-glass Spire",
+        "aether_density": 2042.2,
+        "guardian_level": 36.3
+    },
+    "Level 34": {
+        "level_id": 34,
+        "level_name": "The Pulsing Silver Sanctum",
+        "aether_density": 2164.8,
+        "guardian_level": 37.4
+    },
+    "Level 35": {
+        "level_id": 35,
+        "level_name": "The Forgotten Crystal Spire",
+        "aether_density": 2291.0,
+        "guardian_level": 38.5
+    },
+    "Level 36": {
+        "level_id": 36,
+        "level_name": "The Radiant Obsidian Labyrinth",
+        "aether_density": 2420.8,
+        "guardian_level": 39.6
+    },
+    "Level 37": {
+        "level_id": 37,
+        "level_name": "The Radiant Silver Spire",
+        "aether_density": 2554.2,
+        "guardian_level": 40.7
+    },
+    "Level 38": {
+        "level_id": 38,
+        "level_name": "The Radiant Bone Sanctum",
+        "aether_density": 2691.2,
+        "guardian_level": 41.8
+    },
+    "Level 39": {
+        "level_id": 39,
+        "level_name": "The Void-Touched Bone Vault",
+        "aether_density": 2831.8,
+        "guardian_level": 42.9
+    },
+    "Level 40": {
+        "level_id": 40,
+        "level_name": "The Forgotten Obsidian Vault",
+        "aether_density": 2976.0,
+        "guardian_level": 44.0
+    },
+    "Level 41": {
+        "level_id": 41,
+        "level_name": "The Pulsing Aether-glass Vault",
+        "aether_density": 3123.8,
+        "guardian_level": 45.1
+    },
+    "Level 42": {
+        "level_id": 42,
+        "level_name": "The Stygian Obsidian Vault",
+        "aether_density": 3275.2,
+        "guardian_level": 46.2
+    },
+    "Level 43": {
+        "level_id": 43,
+        "level_name": "The Shimmering Silver Labyrinth",
+        "aether_density": 3430.2,
+        "guardian_level": 47.3
+    },
+    "Level 44": {
+        "level_id": 44,
+        "level_name": "The Stygian Silver Abyss",
+        "aether_density": 3588.8,
+        "guardian_level": 48.4
+    },
+    "Level 45": {
+        "level_id": 45,
+        "level_name": "The Pulsing Silver Labyrinth",
+        "aether_density": 3751.0,
+        "guardian_level": 49.5
+    },
+    "Level 46": {
+        "level_id": 46,
+        "level_name": "The Radiant Crystal Sanctum",
+        "aether_density": 3916.8,
+        "guardian_level": 50.6
+    },
+    "Level 47": {
+        "level_id": 47,
+        "level_name": "The Radiant Obsidian Labyrinth",
+        "aether_density": 4086.2,
+        "guardian_level": 51.7
+    },
+    "Level 48": {
+        "level_id": 48,
+        "level_name": "The Pulsing Silver Spire",
+        "aether_density": 4259.2,
+        "guardian_level": 52.8
+    },
+    "Level 49": {
+        "level_id": 49,
+        "level_name": "The Shimmering Bone Crypt",
+        "aether_density": 4435.8,
+        "guardian_level": 53.9
+    },
+    "Level 50": {
+        "level_id": 50,
+        "level_name": "The Void-Touched Obsidian Sanctum",
+        "aether_density": 4616.0,
+        "guardian_level": 55.0
+    },
+    "Level 51": {
+        "level_id": 51,
+        "level_name": "The Radiant Obsidian Spire",
+        "aether_density": 4799.8,
+        "guardian_level": 56.1
+    },
+    "Level 52": {
+        "level_id": 52,
+        "level_name": "The Shimmering Aether-glass Sanctum",
+        "aether_density": 4987.2,
+        "guardian_level": 57.2
+    },
+    "Level 53": {
+        "level_id": 53,
+        "level_name": "The Shimmering Silver Vault",
+        "aether_density": 5178.2,
+        "guardian_level": 58.3
+    },
+    "Level 54": {
+        "level_id": 54,
+        "level_name": "The Shimmering Crystal Sanctum",
+        "aether_density": 5372.8,
+        "guardian_level": 59.4
+    },
+    "Level 55": {
+        "level_id": 55,
+        "level_name": "The Radiant Silver Vault",
+        "aether_density": 5571.0,
+        "guardian_level": 60.5
+    },
+    "Level 56": {
+        "level_id": 56,
+        "level_name": "The Shimmering Aether-glass Crypt",
+        "aether_density": 5772.8,
+        "guardian_level": 61.6
+    },
+    "Level 57": {
+        "level_id": 57,
+        "level_name": "The Stygian Silver Vault",
+        "aether_density": 5978.2,
+        "guardian_level": 62.7
+    },
+    "Level 58": {
+        "level_id": 58,
+        "level_name": "The Forgotten Silver Labyrinth",
+        "aether_density": 6187.2,
+        "guardian_level": 63.8
+    },
+    "Level 59": {
+        "level_id": 59,
+        "level_name": "The Forgotten Aether-glass Crypt",
+        "aether_density": 6399.8,
+        "guardian_level": 64.9
+    },
+    "Level 60": {
+        "level_id": 60,
+        "level_name": "The Stygian Shadow-matter Crypt",
+        "aether_density": 6616.0,
+        "guardian_level": 66.0
+    },
+    "Level 61": {
+        "level_id": 61,
+        "level_name": "The Pulsing Crystal Spire",
+        "aether_density": 6835.8,
+        "guardian_level": 67.1
+    },
+    "Level 62": {
+        "level_id": 62,
+        "level_name": "The Pulsing Crystal Crypt",
+        "aether_density": 7059.2,
+        "guardian_level": 68.2
+    },
+    "Level 63": {
+        "level_id": 63,
+        "level_name": "The Forgotten Shadow-matter Spire",
+        "aether_density": 7286.2,
+        "guardian_level": 69.3
+    },
+    "Level 64": {
+        "level_id": 64,
+        "level_name": "The Void-Touched Silver Labyrinth",
+        "aether_density": 7516.8,
+        "guardian_level": 70.4
+    },
+    "Level 65": {
+        "level_id": 65,
+        "level_name": "The Pulsing Crystal Labyrinth",
+        "aether_density": 7751.0,
+        "guardian_level": 71.5
+    },
+    "Level 66": {
+        "level_id": 66,
+        "level_name": "The Pulsing Obsidian Vault",
+        "aether_density": 7988.8,
+        "guardian_level": 72.6
+    },
+    "Level 67": {
+        "level_id": 67,
+        "level_name": "The Void-Touched Obsidian Labyrinth",
+        "aether_density": 8230.2,
+        "guardian_level": 73.7
+    },
+    "Level 68": {
+        "level_id": 68,
+        "level_name": "The Stygian Shadow-matter Vault",
+        "aether_density": 8475.2,
+        "guardian_level": 74.8
+    },
+    "Level 69": {
+        "level_id": 69,
+        "level_name": "The Radiant Shadow-matter Labyrinth",
+        "aether_density": 8723.8,
+        "guardian_level": 75.9
+    },
+    "Level 70": {
+        "level_id": 70,
+        "level_name": "The Forgotten Obsidian Crypt",
+        "aether_density": 8976.0,
+        "guardian_level": 77.0
+    },
+    "Level 71": {
+        "level_id": 71,
+        "level_name": "The Shimmering Aether-glass Labyrinth",
+        "aether_density": 9231.8,
+        "guardian_level": 78.1
+    },
+    "Level 72": {
+        "level_id": 72,
+        "level_name": "The Radiant Crystal Crypt",
+        "aether_density": 9491.2,
+        "guardian_level": 79.2
+    },
+    "Level 73": {
+        "level_id": 73,
+        "level_name": "The Radiant Bone Spire",
+        "aether_density": 9754.2,
+        "guardian_level": 80.3
+    },
+    "Level 74": {
+        "level_id": 74,
+        "level_name": "The Radiant Bone Sanctum",
+        "aether_density": 10020.8,
+        "guardian_level": 81.4
+    },
+    "Level 75": {
+        "level_id": 75,
+        "level_name": "The Pulsing Obsidian Vault",
+        "aether_density": 10291.0,
+        "guardian_level": 82.5
+    },
+    "Level 76": {
+        "level_id": 76,
+        "level_name": "The Forgotten Crystal Abyss",
+        "aether_density": 10564.8,
+        "guardian_level": 83.6
+    },
+    "Level 77": {
+        "level_id": 77,
+        "level_name": "The Pulsing Aether-glass Crypt",
+        "aether_density": 10842.2,
+        "guardian_level": 84.7
+    },
+    "Level 78": {
+        "level_id": 78,
+        "level_name": "The Shimmering Bone Crypt",
+        "aether_density": 11123.2,
+        "guardian_level": 85.8
+    },
+    "Level 79": {
+        "level_id": 79,
+        "level_name": "The Pulsing Aether-glass Sanctum",
+        "aether_density": 11407.8,
+        "guardian_level": 86.9
+    },
+    "Level 80": {
+        "level_id": 80,
+        "level_name": "The Stygian Silver Spire",
+        "aether_density": 11696.0,
+        "guardian_level": 88.0
+    },
+    "Level 81": {
+        "level_id": 81,
+        "level_name": "The Forgotten Obsidian Crypt",
+        "aether_density": 11987.8,
+        "guardian_level": 89.1
+    },
+    "Level 82": {
+        "level_id": 82,
+        "level_name": "The Void-Touched Aether-glass Vault",
+        "aether_density": 12283.2,
+        "guardian_level": 90.2
+    },
+    "Level 83": {
+        "level_id": 83,
+        "level_name": "The Stygian Bone Abyss",
+        "aether_density": 12582.2,
+        "guardian_level": 91.3
+    },
+    "Level 84": {
+        "level_id": 84,
+        "level_name": "The Shimmering Obsidian Labyrinth",
+        "aether_density": 12884.8,
+        "guardian_level": 92.4
+    },
+    "Level 85": {
+        "level_id": 85,
+        "level_name": "The Pulsing Obsidian Labyrinth",
+        "aether_density": 13191.0,
+        "guardian_level": 93.5
+    },
+    "Level 86": {
+        "level_id": 86,
+        "level_name": "The Shimmering Aether-glass Labyrinth",
+        "aether_density": 13500.8,
+        "guardian_level": 94.6
+    },
+    "Level 87": {
+        "level_id": 87,
+        "level_name": "The Void-Touched Shadow-matter Vault",
+        "aether_density": 13814.2,
+        "guardian_level": 95.7
+    },
+    "Level 88": {
+        "level_id": 88,
+        "level_name": "The Stygian Silver Vault",
+        "aether_density": 14131.2,
+        "guardian_level": 96.8
+    },
+    "Level 89": {
+        "level_id": 89,
+        "level_name": "The Shimmering Crystal Spire",
+        "aether_density": 14451.8,
+        "guardian_level": 97.9
+    },
+    "Level 90": {
+        "level_id": 90,
+        "level_name": "The Shimmering Bone Sanctum",
+        "aether_density": 14776.0,
+        "guardian_level": 99.0
+    },
+    "Level 91": {
+        "level_id": 91,
+        "level_name": "The Stygian Bone Labyrinth",
+        "aether_density": 15103.8,
+        "guardian_level": 100.1
+    },
+    "Level 92": {
+        "level_id": 92,
+        "level_name": "The Stygian Silver Crypt",
+        "aether_density": 15435.2,
+        "guardian_level": 101.2
+    },
+    "Level 93": {
+        "level_id": 93,
+        "level_name": "The Radiant Bone Sanctum",
+        "aether_density": 15770.2,
+        "guardian_level": 102.3
+    },
+    "Level 94": {
+        "level_id": 94,
+        "level_name": "The Void-Touched Shadow-matter Crypt",
+        "aether_density": 16108.8,
+        "guardian_level": 103.4
+    },
+    "Level 95": {
+        "level_id": 95,
+        "level_name": "The Shimmering Aether-glass Vault",
+        "aether_density": 16451.0,
+        "guardian_level": 104.5
+    },
+    "Level 96": {
+        "level_id": 96,
+        "level_name": "The Shimmering Aether-glass Sanctum",
+        "aether_density": 16796.8,
+        "guardian_level": 105.6
+    },
+    "Level 97": {
+        "level_id": 97,
+        "level_name": "The Stygian Silver Labyrinth",
+        "aether_density": 17146.2,
+        "guardian_level": 106.7
+    },
+    "Level 98": {
+        "level_id": 98,
+        "level_name": "The Shimmering Shadow-matter Vault",
+        "aether_density": 17499.2,
+        "guardian_level": 107.8
+    },
+    "Level 99": {
+        "level_id": 99,
+        "level_name": "The Pulsing Shadow-matter Spire",
+        "aether_density": 17855.8,
+        "guardian_level": 108.9
+    },
+    "Level 100": {
+        "level_id": 100,
+        "level_name": "The Pulsing Aether-glass Labyrinth",
+        "aether_density": 18216.0,
+        "guardian_level": 110.0
+    }
+}
