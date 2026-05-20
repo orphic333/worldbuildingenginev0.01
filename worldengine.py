@@ -318,6 +318,48 @@ class DungeonWorld:
         return cls(name=name, levels=levels, turn=turn,
                    zones=zones, known_zones=known_zones)
 
+    def tick(self, heroes, guardians, builders):
+        """Advance the game by one turn."""
+
+        self.turn += 1
+
+        self._process_expeditions(heroes)
+
+        self._process_environmental_events(
+            heroes, guardians
+        )
+
+        self._process_unit_statuses(
+            heroes, guardians, builders
+        )
+
+        print(f"\n--- Turn {self.turn} ---")
+
+    def _process_expeditions(self, heroes):
+        """Stub: process ongoing hero expeditions."""
+
+        print("  [Tick] Expeditions phase (not yet implemented)")
+
+    def _process_environmental_events(
+        self, heroes, guardians
+    ):
+        """Stub: process hazards and events."""
+
+        print(
+            "  [Tick] Environmental events phase "
+            "(not yet implemented)"
+        )
+
+    def _process_unit_statuses(
+        self, heroes, guardians, builders
+    ):
+        """Stub: update unit vitals and cooldowns."""
+
+        print(
+            "  [Tick] Unit status phase "
+            "(not yet implemented)"
+        )
+
 
 # =========================
 # LEVEL GENERATION
@@ -889,6 +931,14 @@ def process_user_command(
 
         return True
 
+    elif cleaned_command == "tick":
+
+        world_data.tick(
+            heroes, guardians, builders
+        )
+
+        return True
+
     elif cleaned_command.isdigit():
 
         level_number = int(
@@ -926,6 +976,7 @@ def run_oracle_system(world_data, heroes, guardians, builders):
         f"'heroes', "
         f"'hero <id>', "
         f"'zones', "
+        f"'tick', "
         f"or 'exit'."
     )
 
