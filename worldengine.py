@@ -7,7 +7,7 @@ import os
 # =========================
 
 SAVE_FOLDER = "saves"
-MAX_LEVEL = 100
+MAX_LEVEL = 3
 
 ADJECTIVES = [
     "Pulsing",
@@ -36,21 +36,49 @@ LOCATIONS = [
     "Labyrinth"
 ]
 
+TERRAIN_TYPES = [
+    "Ashfield", "Rotwood", "Hollow",
+    "Wastes", "Fenlands"
+]
+
+ZONE_MODIFIERS = [
+    "Blighted", "Ancient", "Forsaken",
+    "Sunken", "Fractured"
+]
+
+
+# =========================
+# UNIT BASE CLASS
+# =========================
+
+class BaseUnit:
+    """Base class for all units in the game."""
+
+    def __init__(self, unit_id, name, health=100.0):
+        self.unit_id = unit_id
+        self.name = name
+        self.health = health
+        self.is_alive = True
+
+    def take_damage(self, amount):
+        """Reduce health, clamped to zero. Kills unit if health reaches zero."""
+        self.health = max(0.0, self.health - amount)
+        if self.health <= 0:
+            self.is_alive = False
+
 
 # =========================
 # HERO CLASS
 # =========================
 
-class Hero:
+class Hero(BaseUnit):
     """A hero that delves into the dungeon depths."""
 
     def __init__(self, hero_id, name, specialization):
-        self.hero_id = hero_id
-        self.name = name
+        super().__init__(hero_id, name)
         self.specialization = specialization
 
-        # Vital stats — all start at 100
-        self.health = 100.0
+        # Vital stats
         self.stamina = 100.0
         self.sanity = 100.0
 
@@ -59,7 +87,7 @@ class Hero:
         self.experience = 0
 
         # Status
-        self.current_depth = 0
+        self.current_zone = None
         self.is_alive = True
 
         # Inventory / history
@@ -72,19 +100,13 @@ class Hero:
         print(f"  Specialization: {self.specialization}")
         print(f"  Level: {self.level}  |  XP: {self.experience}")
         print(f"  Health: {self.health:.1f}  |  Stamina: {self.stamina:.1f}  |  Sanity: {self.sanity:.1f}")
-        print(f"  Depth: {self.current_depth}  |  Expeditions: {self.expeditions_completed}")
+        print(f"  Zone: {self.current_zone}  |  Expeditions: {self.expeditions_completed}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
         if self.inventory:
             print(f"  Inventory: {', '.join(f'{k}: {v}' for k, v in self.inventory.items())}")
         else:
             print("  Inventory: (empty)")
         print("-" * 30)
-
-    def take_damage(self, amount):
-        """Reduce health, clamped to zero. Kills hero if health reaches zero."""
-        self.health = max(0.0, self.health - amount)
-        if self.health <= 0:
-            self.is_alive = False
 
     def lose_sanity(self, amount):
         """Reduce sanity, clamped to zero."""
@@ -108,6 +130,48 @@ class Hero:
 
 
 # =========================
+# GUARDIAN AND BUILDER CLASSES
+# =========================
+
+class Guardian(BaseUnit):
+    """A guardian assigned to protect dungeon levels."""
+
+    def __init__(self, guardian_id, name, power=10.0):
+        super().__init__(guardian_id, name)
+        self.assigned_level_id = None
+        self.power = power
+
+    def display_status(self):
+        """Print formatted guardian stats."""
+        print(f"\n=== {self.name} ===")
+        print(f"  ID: {self.unit_id}")
+        print(f"  Power: {self.power}")
+        print(f"  Assigned Level: {self.assigned_level_id}")
+        print(f"  Health: {self.health:.1f}")
+        print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
+        print("-" * 30)
+
+
+class Builder(BaseUnit):
+    """A builder that constructs and upgrades dungeon structures."""
+
+    def __init__(self, builder_id, name, build_speed=1.0):
+        super().__init__(builder_id, name)
+        self.build_speed = build_speed
+        self.current_task = None
+
+    def display_status(self):
+        """Print formatted builder stats."""
+        print(f"\n=== {self.name} ===")
+        print(f"  ID: {self.unit_id}")
+        print(f"  Build Speed: {self.build_speed}")
+        print(f"  Current Task: {self.current_task}")
+        print(f"  Health: {self.health:.1f}")
+        print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
+        print("-" * 30)
+
+
+# =========================
 # CORE CALCULATIONS
 # =========================
 
@@ -121,6 +185,138 @@ def calculate_aether_density(level):
 def calculate_guardian_power(level):
 
     return round(level * 1.1, 3)
+
+
+# =========================
+# DUNGEON DATA CLASSES
+# =========================
+
+class DungeonLevel:
+    """A single level within the dungeon."""
+
+    def __init__(self, level_id, name, aether_density, guardian_power,
+                 resource_nodes=None, structural_mods=None,
+                 active_events=None, is_explored=False):
+        self.level_id = level_id
+        self.name = name
+        self.aether_density = aether_density
+        self.guardian_power = guardian_power
+        self.resource_nodes = resource_nodes if resource_nodes is not None else {}
+        self.structural_mods = structural_mods if structural_mods is not None else []
+        self.active_events = active_events if active_events is not None else []
+        self.is_explored = is_explored
+
+    def to_dict(self):
+        """Serialize level to a JSON-safe dict."""
+        return {
+            "level_id": self.level_id,
+            "name": self.name,
+            "aether_density": self.aether_density,
+            "guardian_power": self.guardian_power,
+            "resource_nodes": self.resource_nodes,
+            "structural_mods": self.structural_mods,
+            "active_events": self.active_events,
+            "is_explored": self.is_explored,
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        """Deserialize a level from a dict."""
+        return cls(
+            level_id=data["level_id"],
+            name=data["name"],
+            aether_density=data["aether_density"],
+            guardian_power=data["guardian_power"],
+            resource_nodes=data.get("resource_nodes", {}),
+            structural_mods=data.get("structural_mods", []),
+            active_events=data.get("active_events", []),
+            is_explored=data.get("is_explored", False),
+        )
+
+
+class WorldZone:
+    """A zone within the outside world surrounding the dungeon."""
+
+    def __init__(self, zone_id, name, tier, danger_rating,
+                 resource_nodes=None, is_discovered=False,
+                 threat_level=0):
+        self.zone_id = zone_id
+        self.name = name
+        self.tier = tier
+        self.danger_rating = danger_rating
+        self.resource_nodes = resource_nodes if resource_nodes is not None else {}
+        self.is_discovered = is_discovered
+        self.threat_level = threat_level
+
+    def to_dict(self):
+        """Serialize zone to a JSON-safe dict."""
+        return {
+            "zone_id": self.zone_id,
+            "name": self.name,
+            "tier": self.tier,
+            "danger_rating": self.danger_rating,
+            "resource_nodes": self.resource_nodes,
+            "is_discovered": self.is_discovered,
+            "threat_level": self.threat_level,
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        """Deserialize a zone from a dict."""
+        return cls(
+            zone_id=data["zone_id"],
+            name=data["name"],
+            tier=data["tier"],
+            danger_rating=data["danger_rating"],
+            resource_nodes=data.get("resource_nodes", {}),
+            is_discovered=data.get("is_discovered", False),
+            threat_level=data.get("threat_level", 0),
+        )
+
+
+class DungeonWorld:
+    """A named dungeon world containing multiple levels and zones."""
+
+    def __init__(self, name="", levels=None, turn=0,
+                 zones=None, known_zones=None):
+        self.name = name
+        self.levels = levels if levels is not None else {}
+        self.turn = turn
+        self.zones = zones if zones is not None else {}
+        self.known_zones = known_zones if known_zones is not None else []
+
+    def to_dict(self):
+        """Serialize world to a JSON-safe dict."""
+        return {
+            "name": self.name,
+            "turn": self.turn,
+            "levels": {
+                str(lvl_id): level.to_dict()
+                for lvl_id, level in self.levels.items()
+            },
+            "zones": {
+                str(zone_id): zone.to_dict()
+                for zone_id, zone in self.zones.items()
+            },
+            "known_zones": self.known_zones,
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        """Deserialize a world from a dict."""
+        name = data.get("name", "")
+        turn = data.get("turn", 0)
+        levels = {}
+        for lvl_id_str, level_data in data.get("levels", {}).items():
+            level = DungeonLevel.from_dict(level_data)
+            levels[level.level_id] = level
+        zones = {}
+        for zone_id_str, zone_data in data.get("zones", {}).items():
+            zone = WorldZone.from_dict(zone_data)
+            zones[zone.zone_id] = zone
+        known_zones = data.get("known_zones", [])
+        return cls(name=name, levels=levels, turn=turn,
+                   zones=zones, known_zones=known_zones)
 
 
 # =========================
@@ -138,20 +334,65 @@ def generate_level_name():
 
 def create_level_data(level_number):
 
-    return {
-        "level_id": level_number,
-        "level_name": generate_level_name(),
-        "aether_density": calculate_aether_density(level_number),
-        "guardian_level": calculate_guardian_power(level_number),
-    }
+    return DungeonLevel(
+        level_id=level_number,
+        name=generate_level_name(),
+        aether_density=calculate_aether_density(level_number),
+        guardian_power=calculate_guardian_power(level_number),
+    )
 
 
 def generate_dungeon_world(max_level=MAX_LEVEL):
 
-    return {
-        f"Level {level}": create_level_data(level)
+    levels = {
+        level: create_level_data(level)
         for level in range(1, max_level + 1)
     }
+
+    zone_id_counter = 1
+    zones = {}
+    known_zones = []
+
+    tier_configs = [
+        (1, 5),
+        (2, 3),
+        (3, 2),
+    ]
+
+    for tier, count in tier_configs:
+
+        for _ in range(count):
+
+            modifier = random.choice(ZONE_MODIFIERS)
+            terrain = random.choice(TERRAIN_TYPES)
+            danger = round(tier * 10.0 + random.uniform(0, 5), 3)
+
+            zone = WorldZone(
+                zone_id=zone_id_counter,
+                name=f"{modifier} {terrain}",
+                tier=tier,
+                danger_rating=danger,
+            )
+
+            zones[zone_id_counter] = zone
+            zone_id_counter += 1
+
+    # Discover first 2 Tier 1 zones
+    discovered = 0
+
+    for zone in zones.values():
+
+        if zone.tier == 1 and discovered < 2:
+
+            zone.is_discovered = True
+            known_zones.append(zone.zone_id)
+            discovered += 1
+
+    return DungeonWorld(
+        levels=levels,
+        zones=zones,
+        known_zones=known_zones,
+    )
 
 
 # =========================
@@ -201,8 +442,10 @@ def save_dungeon_world(world_data, save_name):
 
     filepath = get_save_path(save_name)
 
+    world_data.name = save_name
+
     with open(filepath, "w") as file:
-        json.dump(world_data, file, indent=4)
+        json.dump(world_data.to_dict(), file, indent=4)
 
     print(f"--- WORLD '{save_name}' SAVED ---")
 
@@ -217,7 +460,29 @@ def load_dungeon_world(save_name):
     try:
 
         with open(filepath, "r") as file:
-            world_data = json.load(file)
+            data = json.load(file)
+
+        # Backward compat: pre-refactor saves use flat "Level N" keys
+        if isinstance(data, dict) and any(
+            k.startswith("Level ") for k in data
+        ):
+
+            levels = {}
+
+            for key, level_data in data.items():
+
+                levels[level_data["level_id"]] = DungeonLevel(
+                    level_id=level_data["level_id"],
+                    name=level_data["level_name"],
+                    aether_density=level_data["aether_density"],
+                    guardian_power=level_data["guardian_level"],
+                )
+
+            world_data = DungeonWorld(levels=levels)
+
+        else:
+
+            world_data = DungeonWorld.from_dict(data)
 
         print(f"--- WORLD '{save_name}' LOADED ---")
 
@@ -360,18 +625,18 @@ def display_level_summary(level_data):
     """
 
     print(
-        f"Level {level_data['level_id']}: "
-        f"{level_data['level_name']}"
+        f"Level {level_data.level_id}: "
+        f"{level_data.name}"
     )
 
     print(
         f"  > Aether: "
-        f"{level_data['aether_density']} units"
+        f"{level_data.aether_density} units"
     )
 
     print(
         f"  > Guardian: "
-        f"Pwr Lvl {level_data['guardian_level']}"
+        f"Pwr Lvl {level_data.guardian_power}"
     )
 
     print("-" * 30)
@@ -384,7 +649,7 @@ def display_world_overview(world_data):
 
     print("\n--- THE GREAT DESCENT ---")
 
-    for level_data in world_data.values():
+    for level_data in world_data.levels.values():
         display_level_summary(level_data)
 
 
@@ -398,20 +663,18 @@ def display_random_level(world_data):
         MAX_LEVEL
     )
 
-    level_key = f"Level {random_level_number}"
-
-    level_data = world_data[level_key]
+    level_data = world_data.levels[random_level_number]
 
     print(
         f"\n[DISCOVERY] "
-        f"{level_key}: "
-        f"{level_data['level_name']}"
+        f"Level {random_level_number}: "
+        f"{level_data.name}"
     )
 
     print(
         f"Stats: "
-        f"Aether {level_data['aether_density']} | "
-        f"Guardian {level_data['guardian_level']}"
+        f"Aether {level_data.aether_density} | "
+        f"Guardian {level_data.guardian_power}"
     )
 
 
@@ -426,25 +689,23 @@ def display_specific_level(
     if not 1 <= level_number <= MAX_LEVEL:
 
         print(
-            "The Abyss only goes "
-            "to Level 100."
+            f"The Abyss only goes "
+            f"to Level {MAX_LEVEL}."
         )
 
         return
 
-    level_key = f"Level {level_number}"
-
-    level_data = world_data[level_key]
+    level_data = world_data.levels[level_number]
 
     print(
         f"\n[FOUND] "
-        f"{level_data['level_name']}"
+        f"{level_data.name}"
     )
 
     print(
         f"Logic Specs: "
-        f"Density {level_data['aether_density']} | "
-        f"Power {level_data['guardian_level']}"
+        f"Density {level_data.aether_density} | "
+        f"Power {level_data.guardian_power}"
     )
 
 
@@ -455,10 +716,12 @@ def display_specific_level(
 def process_user_command(
     command,
     world_data,
-    heroes
+    heroes,
+    guardians,
+    builders
 ):
     """
-    Process oracle commands including hero management.
+    Process oracle commands including unit management.
     """
 
     cleaned_command = command.lower().strip()
@@ -480,33 +743,94 @@ def process_user_command(
 
     elif cleaned_command == "recruit":
 
-        recruit_hero(heroes)
+        print("\nChoose unit type:")
+        print("  1. Hero")
+        print("  2. Guardian")
+        print("  3. Builder")
+
+        unit_choice = input(
+            "\nEnter choice: "
+        ).strip()
+
+        if unit_choice == "1":
+
+            recruit_hero(heroes)
+
+        elif unit_choice == "2":
+
+            recruit_guardian(guardians)
+
+        elif unit_choice == "3":
+
+            recruit_builder(builders)
+
+        else:
+
+            print("Invalid choice.")
 
         return True
 
     elif cleaned_command == "heroes":
 
-        if not heroes:
+        has_any = heroes or guardians or builders
 
-            print("No heroes have been recruited yet.")
+        if not has_any:
+
+            print("No units have been recruited yet.")
 
         else:
 
-            print("\n--- RECRUITED HEROES ---")
+            print("\n--- RECRUITED UNITS ---")
 
-            for hero in heroes:
+            if heroes:
 
-                print(
-                    f"  #{hero.hero_id} {hero.name} - "
-                    f"Lvl {hero.level} {hero.specialization}"
-                )
+                print("\n  Heroes:")
 
-                print(
-                    f"    HP:{hero.health:.0f} "
-                    f"ST:{hero.stamina:.0f} "
-                    f"SN:{hero.sanity:.0f} "
-                    f"| {'Alive' if hero.is_alive else 'Dead'}"
-                )
+                for hero in heroes:
+
+                    print(
+                        f"    #{hero.unit_id} {hero.name} - "
+                        f"Lvl {hero.level} {hero.specialization}"
+                    )
+
+                    print(
+                        f"      HP:{hero.health:.0f} "
+                        f"ST:{hero.stamina:.0f} "
+                        f"SN:{hero.sanity:.0f} "
+                        f"| {'Alive' if hero.is_alive else 'Dead'}"
+                    )
+
+            if guardians:
+
+                print("\n  Guardians:")
+
+                for guard in guardians:
+
+                    print(
+                        f"    #{guard.unit_id} {guard.name} - "
+                        f"Power {guard.power}"
+                    )
+
+                    print(
+                        f"      HP:{guard.health:.0f} "
+                        f"| {'Alive' if guard.is_alive else 'Dead'}"
+                    )
+
+            if builders:
+
+                print("\n  Builders:")
+
+                for builder in builders:
+
+                    print(
+                        f"    #{builder.unit_id} {builder.name} - "
+                        f"Speed {builder.build_speed}"
+                    )
+
+                    print(
+                        f"      HP:{builder.health:.0f} "
+                        f"| {'Alive' if builder.is_alive else 'Dead'}"
+                    )
 
         return True
 
@@ -522,7 +846,7 @@ def process_user_command(
 
             for h in heroes:
 
-                if h.hero_id == hero_id:
+                if h.unit_id == hero_id:
 
                     found = h
 
@@ -539,6 +863,29 @@ def process_user_command(
         except (ValueError, IndexError):
 
             print("Usage: hero <id>")
+
+        return True
+
+    elif cleaned_command == "zones":
+
+        if not world_data.known_zones:
+
+            print("No zones discovered.")
+
+        else:
+
+            print("\n--- KNOWN ZONES ---")
+
+            for zone_id in world_data.known_zones:
+
+                zone = world_data.zones[zone_id]
+
+                print(
+                    f"  Zone {zone.zone_id}: "
+                    f"{zone.name} "
+                    f"(Tier {zone.tier}, "
+                    f"Danger {zone.danger_rating})"
+                )
 
         return True
 
@@ -564,21 +911,22 @@ def process_user_command(
         return True
 
 
-def run_oracle_system(world_data, heroes):
+def run_oracle_system(world_data, heroes, guardians, builders):
     """
-    Main interactive command loop with hero management.
+    Main interactive command loop with unit management and zones.
     """
 
     print("\n--- ORACLE SYSTEM ACTIVE ---")
 
     print(
-        "Options: Type a level number "
-        "(1-100), "
-        "'random', "
-        "'recruit', "
-        "'heroes', "
-        "'hero <id>', "
-        "or 'exit'."
+        f"Options: Type a level number "
+        f"(1-{MAX_LEVEL}), "
+        f"'random', "
+        f"'recruit', "
+        f"'heroes', "
+        f"'hero <id>', "
+        f"'zones', "
+        f"or 'exit'."
     )
 
     is_running = True
@@ -592,12 +940,14 @@ def run_oracle_system(world_data, heroes):
         is_running = process_user_command(
             user_command,
             world_data,
-            heroes
+            heroes,
+            guardians,
+            builders
         )
 
 
 # =========================
-# HERO MANAGEMENT
+# UNIT MANAGEMENT
 # =========================
 
 SPECIALIZATIONS = [
@@ -669,6 +1019,62 @@ def recruit_hero(heroes):
     return hero
 
 
+def recruit_guardian(guardians):
+    """
+    Interactive guardian creation.
+    """
+
+    guardian_id = len(guardians) + 1
+
+    name = input(
+        "\nEnter guardian name: "
+    ).strip()
+
+    if not name:
+
+        print("A guardian must have a name.")
+
+        return recruit_guardian(guardians)
+
+    guardian = Guardian(guardian_id, name)
+
+    guardians.append(guardian)
+
+    print(
+        f"\n--- {name} the Guardian has arrived! ---"
+    )
+
+    return guardian
+
+
+def recruit_builder(builders):
+    """
+    Interactive builder creation.
+    """
+
+    builder_id = len(builders) + 1
+
+    name = input(
+        "\nEnter builder name: "
+    ).strip()
+
+    if not name:
+
+        print("A builder must have a name.")
+
+        return recruit_builder(builders)
+
+    builder = Builder(builder_id, name)
+
+    builders.append(builder)
+
+    print(
+        f"\n--- {name} the Builder has arrived! ---"
+    )
+
+    return builder
+
+
 # =========================
 # MAIN PROGRAM
 # =========================
@@ -680,6 +1086,8 @@ def main():
     )
 
     heroes = []
+    guardians = []
+    builders = []
 
     print(
         f"\n--- ACTIVE WORLD: "
@@ -692,7 +1100,9 @@ def main():
 
     run_oracle_system(
         dungeon_world,
-        heroes
+        heroes,
+        guardians,
+        builders
     )
 
 
