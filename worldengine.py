@@ -172,6 +172,108 @@ class Builder(BaseUnit):
 
 
 # =========================
+# EXPEDITION CLASS
+# =========================
+
+class Expedition:
+    """Represents a hero expedition into a zone."""
+
+    def __init__(self, hero, target_zone, world,
+                 duration_turns, turns_elapsed=0,
+                 status="active", loot=None):
+        self.hero = hero
+        self.target_zone = target_zone
+        self.world = world
+        self.duration_turns = duration_turns
+        self.turns_elapsed = turns_elapsed
+        self.status = status
+        self.loot = loot if loot is not None else {}
+
+    def advance(self):
+        """Advance this expedition by one turn."""
+
+        self.turns_elapsed += 1
+
+        self._apply_zone_pressure()
+
+        if self.turns_elapsed >= self.duration_turns:
+
+            self._resolve()
+
+    def _apply_zone_pressure(self):
+        """Apply environmental damage from the zone."""
+
+        self.hero.consume_stamina(
+            self.target_zone.danger_rating * 0.4
+        )
+
+        self.hero.lose_sanity(
+            self.target_zone.tier * 2.0
+        )
+
+        self.hero.take_damage(
+            self.target_zone.danger_rating * 0.2
+        )
+
+        if not self.hero.is_alive:
+
+            self.status = "failed"
+
+    def _resolve(self):
+        """Finalise the expedition and award rewards."""
+
+        self.loot = {
+            "raw_aether": int(
+                self.target_zone.danger_rating
+                * 0.5
+                * self.target_zone.tier
+            )
+        }
+
+        xp_gain = int(
+            self.target_zone.danger_rating
+            * self.target_zone.tier
+            * 5
+        )
+
+        self.hero.gain_experience(xp_gain)
+
+        if not self.target_zone.is_discovered:
+
+            self.target_zone.is_discovered = True
+
+            self.world.known_zones.append(
+                self.target_zone.zone_id
+            )
+
+            print(
+                f"\n  [DISCOVERED] {self.target_zone.name} "
+                f"(Tier {self.target_zone.tier})!"
+            )
+
+        self.hero.current_zone = None
+
+        self.status = "returned"
+
+        print(
+            f"\n  [RETURN] {self.hero.name} returned from "
+            f"{self.target_zone.name} "
+            f"(Tier {self.target_zone.tier})."
+        )
+
+        print(
+            f"    Loot: {self.loot} "
+            f"| XP: {xp_gain}"
+        )
+
+        print(
+            f"    HP:{self.hero.health:.0f} "
+            f"ST:{self.hero.stamina:.0f} "
+            f"SN:{self.hero.sanity:.0f}"
+        )
+
+
+# =========================
 # CORE CALCULATIONS
 # =========================
 
@@ -278,12 +380,18 @@ class DungeonWorld:
     """A named dungeon world containing multiple levels and zones."""
 
     def __init__(self, name="", levels=None, turn=0,
-                 zones=None, known_zones=None):
+                 zones=None, known_zones=None,
+                 active_expeditions=None):
         self.name = name
         self.levels = levels if levels is not None else {}
         self.turn = turn
         self.zones = zones if zones is not None else {}
         self.known_zones = known_zones if known_zones is not None else []
+        self.active_expeditions = (
+            active_expeditions
+            if active_expeditions is not None
+            else []
+        )
 
     def to_dict(self):
         """Serialize world to a JSON-safe dict."""
@@ -299,6 +407,23 @@ class DungeonWorld:
                 for zone_id, zone in self.zones.items()
             },
             "known_zones": self.known_zones,
+            "active_expeditions": [
+                {
+                    "hero_id": exp.hero.unit_id,
+                    "target_zone_id": (
+                        exp.target_zone.zone_id
+                    ),
+                    "duration_turns": (
+                        exp.duration_turns
+                    ),
+                    "turns_elapsed": (
+                        exp.turns_elapsed
+                    ),
+                    "status": exp.status,
+                    "loot": exp.loot,
+                }
+                for exp in self.active_expeditions
+            ],
         }
 
     @classmethod
@@ -315,6 +440,9 @@ class DungeonWorld:
             zone = WorldZone.from_dict(zone_data)
             zones[zone.zone_id] = zone
         known_zones = data.get("known_zones", [])
+        # Active expeditions stored as metadata only;
+        # full rehydration requires hero objects not
+        # available at load time.
         return cls(name=name, levels=levels, turn=turn,
                    zones=zones, known_zones=known_zones)
 
@@ -336,9 +464,28 @@ class DungeonWorld:
         print(f"\n--- Turn {self.turn} ---")
 
     def _process_expeditions(self, heroes):
-        """Stub: process ongoing hero expeditions."""
+        """Advance all active expeditions, removing completed or failed ones."""
 
-        print("  [Tick] Expeditions phase (not yet implemented)")
+        completed = []
+
+        for exp in self.active_expeditions:
+
+            exp.advance()
+
+            if exp.status in ("returned", "failed"):
+
+                completed.append(exp)
+
+                if exp.status == "failed":
+
+                    print(
+                        f"\n  [FAILURE] {exp.hero.name} "
+                        f"perished in {exp.target_zone.name}!"
+                    )
+
+        for exp in completed:
+
+            self.active_expeditions.remove(exp)
 
     def _process_environmental_events(
         self, heroes, guardians
@@ -939,6 +1086,113 @@ def process_user_command(
 
         return True
 
+    elif cleaned_command == "expeditions":
+
+        if not world_data.active_expeditions:
+
+            print("No active expeditions.")
+
+        else:
+
+            print("\n--- ACTIVE EXPEDITIONS ---")
+
+            for exp in world_data.active_expeditions:
+
+                print(
+                    f"  {exp.hero.name} -> "
+                    f"{exp.target_zone.name} "
+                    f"(Tier {exp.target_zone.tier})"
+                )
+
+                print(
+                    f"    Turn {exp.turns_elapsed} / "
+                    f"{exp.duration_turns} "
+                    f"| {exp.status}"
+                )
+
+        return True
+
+    elif cleaned_command.startswith("send "):
+
+        parts = cleaned_command.split()
+
+        if len(parts) != 4:
+
+            print("Usage: send <hero_id> <zone_id> <duration>")
+
+        else:
+
+            try:
+
+                hero_id = int(parts[1])
+
+                zone_id = int(parts[2])
+
+                duration = int(parts[3])
+
+                found_hero = None
+
+                for h in heroes:
+
+                    if h.unit_id == hero_id:
+
+                        found_hero = h
+
+                        break
+
+                if found_hero is None:
+
+                    print(f"No hero with ID {hero_id}.")
+
+                elif not found_hero.is_alive:
+
+                    print(
+                        f"{found_hero.name} is dead "
+                        f"and cannot be sent."
+                    )
+
+                elif found_hero.current_zone is not None:
+
+                    print(
+                        f"{found_hero.name} is already "
+                        f"on an expedition."
+                    )
+
+                elif zone_id not in world_data.zones:
+
+                    print(
+                        f"No zone with ID {zone_id}."
+                    )
+
+                else:
+
+                    target = world_data.zones[zone_id]
+
+                    found_hero.current_zone = zone_id
+
+                    expedition = Expedition(
+                        hero=found_hero,
+                        target_zone=target,
+                        world=world_data,
+                        duration_turns=duration,
+                    )
+
+                    world_data.active_expeditions.append(
+                        expedition
+                    )
+
+                    print(
+                        f"\n--- {found_hero.name} dispatched "
+                        f"to {target.name} "
+                        f"for {duration} turns! ---"
+                    )
+
+            except (ValueError, IndexError):
+
+                print("Usage: send <hero_id> <zone_id> <duration>")
+
+        return True
+
     elif cleaned_command.isdigit():
 
         level_number = int(
@@ -977,6 +1231,8 @@ def run_oracle_system(world_data, heroes, guardians, builders):
         f"'hero <id>', "
         f"'zones', "
         f"'tick', "
+        f"'send <hero_id> <zone_id> <duration>', "
+        f"'expeditions', "
         f"or 'exit'."
     )
 
