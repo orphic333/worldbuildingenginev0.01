@@ -3,6 +3,7 @@ import random
 from .constants import (
     ADJECTIVES, MATERIALS, LOCATIONS,
     TERRAIN_TYPES, ZONE_MODIFIERS, MAX_LEVEL,
+    Resource,
 )
 from .entities import DungeonLevel, WorldZone, DungeonWorld
 
@@ -43,6 +44,13 @@ def create_level_data(level_number):
         name=generate_level_name(),
         aether_density=calculate_aether_density(level_number),
         guardian_power=calculate_guardian_power(level_number),
+        resource_nodes={
+            Resource.RAW_AETHER: int(
+                calculate_aether_density(level_number) * 0.5
+            ),
+            Resource.OBSIDIAN: random.randint(5, 20),
+            Resource.BONE: random.randint(2, 10),
+        },
     )
 
 
@@ -71,11 +79,38 @@ def generate_dungeon_world(max_level=MAX_LEVEL):
             terrain = random.choice(TERRAIN_TYPES)
             danger = round(tier * 10.0 + random.uniform(0, 5), 3)
 
+            if tier == 1:
+
+                zone_resources = {
+                    Resource.RAW_AETHER: random.randint(5, 15),
+                    Resource.BONE: random.randint(3, 8),
+                    Resource.KNOWLEDGE: random.randint(1, 5),
+                }
+
+            elif tier == 2:
+
+                zone_resources = {
+                    Resource.RAW_AETHER: random.randint(10, 25),
+                    Resource.OBSIDIAN: random.randint(5, 15),
+                    Resource.SHADOW_MATTER: random.randint(2, 8),
+                    Resource.KNOWLEDGE: random.randint(5, 12),
+                }
+
+            else:
+
+                zone_resources = {
+                    Resource.RAW_AETHER: random.randint(20, 40),
+                    Resource.OBSIDIAN: random.randint(10, 25),
+                    Resource.SHADOW_MATTER: random.randint(8, 20),
+                    Resource.KNOWLEDGE: random.randint(10, 20),
+                }
+
             zone = WorldZone(
                 zone_id=zone_id_counter,
                 name=f"{modifier} {terrain}",
                 tier=tier,
                 danger_rating=danger,
+                resource_nodes=zone_resources,
             )
 
             zones[zone_id_counter] = zone

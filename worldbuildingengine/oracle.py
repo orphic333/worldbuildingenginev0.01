@@ -1,4 +1,4 @@
-from .constants import MAX_LEVEL
+from .constants import MAX_LEVEL, Resource
 from .display import (
     display_random_level, display_specific_level,
 )
@@ -220,6 +220,19 @@ def process_user_command(
 
         return True
 
+    elif cleaned_command == "stockpile":
+
+        print("\n--- STOCKPILE ---")
+
+        for resource in Resource:
+
+            print(
+                f"  {resource.value}: "
+                f"{world_data.stockpile[resource]}"
+            )
+
+        return True
+
     elif cleaned_command.startswith("send "):
 
         parts = cleaned_command.split()
@@ -341,6 +354,7 @@ def run_oracle_system(world_data, heroes, guardians, builders):
         f"'tick', "
         f"'send <hero_id> <zone_id> <duration>', "
         f"'expeditions', "
+        f"'stockpile', "
         f"or 'exit'."
     )
 

@@ -1,3 +1,6 @@
+import enum
+
+
 # =========================
 # CONSTANTS
 # =========================
@@ -41,6 +44,14 @@ ZONE_MODIFIERS = [
     "Blighted", "Ancient", "Forsaken",
     "Sunken", "Fractured"
 ]
+
+class Resource(enum.Enum):
+    RAW_AETHER = "raw_aether"
+    OBSIDIAN = "obsidian"
+    BONE = "bone"
+    SHADOW_MATTER = "shadow_matter"
+    KNOWLEDGE = "knowledge"
+
 
 SPECIALIZATIONS = [
     "Prospector",

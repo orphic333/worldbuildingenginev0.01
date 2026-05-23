@@ -1,3 +1,6 @@
+from .constants import Resource
+
+
 # =========================
 # UNIT BASE CLASS
 # =========================
@@ -23,7 +26,7 @@ class BaseUnit:
 # =========================
 
 class Hero(BaseUnit):
-    """A hero that delves into the dungeon depths."""
+    """A hero that engages in expeditions to explore the world."""
 
     def __init__(self, hero_id, name, specialization):
         super().__init__(hero_id, name)
@@ -173,13 +176,37 @@ class Expedition:
     def _resolve(self):
         """Finalise the expedition and award rewards."""
 
-        self.loot = {
-            "raw_aether": int(
-                self.target_zone.danger_rating
-                * 0.5
-                * self.target_zone.tier
+        self.loot = {}
+
+        for resource, node_value in (
+            self.target_zone.resource_nodes.items()
+        ):
+
+            if node_value <= 0:
+
+                continue
+
+            harvest = min(
+                node_value,
+                int(node_value * 0.3) + 1
             )
-        }
+
+            if (
+                resource == Resource.KNOWLEDGE
+                and self.hero.specialization == "Scholar"
+            ):
+
+                harvest *= 2
+
+            self.target_zone.resource_nodes[resource] = (
+                max(
+                    0,
+                    self.target_zone.resource_nodes[resource]
+                    - harvest
+                )
+            )
+
+            self.loot[resource] = harvest
 
         xp_gain = int(
             self.target_zone.danger_rating
@@ -250,7 +277,10 @@ class DungeonLevel:
             "name": self.name,
             "aether_density": self.aether_density,
             "guardian_power": self.guardian_power,
-            "resource_nodes": self.resource_nodes,
+            "resource_nodes": {
+                r.value: qty
+                for r, qty in self.resource_nodes.items()
+            },
             "structural_mods": self.structural_mods,
             "active_events": self.active_events,
             "is_explored": self.is_explored,
@@ -264,7 +294,11 @@ class DungeonLevel:
             name=data["name"],
             aether_density=data["aether_density"],
             guardian_power=data["guardian_power"],
-            resource_nodes=data.get("resource_nodes", {}),
+            resource_nodes={
+                Resource(k): v
+                for k, v
+                in data.get("resource_nodes", {}).items()
+            },
             structural_mods=data.get("structural_mods", []),
             active_events=data.get("active_events", []),
             is_explored=data.get("is_explored", False),
@@ -292,7 +326,10 @@ class WorldZone:
             "name": self.name,
             "tier": self.tier,
             "danger_rating": self.danger_rating,
-            "resource_nodes": self.resource_nodes,
+            "resource_nodes": {
+                r.value: qty
+                for r, qty in self.resource_nodes.items()
+            },
             "is_discovered": self.is_discovered,
             "threat_level": self.threat_level,
         }
@@ -305,7 +342,11 @@ class WorldZone:
             name=data["name"],
             tier=data["tier"],
             danger_rating=data["danger_rating"],
-            resource_nodes=data.get("resource_nodes", {}),
+            resource_nodes={
+                Resource(k): v
+                for k, v
+                in data.get("resource_nodes", {}).items()
+            },
             is_discovered=data.get("is_discovered", False),
             threat_level=data.get("threat_level", 0),
         )
@@ -316,7 +357,8 @@ class DungeonWorld:
 
     def __init__(self, name="", levels=None, turn=0,
                  zones=None, known_zones=None,
-                 active_expeditions=None):
+                 active_expeditions=None,
+                 stockpile=None):
         self.name = name
         self.levels = levels if levels is not None else {}
         self.turn = turn
@@ -326,6 +368,11 @@ class DungeonWorld:
             active_expeditions
             if active_expeditions is not None
             else []
+        )
+        self.stockpile = (
+            stockpile
+            if stockpile is not None
+            else {r: 0 for r in Resource}
         )
 
     def to_dict(self):
@@ -355,10 +402,17 @@ class DungeonWorld:
                         exp.turns_elapsed
                     ),
                     "status": exp.status,
-                    "loot": exp.loot,
+                    "loot": {
+                        r.value: qty
+                        for r, qty in exp.loot.items()
+                    },
                 }
                 for exp in self.active_expeditions
             ],
+            "stockpile": {
+                r.value: qty
+                for r, qty in self.stockpile.items()
+            },
         }
 
     @classmethod
@@ -375,8 +429,23 @@ class DungeonWorld:
             zone = WorldZone.from_dict(zone_data)
             zones[zone.zone_id] = zone
         known_zones = data.get("known_zones", [])
+
+        raw_stockpile = data.get("stockpile")
+
+        if raw_stockpile:
+
+            stockpile = {
+                Resource(k): v
+                for k, v in raw_stockpile.items()
+            }
+
+        else:
+
+            stockpile = {r: 0 for r in Resource}
+
         return cls(name=name, levels=levels, turn=turn,
-                   zones=zones, known_zones=known_zones)
+                   zones=zones, known_zones=known_zones,
+                   stockpile=stockpile)
 
     def tick(self, heroes, guardians, builders):
         """Advance the game by one turn."""
@@ -407,6 +476,17 @@ class DungeonWorld:
             if exp.status in ("returned", "failed"):
 
                 completed.append(exp)
+
+                if exp.status == "returned":
+
+                    for resource, qty in exp.loot.items():
+
+                        self.stockpile[resource] += qty
+
+                        print(
+                            f"    [DEPOSIT] "
+                            f"{resource.value}: +{qty}"
+                        )
 
                 if exp.status == "failed":
 
