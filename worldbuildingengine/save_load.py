@@ -72,7 +72,7 @@ def load_dungeon_world(save_name):
         with open(filepath, "r") as file:
             data = json.load(file)
 
-        # Backward compat: pre-refactor saves use flat "Level N" keys
+        # Backward compatibility: pre-refactor saves use flat "Level N" keys
         if isinstance(data, dict) and any(
             k.startswith("Level ") for k in data
         ):
@@ -85,7 +85,7 @@ def load_dungeon_world(save_name):
                     level_id=level_data["level_id"],
                     name=level_data["level_name"],
                     aether_density=level_data["aether_density"],
-                    guardian_power=level_data["guardian_level"],
+                    guardian_power_level=level_data["guardian_level"],
                 )
 
             world_data = DungeonWorld(levels=levels)

@@ -62,7 +62,7 @@ def recruit_hero(heroes):
     return hero
 
 
-def recruit_guardian(guardians):
+def recruit_guardian(guardians): #should be removed.
     """
     Interactive guardian creation.
     """
@@ -99,7 +99,7 @@ def recruit_builder(builders):
 
     name = input(
         "\nEnter builder name: "
-    ).strip()
+    ).strip()  #builders don't need names, but they do need ID's. I need to make ID's much more definitive across board.
 
     if not name:
 

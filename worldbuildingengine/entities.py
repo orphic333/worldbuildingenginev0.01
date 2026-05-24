@@ -81,6 +81,9 @@ class Hero(BaseUnit):
     def add_resource(self, resource_name, amount):
         """Add a resource to the hero's inventory."""
         self.inventory[resource_name] = self.inventory.get(resource_name, 0) + amount
+        #a maximum number of resources should be implemented, and should differ due to hero specialisations.
+        #an implementation measure may be a bag.
+        #increasing the level of the hero should increase the hero's use of space, and also increase the 'size' of the bag
 
 
 # =========================
@@ -90,16 +93,16 @@ class Hero(BaseUnit):
 class Guardian(BaseUnit):
     """A guardian assigned to protect dungeon levels."""
 
-    def __init__(self, guardian_id, name, power=10.0):
+    def __init__(self, guardian_id, name, power_level=10.0):
         super().__init__(guardian_id, name)
         self.assigned_level_id = None
-        self.power = power
+        self.power_level = power_level
 
     def display_status(self):
         """Print formatted guardian stats."""
         print(f"\n=== {self.name} ===")
         print(f"  ID: {self.unit_id}")
-        print(f"  Power: {self.power}")
+        print(f"  Power: {self.power_level}")
         print(f"  Assigned Level: {self.assigned_level_id}")
         print(f"  Health: {self.health:.1f}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
@@ -264,11 +267,10 @@ class DungeonLevel:
         self.level_id = level_id
         self.name = name
         self.aether_density = aether_density
-        self.guardian_power = guardian_power
+        self.guardian_power_level = guardian_power_level
         self.resource_nodes = resource_nodes if resource_nodes is not None else {}
         self.structural_mods = structural_mods if structural_mods is not None else []
         self.active_events = active_events if active_events is not None else []
-        self.is_explored = is_explored
 
     def to_dict(self):
         """Serialize level to a JSON-safe dict."""
@@ -276,14 +278,13 @@ class DungeonLevel:
             "level_id": self.level_id,
             "name": self.name,
             "aether_density": self.aether_density,
-            "guardian_power": self.guardian_power,
+            "guardian_power_level": self.guardian_power_level,
             "resource_nodes": {
                 r.value: qty
                 for r, qty in self.resource_nodes.items()
             },
             "structural_mods": self.structural_mods,
             "active_events": self.active_events,
-            "is_explored": self.is_explored,
         }
 
     @classmethod
@@ -293,7 +294,7 @@ class DungeonLevel:
             level_id=data["level_id"],
             name=data["name"],
             aether_density=data["aether_density"],
-            guardian_power=data["guardian_power"],
+            guardian_power_level=data["guardian_power_level"],
             resource_nodes={
                 Resource(k): v
                 for k, v
@@ -301,7 +302,6 @@ class DungeonLevel:
             },
             structural_mods=data.get("structural_mods", []),
             active_events=data.get("active_events", []),
-            is_explored=data.get("is_explored", False),
         )
 
 

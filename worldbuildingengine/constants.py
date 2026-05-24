@@ -60,7 +60,7 @@ SPECIALIZATIONS = [
 ]
 
 SPECIALIZATION_DESC = {
-    "Prospector": "Prospector - gifted at extracting raw resources from the depths.",
-    "Scholar": "Scholar - seeks ancient knowledge hidden in the dark.",
-    "Warder": "Warder - built to endure the dangers of the deep."
+    "Prospector": "Prospector - gifted at identifying resource hotspots and extracting raw resources from world zones.",
+    "Scholar": "Scholar - seeks ancient knowledge as a resource.",
+    "Warder": "Warder - skilled combatants whose purpose is battle."
 }

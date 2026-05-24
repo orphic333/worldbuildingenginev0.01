@@ -117,9 +117,7 @@ def initialize_world():
 
 def main():
 
-    dungeon_world, save_name = (
-        initialize_world()
-    )
+    dungeon_world, save_name = initialize_world()
 
     heroes = []
     guardians = []

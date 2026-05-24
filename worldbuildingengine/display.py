@@ -113,3 +113,7 @@ def display_specific_level(
         f"Density {level_data.aether_density} | "
         f"Power {level_data.guardian_power}"
     )
+
+def display_world_zone():
+    """Display world zone details"""
+    pass

@@ -43,7 +43,7 @@ def create_level_data(level_number):
         level_id=level_number,
         name=generate_level_name(),
         aether_density=calculate_aether_density(level_number),
-        guardian_power=calculate_guardian_power(level_number),
+        guardian_power_level=calculate_guardian_power(level_number),
         resource_nodes={
             Resource.RAW_AETHER: int(
                 calculate_aether_density(level_number) * 0.5
