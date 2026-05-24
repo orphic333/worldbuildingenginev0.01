@@ -260,7 +260,7 @@ class DungeonLevel:
 
     def __init__(self, level_id, name, aether_density, guardian_power_level,
                  resource_nodes=None, structural_mods=None,
-                 active_events=None, is_explored=False):
+                 active_events=None,):
         self.level_id = level_id
         self.name = name
         self.aether_density = aether_density
