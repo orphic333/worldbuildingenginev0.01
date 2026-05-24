@@ -258,7 +258,7 @@ class Expedition:
 class DungeonLevel:
     """A single level within the dungeon."""
 
-    def __init__(self, level_id, name, aether_density, guardian_power,
+    def __init__(self, level_id, name, aether_density, guardian_power_level,
                  resource_nodes=None, structural_mods=None,
                  active_events=None, is_explored=False):
         self.level_id = level_id
