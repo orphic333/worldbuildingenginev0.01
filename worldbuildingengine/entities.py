@@ -85,6 +85,48 @@ class Hero(BaseUnit):
         #an implementation measure may be a bag.
         #increasing the level of the hero should increase the hero's use of space, and also increase the 'size' of the bag
 
+    def to_dict(self):
+        return {
+            "unit_id": self.unit_id,
+            "name": self.name,
+            "health": self.health,
+            "is_alive": self.is_alive,
+            "specialization": self.specialization,
+            "stamina": self.stamina,
+            "sanity": self.sanity,
+            "level": self.level,
+            "experience": self.experience,
+            "current_zone": self.current_zone,
+            "inventory": {
+                (r.value if isinstance(r, Resource) else r): qty
+                for r, qty in self.inventory.items()
+            },
+            "expeditions_completed": self.expeditions_completed,
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        hero = cls(
+            hero_id=data["unit_id"],
+            name=data["name"],
+            specialization=data["specialization"]
+        )
+        hero.health = data["health"]
+        hero.is_alive = data["is_alive"]
+        hero.stamina = data["stamina"]
+        hero.sanity = data["sanity"]
+        hero.level = data["level"]
+        hero.experience = data["experience"]
+        hero.current_zone = data.get("current_zone")
+        hero.inventory = {}
+        for k, v in data.get("inventory", {}).items():
+            try:
+                hero.inventory[Resource(k)] = v
+            except ValueError:
+                hero.inventory[k] = v
+        hero.expeditions_completed = data["expeditions_completed"]
+        return hero
+
 
 # =========================
 # GUARDIAN AND BUILDER CLASSES
@@ -108,6 +150,28 @@ class Guardian(BaseUnit):
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
         print("-" * 30)
 
+    def to_dict(self):
+        return {
+            "unit_id": self.unit_id,
+            "name": self.name,
+            "health": self.health,
+            "is_alive": self.is_alive,
+            "assigned_level_id": self.assigned_level_id,
+            "power_level": self.power_level
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        g = cls(
+            guardian_id=data["unit_id"],
+            name=data["name"],
+            power_level=data.get("power_level", 10.0)
+        )
+        g.health = data["health"]
+        g.is_alive = data["is_alive"]
+        g.assigned_level_id = data.get("assigned_level_id")
+        return g
+
 
 class Builder(BaseUnit):
     """A builder that constructs and upgrades dungeon structures."""
@@ -126,6 +190,28 @@ class Builder(BaseUnit):
         print(f"  Health: {self.health:.1f}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
         print("-" * 30)
+
+    def to_dict(self):
+        return {
+            "unit_id": self.unit_id,
+            "name": self.name,
+            "health": self.health,
+            "is_alive": self.is_alive,
+            "build_speed": self.build_speed,
+            "current_task": self.current_task
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        b = cls(
+            builder_id=data["unit_id"],
+            name=data["name"],
+            build_speed=data.get("build_speed", 1.0)
+        )
+        b.health = data["health"]
+        b.is_alive = data["is_alive"]
+        b.current_task = data.get("current_task")
+        return b
 
 
 # =========================
@@ -374,12 +460,22 @@ class DungeonWorld:
             if stockpile is not None
             else {r: 0 for r in Resource}
         )
+        self.heroes = []
+        self.guardians = []
+        self.builders = []
+        self.next_unit_id = 1
+
+    def get_next_unit_id(self):
+        uid = self.next_unit_id
+        self.next_unit_id += 1
+        return uid
 
     def to_dict(self):
         """Serialize world to a JSON-safe dict."""
         return {
             "name": self.name,
             "turn": self.turn,
+            "next_unit_id": self.next_unit_id,
             "levels": {
                 str(lvl_id): level.to_dict()
                 for lvl_id, level in self.levels.items()
@@ -389,6 +485,9 @@ class DungeonWorld:
                 for zone_id, zone in self.zones.items()
             },
             "known_zones": self.known_zones,
+            "heroes": [hero.to_dict() for hero in self.heroes],
+            "guardians": [guard.to_dict() for guard in self.guardians],
+            "builders": [builder.to_dict() for builder in self.builders],
             "active_expeditions": [
                 {
                     "hero_id": exp.hero.unit_id,
@@ -403,7 +502,7 @@ class DungeonWorld:
                     ),
                     "status": exp.status,
                     "loot": {
-                        r.value: qty
+                        (r.value if isinstance(r, Resource) else r): qty
                         for r, qty in exp.loot.items()
                     },
                 }
@@ -443,23 +542,69 @@ class DungeonWorld:
 
             stockpile = {r: 0 for r in Resource}
 
-        return cls(name=name, levels=levels, turn=turn,
-                   zones=zones, known_zones=known_zones,
-                   stockpile=stockpile)
+        world = cls(name=name, levels=levels, turn=turn,
+                    zones=zones, known_zones=known_zones,
+                    stockpile=stockpile)
 
-    def tick(self, heroes, guardians, builders):
+        # Reconstruct dynamic unit state and unique ID counter
+        world.next_unit_id = data.get("next_unit_id", 1)
+
+        world.heroes = []
+        for hero_data in data.get("heroes", []):
+            world.heroes.append(Hero.from_dict(hero_data))
+
+        world.guardians = []
+        for guard_data in data.get("guardians", []):
+            world.guardians.append(Guardian.from_dict(guard_data))
+
+        world.builders = []
+        for builder_data in data.get("builders", []):
+            world.builders.append(Builder.from_dict(builder_data))
+
+        # Reconstruct active expeditions with object links resolved
+        world.active_expeditions = []
+        for exp_data in data.get("active_expeditions", []):
+            hero_id = exp_data.get("hero_id")
+            target_zone_id = exp_data.get("target_zone_id")
+
+            # Find the actual Hero and WorldZone instances in world_data
+            found_hero = None
+            for h in world.heroes:
+                if h.unit_id == hero_id:
+                    found_hero = h
+                    break
+            found_zone = world.zones.get(target_zone_id)
+
+            if found_hero and found_zone:
+                exp = Expedition(
+                    hero=found_hero,
+                    target_zone=found_zone,
+                    world=world,
+                    duration_turns=exp_data.get("duration_turns", 0),
+                    turns_elapsed=exp_data.get("turns_elapsed", 0),
+                    status=exp_data.get("status", "active"),
+                    loot={
+                        Resource(k): v
+                        for k, v in exp_data.get("loot", {}).items()
+                    }
+                )
+                world.active_expeditions.append(exp)
+
+        return world
+
+    def tick(self):
         """Advance the game by one turn."""
 
         self.turn += 1
 
-        self._process_expeditions(heroes)
+        self._process_expeditions(self.heroes)
 
         self._process_environmental_events(
-            heroes, guardians
+            self.heroes, self.guardians
         )
 
         self._process_unit_statuses(
-            heroes, guardians, builders
+            self.heroes, self.guardians, self.builders
         )
 
         print(f"\n--- Turn {self.turn} ---")

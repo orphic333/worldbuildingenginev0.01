@@ -6,12 +6,12 @@ from .entities import Hero, Guardian, Builder
 # UNIT MANAGEMENT
 # =========================
 
-def recruit_hero(heroes):
+def recruit_hero(world_data):
     """
     Interactive hero creation. Player names the hero and picks a specialization.
     """
 
-    hero_id = len(heroes) + 1
+    hero_id = world_data.get_next_unit_id()
 
     name = input(
         "\nEnter hero name: "
@@ -21,7 +21,7 @@ def recruit_hero(heroes):
 
         print("A hero must have a name.")
 
-        return recruit_hero(heroes)
+        return recruit_hero(world_data)
 
     print("\nChoose a specialization:")
 
@@ -53,7 +53,7 @@ def recruit_hero(heroes):
 
     hero = Hero(hero_id, name, specialization)
 
-    heroes.append(hero)
+    world_data.heroes.append(hero)
 
     print(
         f"\n--- {name} the {specialization} has arrived! ---"
@@ -62,12 +62,12 @@ def recruit_hero(heroes):
     return hero
 
 
-def recruit_guardian(guardians): #should be removed.
+def recruit_guardian(world_data):
     """
     Interactive guardian creation.
     """
 
-    guardian_id = len(guardians) + 1
+    guardian_id = world_data.get_next_unit_id()
 
     name = input(
         "\nEnter guardian name: "
@@ -77,11 +77,11 @@ def recruit_guardian(guardians): #should be removed.
 
         print("A guardian must have a name.")
 
-        return recruit_guardian(guardians)
+        return recruit_guardian(world_data)
 
     guardian = Guardian(guardian_id, name)
 
-    guardians.append(guardian)
+    world_data.guardians.append(guardian)
 
     print(
         f"\n--- {name} the Guardian has arrived! ---"
@@ -90,26 +90,26 @@ def recruit_guardian(guardians): #should be removed.
     return guardian
 
 
-def recruit_builder(builders):
+def recruit_builder(world_data):
     """
     Interactive builder creation.
     """
 
-    builder_id = len(builders) + 1
+    builder_id = world_data.get_next_unit_id()
 
     name = input(
         "\nEnter builder name: "
-    ).strip()  #builders don't need names, but they do need ID's. I need to make ID's much more definitive across board.
+    ).strip()
 
     if not name:
 
         print("A builder must have a name.")
 
-        return recruit_builder(builders)
+        return recruit_builder(world_data)
 
     builder = Builder(builder_id, name)
 
-    builders.append(builder)
+    world_data.builders.append(builder)
 
     print(
         f"\n--- {name} the Builder has arrived! ---"

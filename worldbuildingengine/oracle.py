@@ -4,6 +4,7 @@ from .display import (
 )
 from .entities import Expedition
 from .recruitment import recruit_hero, recruit_guardian, recruit_builder
+from .save_load import save_dungeon_world
 
 
 # =========================
@@ -12,10 +13,7 @@ from .recruitment import recruit_hero, recruit_guardian, recruit_builder
 
 def process_user_command(
     command,
-    world_data,
-    heroes,
-    guardians,
-    builders
+    world_data
 ):
     """
     Process oracle commands including unit management.
@@ -30,7 +28,15 @@ def process_user_command(
             "Goodbye, Architect."
         )
 
+        save_dungeon_world(world_data, world_data.name)
+
         return False
+
+    elif cleaned_command == "save":
+
+        save_dungeon_world(world_data, world_data.name)
+
+        return True
 
     elif cleaned_command == "random":
 
@@ -51,15 +57,15 @@ def process_user_command(
 
         if unit_choice == "1":
 
-            recruit_hero(heroes)
+            recruit_hero(world_data)
 
         elif unit_choice == "2":
 
-            recruit_guardian(guardians)
+            recruit_guardian(world_data)
 
         elif unit_choice == "3":
 
-            recruit_builder(builders)
+            recruit_builder(world_data)
 
         else:
 
@@ -69,7 +75,7 @@ def process_user_command(
 
     elif cleaned_command == "heroes":
 
-        has_any = heroes or guardians or builders
+        has_any = world_data.heroes or world_data.guardians or world_data.builders
 
         if not has_any:
 
@@ -79,11 +85,11 @@ def process_user_command(
 
             print("\n--- RECRUITED UNITS ---")
 
-            if heroes:
+            if world_data.heroes:
 
                 print("\n  Heroes:")
 
-                for hero in heroes:
+                for hero in world_data.heroes:
 
                     print(
                         f"    #{hero.unit_id} {hero.name} - "
@@ -97,15 +103,15 @@ def process_user_command(
                         f"| {'Alive' if hero.is_alive else 'Dead'}"
                     )
 
-            if guardians:
+            if world_data.guardians:
 
                 print("\n  Guardians:")
 
-                for guard in guardians:
+                for guard in world_data.guardians:
 
                     print(
                         f"    #{guard.unit_id} {guard.name} - "
-                        f"Power {guard.power}"
+                        f"Power {guard.power_level}"
                     )
 
                     print(
@@ -113,11 +119,11 @@ def process_user_command(
                         f"| {'Alive' if guard.is_alive else 'Dead'}"
                     )
 
-            if builders:
+            if world_data.builders:
 
                 print("\n  Builders:")
 
-                for builder in builders:
+                for builder in world_data.builders:
 
                     print(
                         f"    #{builder.unit_id} {builder.name} - "
@@ -141,7 +147,7 @@ def process_user_command(
 
             found = None
 
-            for h in heroes:
+            for h in world_data.heroes:
 
                 if h.unit_id == hero_id:
 
@@ -188,9 +194,8 @@ def process_user_command(
 
     elif cleaned_command == "tick":
 
-        world_data.tick(
-            heroes, guardians, builders
-        )
+        world_data.tick()
+        save_dungeon_world(world_data, world_data.name)
 
         return True
 
@@ -253,7 +258,7 @@ def process_user_command(
 
                 found_hero = None
 
-                for h in heroes:
+                for h in world_data.heroes:
 
                     if h.unit_id == hero_id:
 
@@ -336,7 +341,7 @@ def process_user_command(
         return True
 
 
-def run_oracle_system(world_data, heroes, guardians, builders):
+def run_oracle_system(world_data):
     """
     Main interactive command loop with unit management and zones.
     """
@@ -355,6 +360,7 @@ def run_oracle_system(world_data, heroes, guardians, builders):
         f"'send <hero_id> <zone_id> <duration>', "
         f"'expeditions', "
         f"'stockpile', "
+        f"'save', "
         f"or 'exit'."
     )
 
@@ -368,8 +374,5 @@ def run_oracle_system(world_data, heroes, guardians, builders):
 
         is_running = process_user_command(
             user_command,
-            world_data,
-            heroes,
-            guardians,
-            builders
+            world_data
         )

@@ -117,11 +117,9 @@ def initialize_world():
 
 def main():
 
-    dungeon_world, save_name = initialize_world()
-
-    heroes = []
-    guardians = []
-    builders = []
+    dungeon_world, save_name = (
+        initialize_world()
+    )
 
     print(
         f"\n--- ACTIVE WORLD: "
@@ -133,10 +131,7 @@ def main():
     )
 
     run_oracle_system(
-        dungeon_world,
-        heroes,
-        guardians,
-        builders
+        dungeon_world
     )
 
 
