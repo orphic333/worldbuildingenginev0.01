@@ -4,7 +4,7 @@ A terminal-based dungeon management simulation with adventure, lore and high sta
 
 ## Overview
 
-Procedurally generates a 3-level dungeon ("The Great Descent") with unique level names, aether density, and guardian power levels. Dive into an interactive oracle system to explore your dungeon, recruit heroes, and prepare for expedition simulation.
+Procedurally generates a 3-level expandable dungeon ("The Great Descent") with unique level names, aether density, and guardian power levels. Dive into an interactive oracle system to explore your dungeon, recruit heroes, prepare for expedition simulation and perform managerial tasks.
 
 ## Features
 
