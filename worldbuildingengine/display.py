@@ -42,7 +42,7 @@ def display_level_summary(level_data):
 
     print(
         f"  > Guardian: "
-        f"Pwr Lvl {level_data.guardian_power}"
+        f"Pwr Lvl {level_data.guardian_power_level}"
     )
 
     print("-" * 30)
@@ -111,7 +111,7 @@ def display_specific_level(
     print(
         f"Logic Specs: "
         f"Density {level_data.aether_density} | "
-        f"Power {level_data.guardian_power}"
+        f"Power {level_data.guardian_power_level}"
     )
 
 def display_world_zone():
