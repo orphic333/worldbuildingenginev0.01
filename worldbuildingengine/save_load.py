@@ -47,17 +47,41 @@ def list_save_files():
 
 def save_dungeon_world(world_data, save_name):
     """
-    Save world data to JSON.
+    Save world data to JSON transactionally to prevent data corruption.
     """
 
+    ensure_save_directory_exists()
+
     filepath = get_save_path(save_name)
+    temp_filepath = filepath + ".tmp"
 
     world_data.name = save_name
 
-    with open(filepath, "w") as file:
-        json.dump(world_data.to_dict(), file, indent=4)
+    try:
+        # Obtain serialized state and stamp CURRENT_SCHEMA_VERSION
+        save_dict = world_data.to_dict()
 
-    print(f"--- WORLD '{save_name}' SAVED ---")
+        from .migrations import CURRENT_SCHEMA_VERSION
+        save_dict["schema_version"] = CURRENT_SCHEMA_VERSION
+
+        # 1. Write the save data to a temporary file
+        with open(temp_filepath, "w") as file:
+            json.dump(save_dict, file, indent=4)
+            file.flush()
+            os.fsync(file.fileno())  # Force OS buffers to write to physical storage
+
+        # 2. Swap files atomically
+        os.replace(temp_filepath, filepath)
+        print(f"--- WORLD '{save_name}' SAVED TRANSACTIONALLY ---")
+
+    except Exception as e:
+        # Clean up temporary file if write fails
+        if os.path.exists(temp_filepath):
+            try:
+                os.remove(temp_filepath)
+            except OSError:
+                pass
+        raise e
 
 
 def load_dungeon_world(save_name):
@@ -72,27 +96,12 @@ def load_dungeon_world(save_name):
         with open(filepath, "r") as file:
             data = json.load(file)
 
-        # Backward compatibility: pre-refactor saves use flat "Level N" keys
-        if isinstance(data, dict) and any(
-            k.startswith("Level ") for k in data
-        ):
+        # Sequentially run schema migration upgrades on raw data
+        from .migrations import migrate_data
+        data = migrate_data(data)
 
-            levels = {}
-
-            for key, level_data in data.items():
-
-                levels[level_data["level_id"]] = DungeonLevel(
-                    level_id=level_data["level_id"],
-                    name=level_data["level_name"],
-                    aether_density=level_data["aether_density"],
-                    guardian_power_level=level_data["guardian_level"],
-                )
-
-            world_data = DungeonWorld(levels=levels)
-
-        else:
-
-            world_data = DungeonWorld.from_dict(data)
+        # Instantiate from migrated save representation
+        world_data = DungeonWorld.from_dict(data)
 
         print(f"--- WORLD '{save_name}' LOADED ---")
 
