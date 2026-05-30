@@ -3,7 +3,7 @@ from .constants import Resource
 # The active version of the world save schema expected by the game codebase.
 CURRENT_SCHEMA_VERSION = 2
 
-def migrate_v1_to_v2(data):
+def migrate_v1_to_v2(data:dict)->dict:
     """
     Migrates a legacy flat level save (v1) to the centralized container save (v2).
     In v1, the save file is a flat dictionary of Level names/data.
@@ -48,7 +48,7 @@ MIGRATION_PIPELINE = {
     1: migrate_v1_to_v2,
 }
 
-def migrate_data(data):
+def migrate_data(data:dict)->dict:
     """
     Sequentially runs schema upgrade migrations on loaded dict data
     until it matches CURRENT_SCHEMA_VERSION.

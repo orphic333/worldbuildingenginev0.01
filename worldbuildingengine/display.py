@@ -80,7 +80,7 @@ def display_random_level(world_data):
     print(
         f"Stats: "
         f"Aether {level_data.aether_density} | "
-        f"Guardian {level_data.guardian_power}"
+        f"Guardian {level_data.guardian_power_level}"
     )
 
 

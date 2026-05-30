@@ -69,6 +69,7 @@ class Resource(enum.Enum):
     WATER = "water"
     WOOD = "wood"
 
+#create categories for resources. For instance renewable resources, where an attribute could exist called is_renewable.
 
 SPECIALIZATIONS = [
     "Prospector",

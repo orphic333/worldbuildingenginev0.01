@@ -85,7 +85,7 @@ class Hero(BaseUnit):
         #an implementation measure may be a bag.
         #increasing the level of the hero should increase the hero's use of space, and also increase the 'size' of the bag
 
-    def to_dict(self):
+    def to_dict(self):      #hero data serialisation
         return {
             "unit_id": self.unit_id,
             "name": self.name,
@@ -223,7 +223,7 @@ class Expedition:
 
     def __init__(self, hero, target_zone, world,
                  duration_turns, turns_elapsed=0,
-                 status="active", loot=None):
+                 status="active", loot=None):        #feature: add a residents parameter to the constructor, which could be a field for whatever entities are there.
         self.hero = hero
         self.target_zone = target_zone
         self.world = world
@@ -354,7 +354,7 @@ class DungeonLevel:
         self.name = name
         self.aether_density = aether_density
         self.guardian_power_level = guardian_power_level
-        self.resource_nodes = resource_nodes if resource_nodes is not None else {}
+        self.resource_nodes = resource_nodes if resource_nodes is not None else {}  #consider changing resource nodes to 'surrounding resource nodes', referring to materials that can be gained in surrounding levels
         self.structural_mods = structural_mods if structural_mods is not None else []
         self.active_events = active_events if active_events is not None else []
 
@@ -370,7 +370,7 @@ class DungeonLevel:
                 for r, qty in self.resource_nodes.items()
             },
             "structural_mods": self.structural_mods,
-            "active_events": self.active_events,
+            "active_events": self.active_events,    #referring to events that are affecting this level directly.
         }
 
     @classmethod
@@ -392,7 +392,7 @@ class DungeonLevel:
 
 
 class WorldZone:
-    """A zone within the outside world surrounding the dungeon."""
+    """A zone within the outside world of the dungeon."""
 
     def __init__(self, zone_id, name, tier, danger_rating,
                  resource_nodes=None, is_discovered=False,
@@ -403,7 +403,7 @@ class WorldZone:
         self.danger_rating = danger_rating
         self.resource_nodes = resource_nodes if resource_nodes is not None else {}
         self.is_discovered = is_discovered
-        self.threat_level = threat_level
+        self.threat_level = threat_level       #add an events side to this. It could describe possible events that could come from this zone.
 
     def to_dict(self):
         """Serialize zone to a JSON-safe dict."""
@@ -445,7 +445,7 @@ class DungeonWorld:
                  zones=None, known_zones=None,
                  active_expeditions=None,
                  stockpile=None):
-        self.name = name
+        self.name = name   #of the dungeon world taken from the load.
         self.levels = levels if levels is not None else {}
         self.turn = turn
         self.zones = zones if zones is not None else {}
@@ -455,14 +455,14 @@ class DungeonWorld:
             if active_expeditions is not None
             else []
         )
-        self.stockpile = (
+        self.stockpile = (   #for the dungeon. Not the whole world. But I think I need to make that clearer.
             stockpile
             if stockpile is not None
             else {r: 0 for r in Resource}
         )
         self.heroes = []
         self.guardians = []
-        self.builders = []
+        self.builders = []    #other units will follow
         self.next_unit_id = 1
 
     def get_next_unit_id(self):
@@ -488,7 +488,7 @@ class DungeonWorld:
             "heroes": [hero.to_dict() for hero in self.heroes],
             "guardians": [guard.to_dict() for guard in self.guardians],
             "builders": [builder.to_dict() for builder in self.builders],
-            "active_expeditions": [
+            "active_expeditions": [     #might soon need to implement feature to handle multiple heroes on a single expedition.
                 {
                     "hero_id": exp.hero.unit_id,
                     "target_zone_id": (
@@ -559,7 +559,7 @@ class DungeonWorld:
 
         world.builders = []
         for builder_data in data.get("builders", []):
-            world.builders.append(Builder.from_dict(builder_data))
+            world.builders.append(Builder.from_dict(builder_data))  #will add more units over here as well
 
         # Reconstruct active expeditions with object links resolved
         world.active_expeditions = []
@@ -618,7 +618,7 @@ class DungeonWorld:
 
             exp.advance()
 
-            if exp.status in ("returned", "failed"):
+            if exp.status in ("returned", "failed"):   #will need to define exactly what 'failure' and 'success' are.
 
                 completed.append(exp)
 
@@ -655,7 +655,7 @@ class DungeonWorld:
         )
 
     def _process_unit_statuses(
-        self, heroes, guardians, builders
+        self, heroes, guardians, builders    #will add more units to this as well.
     ):
         """Stub: update unit vitals and cooldowns."""
 

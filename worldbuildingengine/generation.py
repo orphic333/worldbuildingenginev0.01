@@ -45,11 +45,11 @@ def create_level_data(level_number):
         aether_density=calculate_aether_density(level_number),
         guardian_power_level=calculate_guardian_power(level_number),
         resource_nodes={
-            Resource.RAW_AETHER: int(
+            Resource.AETHER_CRYSTALS: int(
                 calculate_aether_density(level_number) * 0.5
             ),
-            Resource.OBSIDIAN: random.randint(5, 20),
-            Resource.BONE: random.randint(2, 10),
+            Resource.: random.randint(5, 20),  #fix resource definitions and distributions.
+            Resource.: random.randint(2, 10),   #Resources could be renewable, foundational types like varieties of rocks and ores in area around the level.
         },
     )
 
@@ -82,24 +82,24 @@ def generate_dungeon_world(max_level=MAX_LEVEL):
             if tier == 1:
 
                 zone_resources = {
-                    Resource.RAW_AETHER: random.randint(5, 15),
-                    Resource.BONE: random.randint(3, 8),
+                    Resource.: random.randint(5, 15), #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
+                    Resource.: random.randint(3, 8),
                     Resource.KNOWLEDGE: random.randint(1, 5),
                 }
 
             elif tier == 2:
 
                 zone_resources = {
-                    Resource.RAW_AETHER: random.randint(10, 25),
-                    Resource.OBSIDIAN: random.randint(5, 15),
-                    Resource.SHADOW_MATTER: random.randint(2, 8),
+                    Resource.: random.randint(10, 25),     #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
+                    Resource.: random.randint(5, 15),
+                    Resource.: random.randint(2, 8),
                     Resource.KNOWLEDGE: random.randint(5, 12),
                 }
 
             else:
 
                 zone_resources = {
-                    Resource.RAW_AETHER: random.randint(20, 40),
+                    Resource.RAW_AETHER: random.randint(20, 40),   #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
                     Resource.OBSIDIAN: random.randint(10, 25),
                     Resource.SHADOW_MATTER: random.randint(8, 20),
                     Resource.KNOWLEDGE: random.randint(10, 20),

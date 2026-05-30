@@ -2,7 +2,7 @@ import json
 import os
 
 from .constants import SAVE_FOLDER
-from .entities import DungeonLevel, DungeonWorld
+from .entities import DungeonWorld
 
 
 # =========================
@@ -84,7 +84,7 @@ def save_dungeon_world(world_data, save_name):
         raise e
 
 
-def load_dungeon_world(save_name):
+def load_dungeon_world(save_name:str)->dict:
     """
     Load a saved dungeon world.
     """
