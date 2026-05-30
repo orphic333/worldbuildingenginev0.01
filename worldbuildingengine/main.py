@@ -49,6 +49,9 @@ def select_existing_world(save_files):
             input("\nSelect save number: ")
         )
 
+        if not (1 <= selection <= len(save_files)):
+            raise IndexError("Selection index out of bounds.")
+
         selected_save = save_files[
             selection - 1
         ]

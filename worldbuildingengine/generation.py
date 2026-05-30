@@ -48,8 +48,8 @@ def create_level_data(level_number):
             Resource.AETHER_CRYSTALS: int(
                 calculate_aether_density(level_number) * 0.5
             ),
-            Resource.: random.randint(5, 20),  #fix resource definitions and distributions.
-            Resource.: random.randint(2, 10),   #Resources could be renewable, foundational types like varieties of rocks and ores in area around the level.
+            Resource.COPPER: random.randint(5, 20),  #fix resource definitions and distributions.
+            Resource.STONE: random.randint(2, 10),   #Resources could be renewable, foundational types like varieties of rocks and ores in area around the level.
         },
     )
 
@@ -82,26 +82,26 @@ def generate_dungeon_world(max_level=MAX_LEVEL):
             if tier == 1:
 
                 zone_resources = {
-                    Resource.: random.randint(5, 15), #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
-                    Resource.: random.randint(3, 8),
+                    Resource.WOOD: random.randint(5, 15), #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
+                    Resource.FIBRE: random.randint(3, 8),
                     Resource.KNOWLEDGE: random.randint(1, 5),
                 }
 
             elif tier == 2:
 
                 zone_resources = {
-                    Resource.: random.randint(10, 25),     #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
-                    Resource.: random.randint(5, 15),
-                    Resource.: random.randint(2, 8),
+                    Resource.COPPER: random.randint(10, 25),     #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
+                    Resource.IRON: random.randint(5, 15),
+                    Resource.MEDICINAL_PLANTS: random.randint(2, 8),
                     Resource.KNOWLEDGE: random.randint(5, 12),
                 }
 
             else:
 
                 zone_resources = {
-                    Resource.RAW_AETHER: random.randint(20, 40),   #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
-                    Resource.OBSIDIAN: random.randint(10, 25),
-                    Resource.SHADOW_MATTER: random.randint(8, 20),
+                    Resource.AETHER_CRYSTALS: random.randint(20, 40),   #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
+                    Resource.GUARDIAN_CORES: random.randint(10, 25),
+                    Resource.RARE_METALS: random.randint(8, 20),
                     Resource.KNOWLEDGE: random.randint(10, 20),
                 }
 

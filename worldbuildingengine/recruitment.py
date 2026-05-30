@@ -41,6 +41,9 @@ def recruit_hero(world_data):
             input("\nEnter choice: ")
         )
 
+        if not (1 <= choice <= len(SPECIALIZATIONS)):
+            raise IndexError("Choice index out of bounds.")
+
         specialization = SPECIALIZATIONS[
             choice - 1
         ]
