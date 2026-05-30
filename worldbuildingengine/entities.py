@@ -282,7 +282,7 @@ class Expedition:
 
             if (
                 resource == Resource.KNOWLEDGE
-                and self.hero.specialization == "Scholar"
+                and self.hero.specialization == "Researcher"
             ):
 
                 harvest *= 2
