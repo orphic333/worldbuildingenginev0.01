@@ -256,62 +256,68 @@ def process_user_command(
 
                 duration = int(parts[3])
 
-                found_hero = None
+                if duration <= 0:
 
-                for h in world_data.heroes:
-
-                    if h.unit_id == hero_id:
-
-                        found_hero = h
-
-                        break
-
-                if found_hero is None:
-
-                    print(f"No hero with ID {hero_id}.")
-
-                elif not found_hero.is_alive:
-
-                    print(
-                        f"{found_hero.name} is dead "
-                        f"and cannot be sent."
-                    )
-
-                elif found_hero.current_zone is not None:
-
-                    print(
-                        f"{found_hero.name} is already "
-                        f"on an expedition."
-                    )
-
-                elif zone_id not in world_data.zones:
-
-                    print(
-                        f"No zone with ID {zone_id}."
-                    )
+                    print("Duration must be a positive integer.")
 
                 else:
 
-                    target = world_data.zones[zone_id]
+                    found_hero = None
 
-                    found_hero.current_zone = zone_id
+                    for h in world_data.heroes:
 
-                    expedition = Expedition(
-                        hero=found_hero,
-                        target_zone=target,
-                        world=world_data,
-                        duration_turns=duration,
-                    )
+                        if h.unit_id == hero_id:
 
-                    world_data.active_expeditions.append(
-                        expedition
-                    )
+                            found_hero = h
 
-                    print(
-                        f"\n--- {found_hero.name} dispatched "
-                        f"to {target.name} "
-                        f"for {duration} turns! ---"
-                    )
+                            break
+
+                    if found_hero is None:
+
+                        print(f"No hero with ID {hero_id}.")
+
+                    elif not found_hero.is_alive:
+
+                        print(
+                            f"{found_hero.name} is dead "
+                            f"and cannot be sent."
+                        )
+
+                    elif found_hero.current_zone is not None:
+
+                        print(
+                            f"{found_hero.name} is already "
+                            f"on an expedition."
+                        )
+
+                    elif zone_id not in world_data.zones:
+
+                        print(
+                            f"No zone with ID {zone_id}."
+                        )
+
+                    else:
+
+                        target = world_data.zones[zone_id]
+
+                        found_hero.current_zone = zone_id
+
+                        expedition = Expedition(
+                            hero=found_hero,
+                            target_zone=target,
+                            world=world_data,
+                            duration_turns=duration,
+                        )
+
+                        world_data.active_expeditions.append(
+                            expedition
+                        )
+
+                        print(
+                            f"\n--- {found_hero.name} dispatched "
+                            f"to {target.name} "
+                            f"for {duration} turns! ---"
+                        )
 
             except (ValueError, IndexError):
 
