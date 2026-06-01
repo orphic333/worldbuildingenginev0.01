@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import random
 
 from .constants import MAX_LEVEL
+from .entities import DungeonLevel, DungeonWorld
 
 
 # =========================
 # DISPLAY HELPERS
 # =========================
 
-def display_save_files(save_files):
+def display_save_files(save_files: list[str]) -> None:
     """
     Display available save files.
     """
@@ -25,7 +28,7 @@ def display_save_files(save_files):
         print(f"{index}. {save_name}")
 
 
-def display_level_summary(level_data):
+def display_level_summary(level_data: DungeonLevel) -> None:
     """
     Display formatted level data.
     """
@@ -48,7 +51,7 @@ def display_level_summary(level_data):
     print("-" * 30)
 
 
-def display_world_overview(world_data):
+def display_world_overview(world_data: DungeonWorld) -> None:
     """
     Display all dungeon levels.
     """
@@ -59,7 +62,7 @@ def display_world_overview(world_data):
         display_level_summary(level_data)
 
 
-def display_random_level(world_data):
+def display_random_level(world_data: DungeonWorld) -> None:
     """
     Display a random level.
     """
@@ -85,9 +88,9 @@ def display_random_level(world_data):
 
 
 def display_specific_level(
-    world_data,
-    level_number
-):
+    world_data: DungeonWorld,
+    level_number: int
+) -> None:
     """
     Display chosen level data.
     """

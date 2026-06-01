@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 from .display import display_save_files, display_world_overview
+from .entities import DungeonWorld
 from .generation import generate_dungeon_world
 from .save_load import (
     save_dungeon_world, load_dungeon_world,
-    list_save_files,
+    list_save_files, is_valid_save_name,
 )
 from .oracle import run_oracle_system
 
@@ -11,20 +14,31 @@ from .oracle import run_oracle_system
 # WORLD INITIALIZATION
 # =========================
 
-def create_new_world():
+def create_new_world() -> tuple[DungeonWorld, str]:
     """
     Create and save a new dungeon world.
     """
 
-    save_name = input(
-        "\nEnter new world name: "
-    ).strip()
+    while True:
 
-    if not save_name:
+        save_name = input(
+            "\nEnter new world name: "
+        ).strip()
 
-        print("Invalid world name.")
+        if not save_name:
 
-        return create_new_world()
+            print("World name cannot be empty.")
+
+        elif not is_valid_save_name(save_name):
+
+            print(
+                "World name must only contain letters, "
+                "digits, spaces, hyphens, and underscores."
+            )
+
+        else:
+
+            break
 
     dungeon_world = generate_dungeon_world()
 
@@ -38,43 +52,41 @@ def create_new_world():
     return dungeon_world, save_name
 
 
-def select_existing_world(save_files):
+def select_existing_world(save_files: list[str]) -> tuple[DungeonWorld, str]:
     """
     Load a selected save file.
     """
 
-    try:
+    while True:
 
-        selection = int(
-            input("\nSelect save number: ")
-        )
+        try:
 
-        if not (1 <= selection <= len(save_files)):
-            raise IndexError("Selection index out of bounds.")
+            selection = int(
+                input("\nSelect save number: ")
+            )
 
-        selected_save = save_files[
-            selection - 1
-        ]
+            if not (1 <= selection <= len(save_files)):
+                raise IndexError("Selection index out of bounds.")
 
-        dungeon_world = load_dungeon_world(
-            selected_save
-        )
+            selected_save = save_files[
+                selection - 1
+            ]
 
-        return dungeon_world, selected_save
+            dungeon_world = load_dungeon_world(
+                selected_save
+            )
 
-    except (
-        ValueError,
-        IndexError
-    ):
+            return dungeon_world, selected_save
 
-        print("Invalid selection.")
+        except (
+            ValueError,
+            IndexError
+        ):
 
-        return select_existing_world(
-            save_files
-        )
+            print("Invalid selection.")
 
 
-def initialize_world():
+def initialize_world() -> tuple[DungeonWorld, str]:
     """
     Handle startup world selection.
     """
@@ -87,38 +99,38 @@ def initialize_world():
     print("1. Load Existing World")
     print("2. Create New World")
 
-    choice = input(
-        "\nEnter choice: "
-    ).strip()
+    while True:
 
-    if choice == "1":
+        choice = input(
+            "\nEnter choice: "
+        ).strip()
 
-        if not save_files:
+        if choice == "1":
 
-            print("No saves available.")
+            if not save_files:
+
+                print("No saves available.")
+
+                return create_new_world()
+
+            return select_existing_world(
+                save_files
+            )
+
+        elif choice == "2":
 
             return create_new_world()
 
-        return select_existing_world(
-            save_files
-        )
+        else:
 
-    elif choice == "2":
-
-        return create_new_world()
-
-    else:
-
-        print("Invalid option.")
-
-        return initialize_world()
+            print("Invalid option.")
 
 
 # =========================
 # MAIN PROGRAM
 # =========================
 
-def main():
+def main() -> None:
 
     dungeon_world, save_name = (
         initialize_world()

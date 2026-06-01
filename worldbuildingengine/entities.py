@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .constants import Resource
 
 
@@ -8,13 +10,13 @@ from .constants import Resource
 class BaseUnit:
     """Base class for all units in the game."""
 
-    def __init__(self, unit_id, name, health=100.0):
+    def __init__(self, unit_id: int, name: str, health: float = 100.0) -> None:
         self.unit_id = unit_id
         self.name = name
         self.health = health
         self.is_alive = True
 
-    def take_damage(self, amount):
+    def take_damage(self, amount: float) -> None:
         """Reduce health, clamped to zero. Kills unit if health reaches zero."""
         self.health = max(0.0, self.health - amount)
         if self.health <= 0:
@@ -28,7 +30,7 @@ class BaseUnit:
 class Hero(BaseUnit):
     """A hero that engages in expeditions to explore the world."""
 
-    def __init__(self, hero_id, name, specialization):
+    def __init__(self, hero_id: int, name: str, specialization: str) -> None:
         super().__init__(hero_id, name)
         self.specialization = specialization
 
@@ -48,7 +50,7 @@ class Hero(BaseUnit):
         self.inventory = {}
         self.expeditions_completed = 0
 
-    def display_status(self):
+    def display_status(self) -> None:
         """Print formatted hero stats."""
         print(f"\n=== {self.name} ===")
         print(f"  Specialization: {self.specialization}")
@@ -62,15 +64,15 @@ class Hero(BaseUnit):
             print("  Inventory: (empty)")
         print("-" * 30)
 
-    def lose_sanity(self, amount):
+    def lose_sanity(self, amount: float) -> None:
         """Reduce sanity, clamped to zero."""
         self.sanity = max(0.0, self.sanity - amount)
 
-    def consume_stamina(self, amount):
+    def consume_stamina(self, amount: float) -> None:
         """Reduce stamina, clamped to zero."""
         self.stamina = max(0.0, self.stamina - amount)
 
-    def gain_experience(self, amount):
+    def gain_experience(self, amount: int) -> None:
         """Add XP and level up every threshold."""
         self.experience += amount
         while self.experience >= self.level * 100:
@@ -78,14 +80,14 @@ class Hero(BaseUnit):
             self.level += 1
             print(f"  *** {self.name} reached level {self.level}! ***")
 
-    def add_resource(self, resource_name, amount):
+    def add_resource(self, resource_name: str, amount: int) -> None:
         """Add a resource to the hero's inventory."""
         self.inventory[resource_name] = self.inventory.get(resource_name, 0) + amount
         #a maximum number of resources should be implemented, and should differ due to hero specialisations.
         #an implementation measure may be a bag.
         #increasing the level of the hero should increase the hero's use of space, and also increase the 'size' of the bag
 
-    def to_dict(self):      #hero data serialisation
+    def to_dict(self) -> dict:      #hero data serialisation
         return {
             "unit_id": self.unit_id,
             "name": self.name,
@@ -105,7 +107,7 @@ class Hero(BaseUnit):
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> Hero:
         hero = cls(
             hero_id=data["unit_id"],
             name=data["name"],
@@ -135,12 +137,12 @@ class Hero(BaseUnit):
 class Guardian(BaseUnit):
     """A guardian assigned to protect dungeon levels."""
 
-    def __init__(self, guardian_id, name, power_level=10.0):
+    def __init__(self, guardian_id: int, name: str, power_level: float = 10.0) -> None:
         super().__init__(guardian_id, name)
         self.assigned_level_id = None
         self.power_level = power_level
 
-    def display_status(self):
+    def display_status(self) -> None:
         """Print formatted guardian stats."""
         print(f"\n=== {self.name} ===")
         print(f"  ID: {self.unit_id}")
@@ -161,7 +163,7 @@ class Guardian(BaseUnit):
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> Guardian:
         g = cls(
             guardian_id=data["unit_id"],
             name=data["name"],
@@ -176,17 +178,17 @@ class Guardian(BaseUnit):
 class Builder(BaseUnit):
     """A builder that constructs and upgrades dungeon structures."""
 
-    def __init__(self, builder_id, name, build_speed=1.0):
+    def __init__(self, builder_id: int, name: str, build_speed: float = 1.0) -> None:
         super().__init__(builder_id, name)
         self.build_speed = build_speed
         self.current_task = None
 
-    def display_status(self):
-        """Print formatted builder stats."""
+    def display_status(self) -> None:
+        """Print formatted guardian stats."""
         print(f"\n=== {self.name} ===")
         print(f"  ID: {self.unit_id}")
-        print(f"  Build Speed: {self.build_speed}")
-        print(f"  Current Task: {self.current_task}")
+        print(f"  Power: {self.power_level}")
+        print(f"  Assigned Level: {self.assigned_level_id}")
         print(f"  Health: {self.health:.1f}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
         print("-" * 30)
@@ -232,7 +234,7 @@ class Expedition:
         self.status = status
         self.loot = loot if loot is not None else {}
 
-    def advance(self):
+    def advance(self) -> None:
         """Advance this expedition by one turn."""
 
         self.turns_elapsed += 1
@@ -347,9 +349,11 @@ class Expedition:
 class DungeonLevel:
     """A single level within the dungeon."""
 
-    def __init__(self, level_id, name, aether_density, guardian_power_level,
-                 resource_nodes=None, structural_mods=None,
-                 active_events=None,):
+    def __init__(self, level_id: int, name: str,
+                 aether_density: float, guardian_power_level: float,
+                 resource_nodes: dict | None = None,
+                 structural_mods: list | None = None,
+                 active_events: list | None = None) -> None:
         self.level_id = level_id
         self.name = name
         self.aether_density = aether_density
@@ -358,7 +362,7 @@ class DungeonLevel:
         self.structural_mods = structural_mods if structural_mods is not None else []
         self.active_events = active_events if active_events is not None else []
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Serialize level to a JSON-safe dict."""
         return {
             "level_id": self.level_id,
@@ -374,7 +378,7 @@ class DungeonLevel:
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> DungeonLevel:
         """Deserialize a level from a dict."""
         return cls(
             level_id=data["level_id"],
@@ -394,9 +398,11 @@ class DungeonLevel:
 class WorldZone:
     """A zone within the outside world of the dungeon."""
 
-    def __init__(self, zone_id, name, tier, danger_rating,
-                 resource_nodes=None, is_discovered=False,
-                 threat_level=0):
+    def __init__(self, zone_id: int, name: str, tier: int,
+                 danger_rating: float,
+                 resource_nodes: dict | None = None,
+                 is_discovered: bool = False,
+                 threat_level: int = 0) -> None:
         self.zone_id = zone_id
         self.name = name
         self.tier = tier
@@ -421,7 +427,7 @@ class WorldZone:
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> WorldZone:
         """Deserialize a zone from a dict."""
         return cls(
             zone_id=data["zone_id"],
@@ -441,10 +447,11 @@ class WorldZone:
 class DungeonWorld:
     """A named dungeon world containing multiple levels and zones."""
 
-    def __init__(self, name="", levels=None, turn=0,
-                 zones=None, known_zones=None,
-                 active_expeditions=None,
-                 stockpile=None):
+    def __init__(self, name: str = "", levels: dict | None = None,
+                 turn: int = 0, zones: dict | None = None,
+                 known_zones: list | None = None,
+                 active_expeditions: list | None = None,
+                 stockpile: dict | None = None) -> None:
         self.name = name   #of the dungeon world taken from the load.
         self.levels = levels if levels is not None else {}
         self.turn = turn
@@ -465,12 +472,12 @@ class DungeonWorld:
         self.builders = []    #other units will follow
         self.next_unit_id = 1
 
-    def get_next_unit_id(self):
+    def get_next_unit_id(self) -> int:
         uid = self.next_unit_id
         self.next_unit_id += 1
         return uid
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Serialize world to a JSON-safe dict."""
         return {
             "name": self.name,
@@ -515,7 +522,7 @@ class DungeonWorld:
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> DungeonWorld:
         """Deserialize a world from a dict."""
         name = data.get("name", "")
         turn = data.get("turn", 0)
@@ -592,7 +599,7 @@ class DungeonWorld:
 
         return world
 
-    def tick(self):
+    def tick(self) -> None:
         """Advance the game by one turn."""
 
         self.turn += 1

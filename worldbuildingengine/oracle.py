@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from .constants import MAX_LEVEL, Resource
 from .display import (
     display_random_level, display_specific_level,
 )
-from .entities import Expedition
+from .entities import Expedition, DungeonWorld
 from .recruitment import recruit_hero, recruit_guardian, recruit_builder
 from .save_load import save_dungeon_world
 
@@ -12,9 +14,9 @@ from .save_load import save_dungeon_world
 # =========================
 
 def process_user_command(
-    command,
-    world_data
-):
+    command: str,
+    world_data: DungeonWorld
+) -> bool:
     """
     Process oracle commands including unit management.
     """
@@ -145,23 +147,29 @@ def process_user_command(
                 cleaned_command.split(" ")[1]
             )
 
-            found = None
+            if hero_id < 0:
 
-            for h in world_data.heroes:
-
-                if h.unit_id == hero_id:
-
-                    found = h
-
-                    break
-
-            if found:
-
-                found.display_status()
+                print("Hero ID must be non-negative.")
 
             else:
 
-                print(f"No hero with ID {hero_id}.")
+                found = None
+
+                for h in world_data.heroes:
+
+                    if h.unit_id == hero_id:
+
+                        found = h
+
+                        break
+
+                if found:
+
+                    found.display_status()
+
+                else:
+
+                    print(f"No hero with ID {hero_id}.")
 
         except (ValueError, IndexError):
 
@@ -256,7 +264,11 @@ def process_user_command(
 
                 duration = int(parts[3])
 
-                if duration <= 0:
+                if hero_id < 0 or zone_id < 0:
+
+                    print("Hero ID and Zone ID must be non-negative.")
+
+                elif duration <= 0:
 
                     print("Duration must be a positive integer.")
 
@@ -347,7 +359,7 @@ def process_user_command(
         return True
 
 
-def run_oracle_system(world_data):
+def run_oracle_system(world_data: DungeonWorld) -> None:
     """
     Main interactive command loop with unit management and zones.
     """

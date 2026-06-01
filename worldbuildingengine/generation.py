@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 
 from .constants import (
@@ -12,23 +14,19 @@ from .entities import DungeonLevel, WorldZone, DungeonWorld
 # CORE CALCULATIONS
 # =========================
 
-def calculate_aether_density(level):
+def calculate_aether_density(level: int) -> float:
 
     density = 1.8 * level**2 + 2 * level + 16
 
     return round(density, 3)
 
 
-def calculate_guardian_power(level):
+def calculate_guardian_power(level: int) -> float:
 
     return round(level * 1.1, 3)
 
 
-# =========================
-# LEVEL GENERATION
-# =========================
-
-def generate_level_name():
+def generate_level_name() -> str:
 
     adjective = random.choice(ADJECTIVES)
     material = random.choice(MATERIALS)
@@ -37,7 +35,7 @@ def generate_level_name():
     return f"The {adjective} {material} {location}"
 
 
-def create_level_data(level_number):
+def create_level_data(level_number: int) -> DungeonLevel:
 
     return DungeonLevel(
         level_id=level_number,
@@ -54,7 +52,7 @@ def create_level_data(level_number):
     )
 
 
-def generate_dungeon_world(max_level=MAX_LEVEL):
+def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
 
     levels = {
         level: create_level_data(level)

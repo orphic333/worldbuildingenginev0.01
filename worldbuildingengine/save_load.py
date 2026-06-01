@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import json
 import os
+import re
 
 from .constants import SAVE_FOLDER
 from .entities import DungeonWorld
@@ -9,7 +12,7 @@ from .entities import DungeonWorld
 # SAVE SYSTEM
 # =========================
 
-def ensure_save_directory_exists():
+def ensure_save_directory_exists() -> None:
     """
     Create save folder if missing.
     """
@@ -17,11 +20,25 @@ def ensure_save_directory_exists():
     if not os.path.exists(SAVE_FOLDER):
         os.makedirs(SAVE_FOLDER)
 
+SAVE_NAME_RE = re.compile(r"^[\w\- ]+$")
 
-def get_save_path(save_name):
+
+def is_valid_save_name(save_name: str) -> bool:
+    """Return True if save_name is safe to use as a filename."""
+    return bool(SAVE_NAME_RE.match(save_name))
+
+
+def get_save_path(save_name: str) -> str:
     """
     Build full save filepath.
     """
+
+    if not is_valid_save_name(save_name):
+
+        raise ValueError(
+            f"Invalid save name: '{save_name}'. "
+            f"Use only letters, digits, spaces, hyphens, and underscores."
+        )
 
     return os.path.join(
         SAVE_FOLDER,
@@ -29,7 +46,7 @@ def get_save_path(save_name):
     )
 
 
-def list_save_files():
+def list_save_files() -> list[str]:
     """
     Return all available save names.
     """
@@ -45,7 +62,7 @@ def list_save_files():
     ]
 
 
-def save_dungeon_world(world_data, save_name):
+def save_dungeon_world(world_data: DungeonWorld, save_name: str) -> None:
     """
     Save world data to JSON transactionally to prevent data corruption.
     """
@@ -84,7 +101,7 @@ def save_dungeon_world(world_data, save_name):
         raise e
 
 
-def load_dungeon_world(save_name:str)->dict:
+def load_dungeon_world(save_name: str) -> DungeonWorld | None:
     """
     Load a saved dungeon world.
     """
@@ -95,6 +112,31 @@ def load_dungeon_world(save_name:str)->dict:
 
         with open(filepath, "r") as file:
             data = json.load(file)
+
+        # Validate top-level structure after parsing
+        if not isinstance(data, dict):
+
+            print(
+                f"Corrupt save '{save_name}': "
+                f"expected a dict, got {type(data).__name__}."
+            )
+
+            return None
+
+        is_v1 = any(
+            k.startswith("Level ") for k in data
+        )
+
+        is_v2 = "levels" in data
+
+        if not (is_v1 or is_v2):
+
+            print(
+                f"Unrecognised save format '{save_name}': "
+                f"missing both 'Level N' keys and 'levels' key."
+            )
+
+            return None
 
         # Sequentially run schema migration upgrades on raw data
         from .migrations import migrate_data
@@ -108,5 +150,22 @@ def load_dungeon_world(save_name:str)->dict:
         return world_data
 
     except FileNotFoundError:
+
+        return None
+
+    except json.JSONDecodeError as e:
+
+        print(
+            f"Corrupt save '{save_name}': "
+            f"JSON parse error at line {e.lineno}: {e.msg}"
+        )
+
+        return None
+
+    except (KeyError, ValueError, TypeError) as e:
+
+        print(
+            f"Save '{save_name}' contains invalid data: {e}"
+        )
 
         return None

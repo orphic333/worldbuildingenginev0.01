@@ -1,27 +1,31 @@
+from __future__ import annotations
+
 from .constants import SPECIALIZATIONS, SPECIALIZATION_DESC
-from .entities import Hero, Guardian, Builder
+from .entities import Hero, Guardian, Builder, DungeonWorld
 
 
 # =========================
 # UNIT MANAGEMENT
 # =========================
 
-def recruit_hero(world_data):
+def recruit_hero(world_data: DungeonWorld) -> Hero:
     """
     Interactive hero creation. Player names the hero and picks a specialization.
     """
 
     hero_id = world_data.get_next_unit_id()
 
-    name = input(
-        "\nEnter hero name: "
-    ).strip()
+    while True:
 
-    if not name:
+        name = input(
+            "\nEnter hero name: "
+        ).strip()
+
+        if name:
+
+            break
 
         print("A hero must have a name.")
-
-        return recruit_hero(world_data)
 
     print("\nChoose a specialization:")
 
@@ -65,22 +69,24 @@ def recruit_hero(world_data):
     return hero
 
 
-def recruit_guardian(world_data):
+def recruit_guardian(world_data: DungeonWorld) -> Guardian:
     """
     Interactive guardian creation.
     """
 
     guardian_id = world_data.get_next_unit_id()
 
-    name = input(
-        "\nEnter guardian name: "
-    ).strip()
+    while True:
 
-    if not name:
+        name = input(
+            "\nEnter guardian name: "
+        ).strip()
+
+        if name:
+
+            break
 
         print("A guardian must have a name.")
-
-        return recruit_guardian(world_data)
 
     guardian = Guardian(guardian_id, name)
 
@@ -93,22 +99,24 @@ def recruit_guardian(world_data):
     return guardian
 
 
-def recruit_builder(world_data):
+def recruit_builder(world_data: DungeonWorld) -> Builder:
     """
     Interactive builder creation.
     """
 
     builder_id = world_data.get_next_unit_id()
 
-    name = input(
-        "\nEnter builder name: "
-    ).strip()
+    while True:
 
-    if not name:
+        name = input(
+            "\nEnter builder name: "
+        ).strip()
+
+        if name:
+
+            break
 
         print("A builder must have a name.")
-
-        return recruit_builder(world_data)
 
     builder = Builder(builder_id, name)
 
