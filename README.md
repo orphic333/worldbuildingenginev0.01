@@ -39,19 +39,35 @@ Select an existing world or create a new one at startup.
 
 ### Hero Specializations
 
-| Class          | Role                                                      |
-|----------------|-----------------------------------------------------------|
-| **Prospector** | Extracts raw resources from zones                         |
-| **Scholar**    | Seeks ancient knowledge hidden in zones                   |
-| **Warrior**    | Highly skilled combatants who purge all manner of dangers |
+| Class           | Role                                                                       |
+|-----------------|----------------------------------------------------------------------------|
+| **Prospector**  | Detects resource hotspots during expeditions and mines them efficiently    |
+| **Researcher**  | Gathers knowledge in zones and performs research to unlock crafting recipes|
+| **Adventurer**  | All-rounder with logistics skills; excels at leading hyper-specific goals  |
+| **Scout**       | Scouts zones to reveal risks, rewards, and enables long-term planning      |
+| **Warrior**     | Combat specialist; clears enemies and defends expedition parties           |
 
 ## Project Structure
 
 ```
-worldengine.py      — Main application entry point
-out.png*  — Program flow diagram (so far)
-saves/              — Saved dungeon worlds (JSON)
-worldbuildingengine/ — Files containing logic, state, attributes and elements of the game
+worldengine.py                     — Thin wrapper (delegates to package)
+worldbuildingengine/
+├── __init__.py                    — Package marker
+├── main.py                        — Startup flow (world selection, main loop)
+├── oracle.py                      — REPL command dispatch
+├── entities.py                    — All entity classes
+├── generation.py                  — Procedural level and zone generation
+├── constants.py                   — Resource enum, word lists, specializations
+├── save_load.py                   — JSON persistence (transactional saves)
+├── migrations.py                  — Schema version migration pipeline
+├── display.py                     — Terminal output helpers
+├── recruitment.py                 — Unit creation flows
+├── types.py                       — Type aliases
+saves/                             — Saved dungeon worlds (JSON)
+tests/
+├── __init__.py
+└── test_smoke.py                  — 21 smoke tests
+mypy.ini                           — Type-checking config (Python 3.14+)
 ```
 
 ## Roadmap

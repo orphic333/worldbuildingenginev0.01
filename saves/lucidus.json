@@ -1,0 +1,222 @@
+{
+    "name": "lucidus",
+    "turn": 1,
+    "next_unit_id": 2,
+    "levels": {
+        "1": {
+            "level_id": 1,
+            "name": "The Forgotten Obsidian Sanctum",
+            "aether_density": 19.8,
+            "guardian_power_level": 1.1,
+            "resource_nodes": {
+                "raw_aether": 9,
+                "obsidian": 7,
+                "bone": 2
+            },
+            "structural_mods": [],
+            "active_events": []
+        },
+        "2": {
+            "level_id": 2,
+            "name": "The Shimmering Bone Spire",
+            "aether_density": 27.2,
+            "guardian_power_level": 2.2,
+            "resource_nodes": {
+                "raw_aether": 13,
+                "obsidian": 12,
+                "bone": 3
+            },
+            "structural_mods": [],
+            "active_events": []
+        },
+        "3": {
+            "level_id": 3,
+            "name": "The Shimmering Crystal Crypt",
+            "aether_density": 38.2,
+            "guardian_power_level": 3.3,
+            "resource_nodes": {
+                "raw_aether": 19,
+                "obsidian": 18,
+                "bone": 4
+            },
+            "structural_mods": [],
+            "active_events": []
+        }
+    },
+    "zones": {
+        "1": {
+            "zone_id": 1,
+            "name": "Fractured Ashfield",
+            "tier": 1,
+            "danger_rating": 13.216,
+            "resource_nodes": {
+                "raw_aether": 9,
+                "bone": 8,
+                "knowledge": 5
+            },
+            "is_discovered": true,
+            "threat_level": 0
+        },
+        "2": {
+            "zone_id": 2,
+            "name": "Blighted Ashfield",
+            "tier": 1,
+            "danger_rating": 13.354,
+            "resource_nodes": {
+                "raw_aether": 12,
+                "bone": 8,
+                "knowledge": 4
+            },
+            "is_discovered": true,
+            "threat_level": 0
+        },
+        "3": {
+            "zone_id": 3,
+            "name": "Sunken Ashfield",
+            "tier": 1,
+            "danger_rating": 14.705,
+            "resource_nodes": {
+                "raw_aether": 7,
+                "bone": 6,
+                "knowledge": 3
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "4": {
+            "zone_id": 4,
+            "name": "Fractured Wastes",
+            "tier": 1,
+            "danger_rating": 14.908,
+            "resource_nodes": {
+                "raw_aether": 12,
+                "bone": 6,
+                "knowledge": 2
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "5": {
+            "zone_id": 5,
+            "name": "Sunken Ashfield",
+            "tier": 1,
+            "danger_rating": 12.048,
+            "resource_nodes": {
+                "raw_aether": 11,
+                "bone": 8,
+                "knowledge": 1
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "6": {
+            "zone_id": 6,
+            "name": "Blighted Rotwood",
+            "tier": 2,
+            "danger_rating": 20.557,
+            "resource_nodes": {
+                "raw_aether": 12,
+                "obsidian": 11,
+                "shadow_matter": 3,
+                "knowledge": 10
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "7": {
+            "zone_id": 7,
+            "name": "Blighted Wastes",
+            "tier": 2,
+            "danger_rating": 23.156,
+            "resource_nodes": {
+                "raw_aether": 23,
+                "obsidian": 5,
+                "shadow_matter": 8,
+                "knowledge": 12
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "8": {
+            "zone_id": 8,
+            "name": "Fractured Ashfield",
+            "tier": 2,
+            "danger_rating": 23.163,
+            "resource_nodes": {
+                "raw_aether": 16,
+                "obsidian": 14,
+                "shadow_matter": 7,
+                "knowledge": 10
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "9": {
+            "zone_id": 9,
+            "name": "Forsaken Hollow",
+            "tier": 3,
+            "danger_rating": 32.575,
+            "resource_nodes": {
+                "raw_aether": 38,
+                "obsidian": 19,
+                "shadow_matter": 12,
+                "knowledge": 13
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "10": {
+            "zone_id": 10,
+            "name": "Blighted Ashfield",
+            "tier": 3,
+            "danger_rating": 30.647,
+            "resource_nodes": {
+                "raw_aether": 31,
+                "obsidian": 15,
+                "shadow_matter": 14,
+                "knowledge": 15
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        }
+    },
+    "known_zones": [
+        1,
+        2
+    ],
+    "heroes": [
+        {
+            "unit_id": 1,
+            "name": "asher",
+            "health": 97.3292,
+            "is_alive": true,
+            "specialization": "Prospector",
+            "stamina": 94.6584,
+            "sanity": 98.0,
+            "level": 1,
+            "experience": 0,
+            "current_zone": 2,
+            "inventory": {},
+            "expeditions_completed": 0
+        }
+    ],
+    "guardians": [],
+    "builders": [],
+    "active_expeditions": [
+        {
+            "hero_id": 1,
+            "target_zone_id": 2,
+            "duration_turns": 3,
+            "turns_elapsed": 1,
+            "status": "active",
+            "loot": {}
+        }
+    ],
+    "stockpile": {
+        "raw_aether": 0,
+        "obsidian": 0,
+        "bone": 0,
+        "shadow_matter": 0,
+        "knowledge": 0
+    }
+}

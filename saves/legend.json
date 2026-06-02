@@ -1,0 +1,216 @@
+{
+    "name": "legend",
+    "turn": 3,
+    "next_unit_id": 1,
+    "levels": {
+        "1": {
+            "level_id": 1,
+            "name": "The Void-Touched Shadow-matter Labyrinth",
+            "aether_density": 19.8,
+            "guardian_power_level": 1.1,
+            "resource_nodes": {
+                "aether_crystals": 9,
+                "copper": 13,
+                "stone": 7
+            },
+            "structural_mods": [],
+            "active_events": []
+        },
+        "2": {
+            "level_id": 2,
+            "name": "The Pulsing Obsidian Abyss",
+            "aether_density": 27.2,
+            "guardian_power_level": 2.2,
+            "resource_nodes": {
+                "aether_crystals": 13,
+                "copper": 5,
+                "stone": 9
+            },
+            "structural_mods": [],
+            "active_events": []
+        },
+        "3": {
+            "level_id": 3,
+            "name": "The Pulsing Crystal Crypt",
+            "aether_density": 38.2,
+            "guardian_power_level": 3.3,
+            "resource_nodes": {
+                "aether_crystals": 19,
+                "copper": 13,
+                "stone": 7
+            },
+            "structural_mods": [],
+            "active_events": []
+        }
+    },
+    "zones": {
+        "1": {
+            "zone_id": 1,
+            "name": "Forsaken Rotwood",
+            "tier": 1,
+            "danger_rating": 14.121,
+            "resource_nodes": {
+                "wood": 10,
+                "fibre": 3,
+                "knowledge": 2
+            },
+            "is_discovered": true,
+            "threat_level": 0
+        },
+        "2": {
+            "zone_id": 2,
+            "name": "Blighted Rotwood",
+            "tier": 1,
+            "danger_rating": 10.485,
+            "resource_nodes": {
+                "wood": 8,
+                "fibre": 4,
+                "knowledge": 5
+            },
+            "is_discovered": true,
+            "threat_level": 0
+        },
+        "3": {
+            "zone_id": 3,
+            "name": "Sunken Fenlands",
+            "tier": 1,
+            "danger_rating": 14.031,
+            "resource_nodes": {
+                "wood": 6,
+                "fibre": 4,
+                "knowledge": 2
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "4": {
+            "zone_id": 4,
+            "name": "Ancient Fenlands",
+            "tier": 1,
+            "danger_rating": 10.578,
+            "resource_nodes": {
+                "wood": 13,
+                "fibre": 7,
+                "knowledge": 1
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "5": {
+            "zone_id": 5,
+            "name": "Fractured Fenlands",
+            "tier": 1,
+            "danger_rating": 13.148,
+            "resource_nodes": {
+                "wood": 6,
+                "fibre": 7,
+                "knowledge": 1
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "6": {
+            "zone_id": 6,
+            "name": "Sunken Hollow",
+            "tier": 2,
+            "danger_rating": 21.354,
+            "resource_nodes": {
+                "copper": 15,
+                "iron": 7,
+                "medicinal_plants": 6,
+                "knowledge": 8
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "7": {
+            "zone_id": 7,
+            "name": "Forsaken Hollow",
+            "tier": 2,
+            "danger_rating": 23.548,
+            "resource_nodes": {
+                "copper": 23,
+                "iron": 14,
+                "medicinal_plants": 8,
+                "knowledge": 5
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "8": {
+            "zone_id": 8,
+            "name": "Blighted Hollow",
+            "tier": 2,
+            "danger_rating": 20.701,
+            "resource_nodes": {
+                "copper": 11,
+                "iron": 9,
+                "medicinal_plants": 7,
+                "knowledge": 5
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "9": {
+            "zone_id": 9,
+            "name": "Forsaken Hollow",
+            "tier": 3,
+            "danger_rating": 31.381,
+            "resource_nodes": {
+                "aether_crystals": 29,
+                "guardian_cores": 24,
+                "rare_metals": 12,
+                "knowledge": 17
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        },
+        "10": {
+            "zone_id": 10,
+            "name": "Sunken Ashfield",
+            "tier": 3,
+            "danger_rating": 30.916,
+            "resource_nodes": {
+                "aether_crystals": 31,
+                "guardian_cores": 20,
+                "rare_metals": 10,
+                "knowledge": 16
+            },
+            "is_discovered": false,
+            "threat_level": 0
+        }
+    },
+    "known_zones": [
+        1,
+        2
+    ],
+    "heroes": [],
+    "guardians": [],
+    "builders": [],
+    "active_expeditions": [],
+    "stockpile": {
+        "aether_crystals": 0,
+        "aetherite": 0,
+        "blood": 0,
+        "cattle": 0,
+        "copper": 0,
+        "creatures": 0,
+        "fibre": 0,
+        "fruits": 0,
+        "guardian_cores": 0,
+        "hard_rock": 0,
+        "iron": 0,
+        "knowledge": 0,
+        "light_metals": 0,
+        "liquid_aether": 0,
+        "meat": 0,
+        "medicinal_plants": 0,
+        "rare_metals": 0,
+        "seeds": 0,
+        "soft_rock": 0,
+        "stone": 0,
+        "water": 0,
+        "wood": 0
+    },
+    "schema_version": 2
+}
