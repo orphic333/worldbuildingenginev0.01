@@ -1,7 +1,7 @@
 {
     "name": "legend",
-    "turn": 3,
-    "next_unit_id": 1,
+    "turn": 6,
+    "next_unit_id": 3,
     "levels": {
         "1": {
             "level_id": 1,
@@ -76,11 +76,11 @@
             "tier": 1,
             "danger_rating": 14.031,
             "resource_nodes": {
-                "wood": 6,
-                "fibre": 4,
-                "knowledge": 2
+                "wood": 4,
+                "fibre": 2,
+                "knowledge": 1
             },
-            "is_discovered": false,
+            "is_discovered": true,
             "threat_level": 0
         },
         "4": {
@@ -182,10 +182,35 @@
     },
     "known_zones": [
         1,
-        2
+        2,
+        3
     ],
-    "heroes": [],
-    "guardians": [],
+    "heroes": [
+        {
+            "unit_id": 1,
+            "name": "arryan",
+            "health": 91.58139999999999,
+            "is_alive": true,
+            "specialization": "Adventurer",
+            "stamina": 83.16279999999998,
+            "sanity": 94.0,
+            "level": 1,
+            "experience": 70,
+            "current_zone": null,
+            "inventory": {},
+            "expeditions_completed": 0
+        }
+    ],
+    "guardians": [
+        {
+            "unit_id": 2,
+            "name": "RALLY",
+            "health": 100.0,
+            "is_alive": true,
+            "assigned_level_id": null,
+            "power_level": 10.0
+        }
+    ],
     "builders": [],
     "active_expeditions": [],
     "stockpile": {
@@ -195,12 +220,12 @@
         "cattle": 0,
         "copper": 0,
         "creatures": 0,
-        "fibre": 0,
+        "fibre": 2,
         "fruits": 0,
         "guardian_cores": 0,
         "hard_rock": 0,
         "iron": 0,
-        "knowledge": 0,
+        "knowledge": 1,
         "light_metals": 0,
         "liquid_aether": 0,
         "meat": 0,
@@ -210,7 +235,7 @@
         "soft_rock": 0,
         "stone": 0,
         "water": 0,
-        "wood": 0
+        "wood": 2
     },
     "schema_version": 2
 }

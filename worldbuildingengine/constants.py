@@ -77,14 +77,15 @@ SPECIALIZATIONS = [
     "Adventurer",
     "Scout",
     "Warrior",
+    "Advisor",
 ]
 
 SPECIALIZATION_DESC = {
     "Prospector": "Prospector - specialise in detecting resource hotspots during expeditions, as well as mining hotspots even within the dungeon. Best for resource extraction expeditions; crucial for turning fruitless expeditions to fruitful ones. Not suited for battle though they can offer such service. Produced by a certain guardian type.",
     "Researcher": "Researcher - Specialise in gathering knowledge in zones during expeditions. Crucial to bringing knowledge back to the dungeon, as well as performing high-level research on the knowledge that is brought back to create recipes for crafting. Best for knowledge-focused expeditions. Produced by a certain guardian type. Not suited for battle.",
     "Warrior": "Warrior - specialise in combat and especially strong against all manner of dungeon enemies from beast and creatures all the way to humans and human-organised attacks. Crucial for safety of expedition parties, and best for expeditions that require killing certain creatures or wiping out certain enemies. They have exceptionally low resource gathering, planning  and logistics capabilities. Full capabilities are drawn under Adventurer types. Produced by a certain guardian type.",
-    "Scout": "best for scouting zones and providing information on potential risks in these zones, as well as rewards. Crucial for long-term planning and zone discovery. Produced by a certain guardian type.",
-    "Adventurer": "heroes with excellent planning and logistics skills, who are specialised at leading expeditions and controlling other units during expeditions. They are capable of handling expeditions with hyper-specific goals. They are naturally all-rounders, with a tiny bit of skill in every field. Produced by a specific guardian type.",
-
+    "Scout": "Scout - best for scouting zones and providing information on potential risks in these zones, as well as rewards. Crucial for long-term planning and zone discovery. Produced by a certain guardian type.",
+    "Adventurer": "Adventurer - heroes with excellent planning and logistics skills, who are specialised at leading expeditions and controlling other units during expeditions. They are capable of handling expeditions with hyper-specific goals. They are naturally all-rounders, with a tiny bit of skill in every field. Produced by a specific guardian type.",
+    "Advisor": "Advisor - best for providing strategic advice during expeditions, as well as long-term strategic planning. They are not directly involved in expeditions, but their advice can be crucial for the success of expeditions and the management of the dungeon. Produced by a certain guardian type.",
 
 }

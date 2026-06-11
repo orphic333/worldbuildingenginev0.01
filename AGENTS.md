@@ -24,21 +24,29 @@ worldbuildingengine/
 ├── recruitment.py     # Unit creation flows
 ├── constants.py       # Resource enum (22 members), specializations, word lists
 └── types.py           # Type aliases (forward-refs to avoid circular imports)
-saves/                 # JSON save files
+`saves/`                 # JSON save files
 tests/test_smoke.py    # unittest smoke tests
 ```
 
-**Critical constraint:** `entities.py` keeps all classes in one file to avoid circular imports (`Expedition` ↔ `DungeonWorld` ↔ `Hero` ↔ `WorldZone` all cross-reference).
+**Critical constraint:** `entities.py` keeps all classes in one file to avoid circular imports (`Expedition` ↔ `DungeonWorld` ↔ `Hero` ↔ `WorldZone` all cross‑reference).
 
-## Known Bugs (game is partially broken)
+## Known Bugs (critical, unresolved)
 
 | Bug | File | Effect |
 |---|---|---|
 | Stale `Resource` enum refs | `generation.py:48-106` | Blocks new world generation (`AttributeError`) — old names `RAW_AETHER`, `OBSIDIAN`, `SHADOW_MATTER` deleted |
 | Wrong attr name `guardian_power` | `display.py:86` | Crashes on `random` command — should be `guardian_power_level` |
-| `"Scholar"` no longer in specializations | `entities.py:284-285` | KNOWLEDGE double-harvest is dead code — should check `"Researcher"` |
+| `"Scholar"` no longer in specializations | `entities.py:284-285` | KNOWLEDGE double‑harvest is dead code — should check `"Researcher"` |
 
-**Fix order:** patch `constants.py` → `generation.py` → `display.py` → `entities.py`, then run tests.
+## Build / Test Commands
+
+The following commands are the primary ways to build, run, and verify the project:
+- **Run the game**: `python worldengine.py` – Starts the thin wrapper which launches the Oracle REPL.
+- **Run the package directly**: `python -m worldbuildingengine.main` – Bypasses the wrapper and invokes the main entry point.
+- **Execute smoke tests**: `python -m unittest tests/test_smoke.py` – Runs the existing 21 smoke tests that cover basic world creation, unit recruitment, and a single expedition cycle.
+- **Run all tests (future)**: `python -m unittest discover -s tests` – Will discover any additional test modules once more comprehensive tests are added.
+
+*Why this section*: Providing clear, canonical commands helps contributors and maintainers quickly verify that the code builds and behaves as expected, reduces onboarding friction, and ensures consistent test execution across environments.
 
 ## Oracle Commands
 
@@ -63,7 +71,7 @@ tests/test_smoke.py    # unittest smoke tests
 - `Resource` enum serialized via `.value` strings, reconstructed with `Resource(k)`.
 - Expeditions serialized as metadata only (hero/zone refs by ID, rehydrated on load).
 - Save files get `schema_version` (currently `2` from `migrations.py`).
-- Old flat-format saves (`"Level N"` keys) migrated via `migrations.migrate_v1_to_v2`.
+- Old flat‑format saves (`"Level N"` keys) migrated via `migrations.migrate_v1_to_v2`.
 - Transactional writes: write to `.tmp`, then `os.replace()`.
 
 ## Key Facts

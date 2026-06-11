@@ -62,7 +62,7 @@ def display_world_overview(world_data: DungeonWorld) -> None:
         display_level_summary(level_data)
 
 
-def display_random_level(world_data: DungeonWorld) -> None:
+def display_random_level(world_data: DungeonWorld) -> None:   #might need to remove this thing
     """
     Display a random level.
     """
@@ -98,7 +98,7 @@ def display_specific_level(
     if not 1 <= level_number <= MAX_LEVEL:
 
         print(
-            f"The Abyss only goes "
+            f"The Dungeon only goes "
             f"to Level {MAX_LEVEL}."
         )
 

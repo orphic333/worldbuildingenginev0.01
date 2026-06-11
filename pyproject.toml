@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dungeon"  # Change to your awesome game name!
+version = "0.1.0"
+description = "A terminal-based dungeon management game with exploration, high stakes and rich lore."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [] 
+
+[project.optional-dependencies]
+#  My future development roadmap! 
+# When I'm ready, run: pip install .[gui]
+gui = [
+    "pygame-ce>=2.5.0", # Faster, community-driven version of Pygame, apparently.
+]
+dev = [
+    "pytest",
+    "mypy",
+]
+
+[project.scripts]
+#  The Magic Command: This turns my game into a real system command.
+# When someone installs my project, they just type "play-game" in their 
+# terminal, and my main python script fires up automatically.
+play-game = "worldbuildingengine.main:run_game"
+
+[tool.setuptools.package-data]
+worldbuildingengine = [
+    "assets/fonts/*.ttf",
+    "assets/images/*.png"
+]

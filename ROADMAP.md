@@ -189,9 +189,9 @@ Not a concern at this scale. Only 3 levels and 10 zones. The only O(n) concern i
 | `README.md` | Yes |
 | `AGENTS.md` | Yes (outdated) |
 | `LICENSE` | **No** |
-| `pyproject.toml` / `setup.cfg` / `setup.py` | **No** (acceptable for this project) |
+| `pyproject.toml` / `setup.cfg` / `setup.py` | **No** (acceptable for this project) | Yes, as of 10/06/2026.
 | CI config | **No** |
-| Test config | **No** |
+| Test config | **No** | Yes, as of 10/06/2026.  
 
 ---
 
@@ -204,17 +204,21 @@ Not a concern at this scale. Only 3 levels and 10 zones. The only O(n) concern i
    - Map `OBSIDIAN` → probably `STONE`, `HARD_ROCK`, or `RARE_METALS`
    - Map `SHADOW_MATTER` → probably remove or map to one of the 22 real resources
    - Files: `worldbuildingengine/generation.py:48-53,84-106`
+   Fixed. 
 
 2. **Fix `guardian_power` → `guardian_power_level` in `display.py:83`**
    - File: `worldbuildingengine/display.py`, line 83
+   Fixed. 
 
 3. **Fix or remove `"Scholar"` specialization check in `entities.py:284-285`**
    - Either add `"Scholar"` back to `SPECIALIZATIONS` or change the condition to check one of the current specializations (e.g., `"Researcher"` which serves a similar role).
    - File: `worldbuildingengine/entities.py:283-285`
+   Fixed. 
 
 4. **Write a smoke test** before fixing anything else, to catch regressions immediately.
    - A single script that: generates a world → recruits a hero → sends on expedition → ticks → checks stockpile
    - Location: `tests/test_smoke.py`
+   Implemented.  
 
 ### Short-term (days to a few weeks)
 
@@ -261,6 +265,7 @@ Not a concern at this scale. Only 3 levels and 10 zones. The only O(n) concern i
     - Guardian Cores should be craftable (not naturally occurring).
     - Liquid Aether should require long research.
     - New module: `worldbuildingengine/crafting.py`
+    - Implement WOOD extraction from zones and transfer it into the dungeon stockpile after expedition resolution.
 
 14. **Unit specialization gameplay**
     - Each specialization should affect expedition outcomes:
@@ -271,6 +276,8 @@ Not a concern at this scale. Only 3 levels and 10 zones. The only O(n) concern i
       - `Adventurer` → generalist bonuses
     - Builder tasks: assign builders to construction, feeding, maintenance
     - Guardian assignment: assign to levels for defense
+    - Warder assignment: assign defenders for the dungeon
+    - Advisor assignment: assign unit which accepts log data from other base units (heroes, builders, etc.) and has the capacity to suggest decisions based on that information, to the player
 
 15. **Expedition expansion**
     - Multiple heroes per expedition (party system).
@@ -279,10 +286,13 @@ Not a concern at this scale. Only 3 levels and 10 zones. The only O(n) concern i
 
 16. **Developer experience**
     - Add CI (GitHub Actions): `python -m compileall worldbuildingengine/` at minimum.
-    - Add `pyproject.toml` with basic metadata and a `[tool.pytest.ini_options]` section.
+    - Add `pyproject.toml` with basic metadata and a `[tool.pytest.ini_options]` section. 
+      - Added `pyproject.toml` as of 10/06/2026 with basic metadata. No `[tool.pytest.ini_options]` yet. 
     - Create `tests/__init__.py` and `tests/conftest.py` with shared fixtures.
+      - Done. Recording presence of working `tests.py` as of 10/06/2026.
     - Set up `ruff` or `flake8` for linting.
     - Consider adding Python 3.11+ as minimum version and using `enum.StrEnum` for Resource.
+     - Done. Recording presence of working `enum.StrEnum` for Resource as of 10/06/2026.
 
 17. **Add a LICENSE file** (MIT or GPL-3.0 — project is public on GitHub).
 
