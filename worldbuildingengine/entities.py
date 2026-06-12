@@ -137,16 +137,41 @@ class Hero(BaseUnit):
 class Guardian(BaseUnit):
     """A guardian assigned to protect dungeon levels."""
 
-    def __init__(self, guardian_id: int, name: str, power_level: float = 10.0) -> None:
+    def __init__(
+        self,
+        guardian_id: int,
+        name: str,
+        level: int = 1,
+        recruitment_type: str = "Standard",
+        maintenance_costs: dict | None = None,
+    ) -> None:
         super().__init__(guardian_id, name)
         self.assigned_level_id = None
-        self.power_level = power_level
+        self.level = max(1, level)
+        self.recruitment_type = recruitment_type
+        self.maintenance_costs = maintenance_costs if maintenance_costs is not None else {}
+
+    @property
+    def power_level(self) -> float:
+        return float(self.level * 10.0)
 
     def display_status(self) -> None:
         """Print formatted guardian stats."""
         print(f"\n=== {self.name} ===")
         print(f"  ID: {self.unit_id}")
+        print(f"  Level: {self.level}")
         print(f"  Power: {self.power_level}")
+        print(f"  Recruitment Type: {self.recruitment_type}")
+        if self.maintenance_costs:
+            print(
+                "  Maintenance: "
+                + ", ".join(
+                    f"{(r.value if isinstance(r, Resource) else r)}: {qty}"
+                    for r, qty in self.maintenance_costs.items()
+                )
+            )
+        else:
+            print("  Maintenance: None")
         print(f"  Assigned Level: {self.assigned_level_id}")
         print(f"  Health: {self.health:.1f}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
@@ -159,15 +184,35 @@ class Guardian(BaseUnit):
             "health": self.health,
             "is_alive": self.is_alive,
             "assigned_level_id": self.assigned_level_id,
-            "power_level": self.power_level
+            "level": self.level,
+            "power_level": self.power_level,
+            "recruitment_type": self.recruitment_type,
+            "maintenance_costs": {
+                (r.value if isinstance(r, Resource) else r): qty
+                for r, qty in self.maintenance_costs.items()
+            },
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> Guardian:
+        level = data.get("level")
+        if level is None:
+            power_level = data.get("power_level", 10.0)
+            level = max(1, int(round(power_level / 10.0)))
+
+        maintenance_costs = {}
+        for k, v in data.get("maintenance_costs", {}).items():
+            try:
+                maintenance_costs[Resource(k)] = v
+            except ValueError:
+                maintenance_costs[k] = v
+
         g = cls(
             guardian_id=data["unit_id"],
             name=data["name"],
-            power_level=data.get("power_level", 10.0)
+            level=level,
+            recruitment_type=data.get("recruitment_type", "Standard"),
+            maintenance_costs=maintenance_costs,
         )
         g.health = data["health"]
         g.is_alive = data["is_alive"]
@@ -184,11 +229,11 @@ class Builder(BaseUnit):
         self.current_task = None
 
     def display_status(self) -> None:
-        """Print formatted guardian stats."""
+        """Print formatted builder stats."""
         print(f"\n=== {self.name} ===")
         print(f"  ID: {self.unit_id}")
-        print(f"  Power: {self.power_level}")
-        print(f"  Assigned Level: {self.assigned_level_id}")
+        print(f"  Build Speed: {self.build_speed}")
+        print(f"  Current Task: {self.current_task}")
         print(f"  Health: {self.health:.1f}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
         print("-" * 30)

@@ -5,7 +5,7 @@ from .display import (
     display_random_level, display_specific_level,
 )
 from .entities import Expedition, DungeonWorld
-from .recruitment import recruit_hero, recruit_guardian, recruit_builder
+from .recruitment import recruit_hero, recruit_builder
 from .save_load import save_dungeon_world
 
 
@@ -50,8 +50,7 @@ def process_user_command(
 
         print("\nChoose unit type:")
         print("  1. Hero")
-        print("  2. Guardian")
-        print("  3. Builder")
+        print("  2. Builder")
 
         unit_choice = input(
             "\nEnter choice: "
@@ -62,10 +61,6 @@ def process_user_command(
             recruit_hero(world_data)
 
         elif unit_choice == "2":
-
-            recruit_guardian(world_data)
-
-        elif unit_choice == "3":
 
             recruit_builder(world_data)
 

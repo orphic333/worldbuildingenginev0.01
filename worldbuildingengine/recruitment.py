@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .constants import SPECIALIZATIONS, SPECIALIZATION_DESC
-from .entities import Hero, Guardian, Builder, DungeonWorld
+from .entities import Hero, Builder, DungeonWorld
 
 
 # =========================
@@ -67,36 +67,6 @@ def recruit_hero(world_data: DungeonWorld) -> Hero:
     )
 
     return hero
-
-
-def recruit_guardian(world_data: DungeonWorld) -> Guardian:
-    """
-    Interactive guardian creation.
-    """
-
-    guardian_id = world_data.get_next_unit_id()
-
-    while True:
-
-        name = input(
-            "\nEnter guardian name: "
-        ).strip()
-
-        if name:
-
-            break
-
-        print("A guardian must have a name.")
-
-    guardian = Guardian(guardian_id, name)
-
-    world_data.guardians.append(guardian)
-
-    print(
-        f"\n--- {name} the Guardian has arrived! ---"
-    )
-
-    return guardian
 
 
 def recruit_builder(world_data: DungeonWorld) -> Builder:

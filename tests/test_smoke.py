@@ -110,12 +110,13 @@ class TestSerialization(unittest.TestCase):
         self.assertEqual(restored.inventory[Resource.STONE], 5)
 
     def test_guardian_round_trip(self):
-        orig = Guardian(guardian_id=1, name="Guard", power_level=15.0)
+        orig = Guardian(guardian_id=1, name="Guard", level=2)
         orig.assigned_level_id = 2
         data = orig.to_dict()
         restored = Guardian.from_dict(data)
         self.assertEqual(restored.unit_id, orig.unit_id)
         self.assertEqual(restored.name, orig.name)
+        self.assertEqual(restored.level, orig.level)
         self.assertEqual(restored.power_level, orig.power_level)
         self.assertEqual(restored.assigned_level_id, orig.assigned_level_id)
 
