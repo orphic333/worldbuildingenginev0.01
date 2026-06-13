@@ -123,7 +123,7 @@ def process_user_command(
                 for builder in world_data.builders:
 
                     print(
-                        f"    #{builder.unit_id} {builder.name} - "
+                        f"    #{builder.unit_id} - "
                         f"Speed {builder.build_speed}"
                     )
 
@@ -304,27 +304,19 @@ def process_user_command(
                         )
 
                     else:
-
-                        target = world_data.zones[zone_id]
-
-                        found_hero.current_zone = zone_id
-
-                        expedition = Expedition(
-                            hero=found_hero,
-                            target_zone=target,
-                            world=world_data,
-                            duration_turns=duration,
-                        )
-
-                        world_data.active_expeditions.append(
-                            expedition
-                        )
-
-                        print(
-                            f"\n--- {found_hero.name} dispatched "
-                            f"to {target.name} "
-                            f"for {duration} turns! ---"
-                        )
+                        try:
+                            expedition = world_data.send_hero_on_expedition(
+                                hero_id,
+                                zone_id,
+                                duration,
+                            )
+                            print(
+                                f"\n--- {expedition.hero.name} dispatched "
+                                f"to {expedition.target_zone.name} "
+                                f"for {duration} turns! ---"
+                            )
+                        except ValueError as exc:
+                            print(exc)
 
             except (ValueError, IndexError):
 

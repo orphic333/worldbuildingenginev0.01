@@ -10,9 +10,10 @@ from .constants import Resource
 class BaseUnit:
     """Base class for all units in the game."""
 
-    def __init__(self, unit_id: int, name: str, health: float = 100.0) -> None:
+    def __init__(self, unit_id: int, name: str | None = None, health: float = 100.0) -> None:
         self.unit_id = unit_id
-        self.name = name
+        if name is not None:
+            self.name = name
         self.health = health
         self.is_alive = True
 
@@ -49,6 +50,10 @@ class Hero(BaseUnit):
         # Inventory / history
         self.inventory = {}
         self.expeditions_completed = 0
+
+    @property
+    def is_busy(self):
+        return self.current_zone is not None
 
     def display_status(self) -> None:
         """Print formatted hero stats."""
@@ -223,15 +228,14 @@ class Guardian(BaseUnit):
 class Builder(BaseUnit):
     """A builder that constructs and upgrades dungeon structures."""
 
-    def __init__(self, builder_id: int, name: str, build_speed: float = 1.0) -> None:
-        super().__init__(builder_id, name)
+    def __init__(self, builder_id: int, build_speed: float = 1.0, name: str = "") -> None:
+        super().__init__(builder_id)
         self.build_speed = build_speed
         self.current_task = None
 
     def display_status(self) -> None:
         """Print formatted builder stats."""
-        print(f"\n=== {self.name} ===")
-        print(f"  ID: {self.unit_id}")
+        print(f"\n=== Builder #{self.unit_id} ===")
         print(f"  Build Speed: {self.build_speed}")
         print(f"  Current Task: {self.current_task}")
         print(f"  Health: {self.health:.1f}")
@@ -241,18 +245,16 @@ class Builder(BaseUnit):
     def to_dict(self):
         return {
             "unit_id": self.unit_id,
-            "name": self.name,
             "health": self.health,
             "is_alive": self.is_alive,
             "build_speed": self.build_speed,
-            "current_task": self.current_task
+            "current_task": self.current_task,
         }
 
     @classmethod
     def from_dict(cls, data):
         b = cls(
             builder_id=data["unit_id"],
-            name=data["name"],
             build_speed=data.get("build_speed", 1.0)
         )
         b.health = data["health"]
@@ -282,12 +284,14 @@ class Expedition:
     def advance(self) -> None:
         """Advance this expedition by one turn."""
 
+        if self.status != "active":
+            return
+
         self.turns_elapsed += 1
 
         self._apply_zone_pressure()
 
-        if self.turns_elapsed >= self.duration_turns:
-
+        if self.status == "active" and self.turns_elapsed >= self.duration_turns:
             self._resolve()
 
     def _apply_zone_pressure(self):
@@ -306,7 +310,7 @@ class Expedition:
         )
 
         if not self.hero.is_alive:
-
+            self.hero.current_zone = None
             self.status = "failed"
 
     def _resolve(self):
@@ -351,6 +355,7 @@ class Expedition:
         )
 
         self.hero.gain_experience(xp_gain)
+        self.hero.expeditions_completed += 1
 
         if not self.target_zone.is_discovered:
 
@@ -521,6 +526,69 @@ class DungeonWorld:
         uid = self.next_unit_id
         self.next_unit_id += 1
         return uid
+
+    def create_hero(self, name: str, specialization: str) -> Hero:
+        hero = Hero(self.get_next_unit_id(), name, specialization)
+        self.heroes.append(hero)
+        return hero
+
+    def create_builder(self, build_speed: float = 1.0) -> Builder:
+        builder = Builder(self.get_next_unit_id(), build_speed=build_speed)
+        self.builders.append(builder)
+        return builder
+
+    def find_hero(self, hero_id: int):
+        for hero in self.heroes:
+            if hero.unit_id == hero_id:
+                return hero
+        return None
+
+    def find_zone(self, zone_id: int):
+        return self.zones.get(zone_id)
+
+    def send_hero_on_expedition(
+        self,
+        hero_id: int,
+        zone_id: int,
+        duration: int,
+    ):
+        if duration <= 0:
+            raise ValueError("Duration must be a positive integer.")
+
+        hero = self.find_hero(hero_id)
+        if hero is None:
+            raise ValueError(f"No hero with ID {hero_id}.")
+
+        if not hero.is_alive:
+            raise ValueError(f"{hero.name} is dead and cannot be sent.")
+
+        if hero.current_zone is not None:
+            raise ValueError(
+                f"{hero.name} is already on an expedition."
+            )
+
+        target_zone = self.find_zone(zone_id)
+        if target_zone is None:
+            raise ValueError(f"No zone with ID {zone_id}.")
+
+        hero.current_zone = zone_id
+        expedition = Expedition(
+            hero=hero,
+            target_zone=target_zone,
+            world=self,
+            duration_turns=duration,
+        )
+        self.active_expeditions.append(expedition)
+        return expedition
+
+    def has_active_expeditions(self) -> bool:
+        return bool(self.active_expeditions)
+
+    def get_active_expeditions(self):
+        return list(self.active_expeditions)
+
+    def advance_turn(self) -> None:
+        self.tick()
 
     def to_dict(self) -> dict:
         """Serialize world to a JSON-safe dict."""

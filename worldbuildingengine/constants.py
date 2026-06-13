@@ -69,6 +69,14 @@ class Resource(enum.Enum):
     WATER = "water"
     WOOD = "wood"
 
+#create resource descriptions. For example, wood could be a resource that is used for crafting and construction, and it could be gathered from certain zones or obtained from certain creatures. It could have attributes such as flammability, durability, and flexibility.
+RESOURCE_DESCRIPTIONS = {
+    Resource.WOOD: "Wood - a versatile material used for crafting and construction, obtained from trees in various zones.",
+    Resource.STONE: "Stone - a durable material used for building and infrastructure, found in quarries and caves.",
+    Resource.IRON: "Iron - a strong metal used for crafting tools and weapons, mined from underground deposits.",
+    # Add more resource descriptions as needed
+}
+
 #create categories for resources. For instance renewable resources, where an attribute could exist called is_renewable.
 
 SPECIALIZATIONS = [
@@ -88,4 +96,13 @@ SPECIALIZATION_DESC = {
     "Adventurer": "Adventurer - heroes with excellent planning and logistics skills, who are specialised at leading expeditions and controlling other units during expeditions. They are capable of handling expeditions with hyper-specific goals. They are naturally all-rounders, with a tiny bit of skill in every field. Produced by a specific guardian type.",
     "Advisor": "Advisor - best for providing strategic advice during expeditions, as well as long-term strategic planning. They are not directly involved in expeditions, but their advice can be crucial for the success of expeditions and the management of the dungeon. Produced by a certain guardian type.",
 
+}
+
+HERO_COSTS = {
+    "Prospector": {Resource.AETHERITE: 10, Resource.BLOOD: 5},
+    "Researcher": {Resource.AETHERITE: 15, Resource.KNOWLEDGE: 10},
+    "Warrior": {Resource.AETHERITE: 20, Resource.BLOOD: 15},
+    "Scout": {Resource.AETHERITE: 12, Resource.BLOOD: 8},
+    "Adventurer": {Resource.AETHERITE: 18, Resource.BLOOD: 12},
+    "Advisor": {Resource.AETHERITE: 25, Resource.KNOWLEDGE: 20}
 }

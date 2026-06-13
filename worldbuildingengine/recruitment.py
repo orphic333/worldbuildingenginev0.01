@@ -58,9 +58,7 @@ def recruit_hero(world_data: DungeonWorld) -> Hero:
 
         specialization = "Prospector"
 
-    hero = Hero(hero_id, name, specialization)
-
-    world_data.heroes.append(hero)
+    hero = world_data.create_hero(name, specialization)
 
     print(
         f"\n--- {name} the {specialization} has arrived! ---"
@@ -74,26 +72,10 @@ def recruit_builder(world_data: DungeonWorld) -> Builder:
     Interactive builder creation.
     """
 
-    builder_id = world_data.get_next_unit_id()
-
-    while True:
-
-        name = input(
-            "\nEnter builder name: "
-        ).strip()
-
-        if name:
-
-            break
-
-        print("A builder must have a name.")
-
-    builder = Builder(builder_id, name)
-
-    world_data.builders.append(builder)
+    builder = world_data.create_builder()
 
     print(
-        f"\n--- {name} the Builder has arrived! ---"
+        f"\n--- Builder #{builder.unit_id} has arrived! ---"
     )
 
     return builder

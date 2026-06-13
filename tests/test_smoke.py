@@ -121,12 +121,11 @@ class TestSerialization(unittest.TestCase):
         self.assertEqual(restored.assigned_level_id, orig.assigned_level_id)
 
     def test_builder_round_trip(self):
-        orig = Builder(builder_id=1, name="Bob", build_speed=2.0)
+        orig = Builder(builder_id=1, build_speed=2.0)
         orig.current_task = "build"
         data = orig.to_dict()
         restored = Builder.from_dict(data)
         self.assertEqual(restored.unit_id, orig.unit_id)
-        self.assertEqual(restored.name, orig.name)
         self.assertEqual(restored.build_speed, orig.build_speed)
         self.assertEqual(restored.current_task, orig.current_task)
 
@@ -212,25 +211,15 @@ class TestExpeditionFlow(unittest.TestCase):
 
     def test_full_expedition_flow(self):
         w = generate_dungeon_world()
-        hero = Hero(hero_id=1, name="Tester", specialization="Prospector")
-        w.heroes.append(hero)
+        hero = w.create_hero("Tester", "Prospector")
 
         # Send to first discovered zone
         zone_id = w.known_zones[0]
         target = w.zones[zone_id]
-        resource_count_before = len(target.resource_nodes)
-
-        hero.current_zone = zone_id
-        exp = Expedition(
-            hero=hero,
-            target_zone=target,
-            world=w,
-            duration_turns=1,
-        )
-        w.active_expeditions.append(exp)
+        w.send_hero_on_expedition(hero.unit_id, zone_id, 1)
 
         # Tick once to resolve
-        w.tick()
+        w.advance_turn()
 
         # After tick, expedition should be completed
         self.assertEqual(len(w.active_expeditions), 0)
@@ -245,23 +234,15 @@ class TestExpeditionFlow(unittest.TestCase):
 
     def test_hero_death_on_expedition(self):
         w = generate_dungeon_world()
-        hero = Hero(hero_id=2, name="Doomed", specialization="Warrior")
+        hero = w.create_hero("Doomed", "Warrior")
         hero.health = 1.0  # One hit from death
-        w.heroes.append(hero)
 
         zone_id = w.known_zones[0]
         target = w.zones[zone_id]
 
-        hero.current_zone = zone_id
-        exp = Expedition(
-            hero=hero,
-            target_zone=target,
-            world=w,
-            duration_turns=5,  # Long enough to die from zone pressure
-        )
-        w.active_expeditions.append(exp)
+        exp = w.send_hero_on_expedition(hero.unit_id, zone_id, 5)
 
-        w.tick()  # Apply pressure once
+        w.advance_turn()  # Apply pressure once
 
         # Hero should be dead if damage exceeded 1.0
         if not hero.is_alive:
