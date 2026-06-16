@@ -3,9 +3,9 @@
 ## Entrypoints
 
 ```bash
-python worldengine.py               # thin wrapper → main()
-python -m worldbuildingengine.main  # direct
-python -m unittest tests/test_smoke.py  # 21 smoke tests
+python worldengine.py
+python -m worldbuildingengine.main
+python -m unittest tests/test_smoke.py
 ```
 
 ## Architecture
@@ -13,74 +13,70 @@ python -m unittest tests/test_smoke.py  # 21 smoke tests
 ```
 worldengine.py         ← thin wrapper
 worldbuildingengine/
-├── main.py            # Startup: world select → generate/load → oracle
-├── oracle.py          # REPL command dispatch (process_user_command)
-├── entities.py        # ALL entity classes (BaseUnit, Hero, Guardian, Builder,
-│                      #   Expedition, DungeonLevel, WorldZone, DungeonWorld)
-├── generation.py      # Level & zone generation
-├── save_load.py       # JSON persistence (transactional: .tmp + os.replace)
-├── migrations.py      # Schema migration pipeline (v1→v2)
-├── display.py         # Terminal output helpers
-├── recruitment.py     # Unit creation flows
-├── constants.py       # Resource enum (22 members), specializations, word lists
-└── types.py           # Type aliases (forward-refs to avoid circular imports)
-`saves/`                 # JSON save files
-tests/test_smoke.py    # unittest smoke tests
+├── main.py            # Startup: world selection, create/load, display initial world state
+├── oracle.py          # REPL command dispatch loop
+├── entities.py        # Core domain model, game state, and serialization
+├── generation.py      # Procedural generation of dungeon levels and outside zones
+├── save_load.py       # JSON persistence with transactional save semantics
+├── migrations.py      # Save schema migration pipeline (v1 → v2)
+├── display.py         # Terminal display helpers
+├── recruitment.py     # Interactive hero/builder recruitment flows
+├── constants.py       # Resource enum, specialization list, word lists
+└── types.py           # Minimal type aliases
+saves/                  # Saved dungeon worlds in JSON
+tests/                  # Smoke tests and future unit tests
+pyproject.toml          # Packaging and dev tooling metadata
 ```
 
-**Critical constraint:** `entities.py` keeps all classes in one file to avoid circular imports (`Expedition` ↔ `DungeonWorld` ↔ `Hero` ↔ `WorldZone` all cross‑reference).
+**Current constraint:** `entities.py` still contains the core entity classes to avoid circular imports between `DungeonWorld`, `Hero`, `WorldZone`, and `Expedition`.
 
-## Known Bugs (critical, unresolved)
+## Current Notes
 
-| Bug | File | Effect |
+| Issue | File | Effect |
 |---|---|---|
-| Stale `Resource` enum refs | `generation.py:48-106` | Blocks new world generation (`AttributeError`) — old names `RAW_AETHER`, `OBSIDIAN`, `SHADOW_MATTER` deleted |
-| Wrong attr name `guardian_power` | `display.py:86` | Crashes on `random` command — should be `guardian_power_level` |
-| `"Scholar"` no longer in specializations | `entities.py:284-285` | KNOWLEDGE double‑harvest is dead code — should check `"Researcher"` |
+| `display_world_zone()` is a stub | `display.py` | No detailed zone display available |
+| Tick-phase hooks are placeholders | `entities.py` | Environmental events and unit status processing are not implemented |
+| No LICENSE file | repository root | Legal status is undefined |
+| No CI workflow | repository root | Automated checks are not enabled |
+| Documentation needs syncing | `README.md`, `AGENTS.md` | Current commands and behavior may be outdated |
 
 ## Build / Test Commands
 
-The following commands are the primary ways to build, run, and verify the project:
-- **Run the game**: `python worldengine.py` – Starts the thin wrapper which launches the Oracle REPL.
-- **Run the package directly**: `python -m worldbuildingengine.main` – Bypasses the wrapper and invokes the main entry point.
-- **Execute smoke tests**: `python -m unittest tests/test_smoke.py` – Runs the existing 21 smoke tests that cover basic world creation, unit recruitment, and a single expedition cycle.
-- **Run all tests (future)**: `python -m unittest discover -s tests` – Will discover any additional test modules once more comprehensive tests are added.
-
-*Why this section*: Providing clear, canonical commands helps contributors and maintainers quickly verify that the code builds and behaves as expected, reduces onboarding friction, and ensures consistent test execution across environments.
+- **Run the game**: `python worldengine.py`
+- **Run the package directly**: `python -m worldbuildingengine.main`
+- **Run smoke tests**: `python -m unittest tests/test_smoke.py`
+- **Run all tests**: `python -m unittest discover -s tests`
 
 ## Oracle Commands
 
 | Command | Action |
 |---|---|
-| `<N>` | View dungeon level N (1–3, hardcoded) |
-| `random` | Random level |
-| `recruit` | Create unit (hero/guardian/builder) |
-| `heroes` | List ALL units by type |
-| `hero <id>` | Unit detail (heroes only) |
-| `zones` | List discovered zones |
-| `send <hid> <zid> <dur>` | Dispatch hero on expedition |
-| `expeditions` | Active expedition status |
-| `tick` | Advance one turn (auto-saves) |
-| `stockpile` | Show accumulated resources |
-| `save` | Save to JSON |
-| `exit` | Save + quit |
+| `random` | Show a random dungeon level |
+| `recruit` | Recruit a hero or builder |
+| `heroes` | List recruited heroes, guardians, and builders |
+| `hero <id>` | Show detailed hero status |
+| `zones` | List discovered outside zones |
+| `send <hero_id> <zone_id> <duration>` | Dispatch a hero on an expedition |
+| `expeditions` | Show active expedition status |
+| `tick` | Advance one turn and process expeditions |
+| `stockpile` | Show accumulated dungeon stockpile resources |
+| `save` | Save the current world |
+| `exit` | Save and quit the game |
 
 ## Serialization
 
-- All data classes implement `to_dict()` / `from_dict()`.
-- `Resource` enum serialized via `.value` strings, reconstructed with `Resource(k)`.
-- Expeditions serialized as metadata only (hero/zone refs by ID, rehydrated on load).
-- Save files get `schema_version` (currently `2` from `migrations.py`).
-- Old flat‑format saves (`"Level N"` keys) migrated via `migrations.migrate_v1_to_v2`.
-- Transactional writes: write to `.tmp`, then `os.replace()`.
+- Most core classes implement `to_dict()` / `from_dict()` for JSON persistence.
+- `Resource` values serialize as strings and restore via `Resource(k)`.
+- `DungeonWorld.from_dict()` reconstructs heroes, guardians, builders, and active expeditions.
+- Save files include `schema_version` and can be migrated from older save formats.
+- Saves are written transactionally with a `.tmp` file and `os.replace()`.
 
 ## Key Facts
 
-- **stdlib only:** `json`, `random`, `os`, `enum`. No `requirements.txt` or `pyproject.toml`.
-- **`DungeonWorld`** owns `heroes`, `guardians`, `builders`, `stockpile`, `turn`, `next_unit_id`.
-- **Researcher** specialization doubles `KNOWLEDGE` harvest (but see bug above — checks `"Scholar"` instead).
-- **Zones deplete** on harvest (`_resolve` subtracts from `resource_nodes`).
-- **No type hints** anywhere in the codebase (except `types.py` type aliases).
-- **`mypy.ini`** exists but mypy does not ship wheels for Python 3.14 — type checking is currently impossible.
-- **`_test_roundtrip.json`** may be left behind in `saves/` after running tests — safe to delete.
-- `MAX_LEVEL = 3` only affects new worlds. Loaded saves preserve their own structure.
+- **Standard library only** at runtime.
+- **`pyproject.toml` exists** and declares dev extras for `pytest` and `mypy`.
+- `DungeonWorld` owns levels, zones, heroes, guardians, builders, expeditions, and stockpile state.
+- `send` dispatches heroes to discovered zones and resolves loot on tick.
+- `create_builder()` no longer prompts for a name; builders are identified by ID only.
+- `Researcher` specialization already doubles `KNOWLEDGE` harvest in current expedition logic.
+- `MAX_LEVEL = 3` controls generated dungeon size; existing saves can preserve their own layout.

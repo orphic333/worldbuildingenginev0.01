@@ -1,17 +1,18 @@
 # Worldbuilding Engine v0.01
 
-A terminal-based dungeon management simulation with adventure, lore and high stakes that pushes the creativity of players to the limit.
+A terminal-based dungeon management simulation with a procedural dungeon, expedition mechanics, and persistent JSON world saves.
 
 ## Overview
 
-Procedurally generates a 3-level expandable dungeon ("The Great Descent") with unique level names, aether density, and guardian power levels. Dive into an interactive oracle system to explore your dungeon, recruit heroes, prepare for expedition simulation and perform managerial tasks.
+The game generates a 3-level dungeon and a set of outside world zones. Players recruit heroes and builders, send heroes on expeditions to discover resources, and manage the dungeon stockpile through a turn-based oracle command system.
 
 ## Features
 
-- **Procedural Dungeon Generation** — 3 unique levels
-- **Oracle Terminal** — Query levels by number, navigate the dungeon, issue commands to units, manage and grow the dungeon as a whole
-- **Save/Load System** — Persist dungeon worlds and world information as JSON files
-- **Unit Management** — Recruit heroes and other units with distinct specializations and track their stats.
+- **Procedural Dungeon Generation** — Generates 3 dungeon levels and 10 outside zones.
+- **Oracle Command Interface** — Interact with the game through a text-based command loop.
+- **Save/Load System** — Persist world state safely to JSON files.
+- **Unit Management** — Recruit heroes and builders and track hero stats during expeditions.
+- **Expedition Lifecycle** — Send heroes to zones, resolve loot, and update stockpile on tick.
 
 ## Getting Started
 
@@ -19,61 +20,64 @@ Procedurally generates a 3-level expandable dungeon ("The Great Descent") with u
 python worldengine.py
 ```
 
-Select an existing world or create a new one at startup.
+At startup, choose to load an existing world or create a new one.
 
-### Oracle Commands
+### Commands
 
-| Command       | Action |
-|---------------|---|
-| `<number>`    | View a specific level (1–100) |
-| `random`      | Discover a random level |
-| `recruit`     | Create a new hero |
-| `heroes`      | List all heroes |
-| `hero <id>`   | View detailed hero status |
-| `zones`       | View information on discovered zones outside the dungeon|
-| `expeditions` | See the status of ongoing expeditions, completed ones, and initiate expeditions|
-| `stockpile`   | View the stockpile of your dungeon which contains amassed resources and knowledge|
-| `tick`        | Move the game forward by one tick|
-| `save`        | Save your game|
-| `exit`        | Quit the oracle |
+| Command | Action |
+|---|---|
+| `random` | Show a random dungeon level |
+| `recruit` | Recruit a hero or builder |
+| `heroes` | List recruited heroes, guardians, and builders |
+| `hero <id>` | Show detailed hero status |
+| `zones` | List discovered outside zones |
+| `send <hero_id> <zone_id> <duration>` | Dispatch a hero on an expedition |
+| `expeditions` | Show active expedition status |
+| `tick` | Advance one turn and process expeditions |
+| `stockpile` | View current stockpile resources |
+| `save` | Save the current world |
+| `exit` | Save and quit |
 
 ### Hero Specializations
 
-| Class           | Role                                                                       |
-|-----------------|----------------------------------------------------------------------------|
-| **Prospector**  | Detects resource hotspots during expeditions and mines them efficiently    |
-| **Researcher**  | Gathers knowledge in zones and performs research to unlock crafting recipes|
-| **Adventurer**  | All-rounder with logistics skills; excels at leading hyper-specific goals  |
-| **Scout**       | Scouts zones to reveal risks, rewards, and enables long-term planning      |
-| **Warrior**     | Combat specialist; clears enemies and defends expedition parties           |
+| Class | Role |
+|---|---|
+| `Prospector` | Efficient at extracting resources during expeditions |
+| `Researcher` | Doubles `KNOWLEDGE` harvest from zones |
+| `Adventurer` | Generalist hero with balanced progression |
+| `Scout` | Good at scouting and risk assessment |
+| `Warrior` | Strong in combat-oriented expedition challenges |
+
+## Running Tests
+
+```bash
+python -m unittest tests/test_smoke.py
+```
 
 ## Project Structure
 
 ```
-worldengine.py                     — Thin wrapper (delegates to package)
+worldengine.py
 worldbuildingengine/
-├── __init__.py                    — Package marker
-├── main.py                        — Startup flow (world selection, main loop)
-├── oracle.py                      — REPL command dispatch
-├── entities.py                    — All entity classes
-├── generation.py                  — Procedural level and zone generation
-├── constants.py                   — Resource enum, word lists, specializations
-├── save_load.py                   — JSON persistence (transactional saves)
-├── migrations.py                  — Schema version migration pipeline
-├── display.py                     — Terminal output helpers
-├── recruitment.py                 — Unit creation flows
-├── types.py                       — Type aliases
-saves/                             — Saved dungeon worlds (JSON)
+├── main.py
+├── oracle.py
+├── entities.py
+├── generation.py
+├── constants.py
+├── save_load.py
+├── migrations.py
+├── display.py
+├── recruitment.py
+└── types.py
 tests/
 ├── __init__.py
-└── test_smoke.py                  — 21 smoke tests
-mypy.ini                           — Type-checking config (Python 3.14+)
+└── test_smoke.py
+pyproject.toml
 ```
 
-## Roadmap
+## Notes
 
-- Hero expedition simulation with danger ratings on zones
-- Resource extraction and crafting system
-- Hero injury, sanity, and stamina degradation mechanics
-- Procedural events and hazards during ticks
-- Notoriety scale
+- Builders are created with IDs only; they no longer require a name.
+- `Researcher` specialization currently doubles `KNOWLEDGE` harvest during expeditions.
+- `display_world_zone()` is still a placeholder function in `display.py`.
+- There is currently no CI workflow or LICENSE file in the repository.
