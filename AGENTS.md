@@ -34,7 +34,7 @@ pyproject.toml          # Packaging and dev tooling metadata
 
 | Issue | File | Effect |
 |---|---|---|
-| `display_world_zone()` is a stub | `display.py` | No detailed zone display available |
+| `display_world_zones()` implemented | `display.py` | Shows known zones with details |
 | Tick-phase hooks are placeholders | `entities.py` | Environmental events and unit status processing are not implemented |
 | No LICENSE file | repository root | Legal status is undefined |
 | No CI workflow | repository root | Automated checks are not enabled |

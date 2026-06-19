@@ -117,6 +117,28 @@ def display_specific_level(
         f"Power {level_data.guardian_power_level}"
     )
 
-def display_world_zone():
-    """Display world zone details"""
-    pass
+def display_world_zones(world_data: DungeonWorld) -> None:
+    """Display all known world zones and their details."""
+
+    if not world_data.known_zones:
+        print("\nNo zones discovered.")
+        return
+
+    print("\n--- KNOWN ZONES ---")
+
+    for idx, zone_id in enumerate(world_data.known_zones, 1):
+        zone = world_data.zones[zone_id]
+        print(
+            f"\n{idx}. Zone {zone.zone_id}: {zone.name}"
+        )
+        print(f"   Tier: {zone.tier}")
+        print(f"   Danger Rating: {zone.danger_rating}")
+        print(f"   Threat Level: {zone.threat_level}")
+        if zone.resource_nodes:
+            resources = ", ".join(
+                f"{r.value}: {qty}"
+                for r, qty in zone.resource_nodes.items()
+            )
+            print(f"   Resources: {resources}")
+        else:
+            print("   Resources: None discovered")

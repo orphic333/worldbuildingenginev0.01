@@ -88,7 +88,7 @@ DungeonWorld
 ```
 .gitignore         — Blocks __pycache__, .venv, .idea, saves
 README.md          — Project overview and commands
-AGENTS.md          — Agent notes, currently needs refresh
+AGENTS.md          — Agent notes, refreshed
 pyproject.toml     — Packaging and dev tooling metadata
 worldengine.py     — Thin wrapper to start the game
 out.gv / out.png   — Generated architecture/diagram artifacts
@@ -109,10 +109,41 @@ out.gv / out.png   — Generated architecture/diagram artifacts
 
 ### 2.2 Remaining Issues
 
-- `display_world_zone()` in `display.py` is still an empty stub.
+- (Resolved) `display_world_zones()` in `display.py` has been implemented and shows known zone details.
 - Turn-processing phases `_process_environmental_events()` and `_process_unit_statuses()` remain unimplemented placeholders.
+
+> #### `_process_environmental_events()` — Design Reference
+> *Entry: 2026-06-19*
+>
+> **Purpose:** Generate and apply world, dungeon, and expedition events that make the game world feel reactive and resistant to the player. Events challenge the player's plans — discoveries, hazards, delays, encounters.
+>
+> **Design notes:**
+> - Events should be varied in scope: expedition events (discovery, hazard, encounter), dungeon events (aether fluctuation, structural issues), and world events (seasonal, regional phenomena).
+> - Some events are instantaneous, others are persistent with duration (counted in turns). `DungeonLevel.active_events` is already available for persistent events.
+> - `WorldZone.threat_level` should influence event probability for zone-linked events.
+> - Events should create meaningful tradeoffs, not just random noise.
+>
+> **Short-term plan:** Keep the hook in `entities.py` but wire it to roll for world and expedition events each tick, apply/expire persistent events, and print event messages.
+>
+> **Long-term plan:** Extract event logic into `events.py` with dedicated data types (`GameEvent`, `EventOutcome`) when complexity grows.
+
+> #### `_process_unit_statuses()` — Design Reference
+> *Entry: 2026-06-19*
+>
+> **Purpose:** Update vitals and other stats for all unit types (heroes, guardians, builders, and future units) on each tick. Works hand-in-hand with event logic — events may inject modifiers to tick effects.
+>
+> **Design notes:**
+> - Complementary to `_apply_zone_pressure()`: zone pressure damages heroes during active expeditions, unit status handles passive tick-by-tick changes to all units everywhere (idle or busy).
+> - Should scale to hundreds or thousands of units. Each unit class should own its tick logic via a method like `apply_tick_effects()` on `BaseUnit`, so `_process_unit_statuses` stays a simple dispatch loop.
+> - Builders are not permanent — they gradually erode and die. A `lifespan` field and decay counter in `apply_tick_effects()` models this.
+> - Future expansion: passive healing, stamina/sanity recovery while idle, guardian upkeep costs, status effect application/expiry.
+>
+> **Short-term plan:** Implement builder decay (HP erosion based on lifespan). Keep the dispatch in `entities.py`, add `apply_tick_effects()` to `BaseUnit` and override in `Builder`.
+>
+> **Long-term plan:** Extract into `statuses.py` or `tick_effects.py` with registration-based hooks when complexity grows.
+
 - Some in-code TODOs and comments indicate resource distribution and hero inventory systems are still draft-level.
-- Documentation files are partially stale: `AGENTS.md` and possibly `README.md` should be synchronized with current commands and domain behavior.
+- (Resolved) Documentation files (`AGENTS.md`, `README.md`) have been refreshed to match current commands and domain behavior.
 - There is no LICENSE file in the repository.
 - There is no CI workflow configured yet.
 - Test coverage is limited to a single smoke test module.
@@ -150,9 +181,9 @@ Not a concern for the current scale. World generation and turn updates operate o
 
 | Item | File | Severity |
 |---|---|---|
-| Empty display stub | `display.py` | Low |
+| (Resolved) Empty display stub | `display.py` | — |
 | Tick-phase stubs | `entities.py` | Medium |
-| Stale documentation | `AGENTS.md`, `README.md` | Low/Medium |
+| (Resolved) Stale documentation | `AGENTS.md`, `README.md` | — |
 | No LICENSE | repository root | Medium |
 | No CI workflow | repository root | Medium |
 | Limited test coverage | `tests/` | Medium |
@@ -178,8 +209,8 @@ Not a concern for the current scale. World generation and turn updates operate o
 
 1. **Add a LICENSE file.** A simple MIT license is the best low-friction choice for an open project.
 2. **Add CI coverage.** Start with a GitHub Actions workflow that runs `python -m unittest` and optionally `python -m py_compile`.
-3. **Refresh documentation.** Update `README.md` and `AGENTS.md` to match the current command set, world loading flow, and domain API.
-4. **Remove or implement `display_world_zone()`.** Either provide zone detail output or remove the placeholder entirely.
+3. ~~**Refresh documentation.** Update `README.md` and `AGENTS.md` to match the current command set, world loading flow, and domain API.~~ ✅ Done
+4. ~~**Remove or implement `display_world_zones()`.** Either provide zone detail output or remove the placeholder entirely.~~ ✅ Done
 5. **Clean up stale comments/TODOs.** Focus first on resource generation comments and domain API notes in `generation.py` and `entities.py`.
 
 ### Next Weeks

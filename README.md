@@ -79,5 +79,5 @@ pyproject.toml
 
 - Builders are created with IDs only; they no longer require a name.
 - `Researcher` specialization currently doubles `KNOWLEDGE` harvest during expeditions.
-- `display_world_zone()` is still a placeholder function in `display.py`.
+- `display_world_zones()` is implemented in `display.py` and shows known zones with their details.
 - There is currently no CI workflow or LICENSE file in the repository.

@@ -3,6 +3,7 @@ from __future__ import annotations
 from .constants import MAX_LEVEL, Resource
 from .display import (
     display_random_level, display_specific_level,
+    display_world_zones,
 )
 from .entities import Expedition, DungeonWorld
 from .recruitment import recruit_hero, recruit_builder
@@ -174,24 +175,7 @@ def process_user_command(
 
     elif cleaned_command == "zones":
 
-        if not world_data.known_zones:
-
-            print("No zones discovered.")
-
-        else:
-
-            print("\n--- KNOWN ZONES ---")
-
-            for zone_id in world_data.known_zones:
-
-                zone = world_data.zones[zone_id]
-
-                print(
-                    f"  Zone {zone.zone_id}: "
-                    f"{zone.name} "
-                    f"(Tier {zone.tier}, "
-                    f"Danger {zone.danger_rating})"
-                )
+        display_world_zones(world_data)
 
         return True
 
