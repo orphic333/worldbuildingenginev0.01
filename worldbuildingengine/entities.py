@@ -23,6 +23,10 @@ class BaseUnit:
         if self.health <= 0:
             self.is_alive = False
 
+    def apply_tick_effects(self) -> None:
+        """Apply per-tick effects. Override in subclasses."""
+        pass
+
 
 # =========================
 # HERO CLASS
@@ -228,10 +232,26 @@ class Guardian(BaseUnit):
 class Builder(BaseUnit):
     """A builder that constructs and upgrades dungeon structures."""
 
+    LIFESPAN_TICK_INTERVAL = 2
+
     def __init__(self, builder_id: int, build_speed: float = 1.0, name: str = "") -> None:
         super().__init__(builder_id)
         self.build_speed = build_speed
         self.current_task = None
+        self.lifespan = 100
+        self._tick_counter = 0
+
+    def apply_tick_effects(self) -> None:
+        """Reduce lifespan by 1 every 2 ticks. Mark dead when lifespan expires."""
+        if not self.is_alive:
+            return
+        self._tick_counter += 1
+        if self._tick_counter >= self.LIFESPAN_TICK_INTERVAL:
+            self._tick_counter = 0
+            self.lifespan -= 1
+            if self.lifespan <= 0:
+                self.is_alive = False
+                print(f"  [DECAY] Builder #{self.unit_id} has expired.")
 
     def display_status(self) -> None:
         """Print formatted builder stats."""
@@ -239,6 +259,7 @@ class Builder(BaseUnit):
         print(f"  Build Speed: {self.build_speed}")
         print(f"  Current Task: {self.current_task}")
         print(f"  Health: {self.health:.1f}")
+        print(f"  Lifespan: {self.lifespan}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
         print("-" * 30)
 
@@ -249,6 +270,8 @@ class Builder(BaseUnit):
             "is_alive": self.is_alive,
             "build_speed": self.build_speed,
             "current_task": self.current_task,
+            "lifespan": self.lifespan,
+            "_tick_counter": self._tick_counter,
         }
 
     @classmethod
@@ -260,6 +283,8 @@ class Builder(BaseUnit):
         b.health = data["health"]
         b.is_alive = data["is_alive"]
         b.current_task = data.get("current_task")
+        b.lifespan = data.get("lifespan", 100)
+        b._tick_counter = data.get("_tick_counter", 0)
         return b
 
 #add advisor class. These ones are more advanced in terms of function
@@ -775,11 +800,15 @@ class DungeonWorld:
         )
 
     def _process_unit_statuses(
-        self, heroes, guardians, builders    #will add more units to this as well.
+        self, heroes, guardians, builders
     ):
-        """Stub: update unit vitals and cooldowns."""
+        """Apply per-tick effects to all units."""
 
-        print(
-            "  [Tick] Unit status phase "
-            "(not yet implemented)"
-        )
+        for unit in heroes:
+            unit.apply_tick_effects()
+
+        for unit in guardians:
+            unit.apply_tick_effects()
+
+        for unit in builders:
+            unit.apply_tick_effects()

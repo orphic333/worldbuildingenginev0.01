@@ -138,7 +138,7 @@ out.gv / out.png   — Generated architecture/diagram artifacts
 > - Builders are not permanent — they gradually erode and die. A `lifespan` field and decay counter in `apply_tick_effects()` models this.
 > - Future expansion: passive healing, stamina/sanity recovery while idle, guardian upkeep costs, status effect application/expiry.
 >
-> **Short-term plan:** Implement builder decay (HP erosion based on lifespan). Keep the dispatch in `entities.py`, add `apply_tick_effects()` to `BaseUnit` and override in `Builder`.
+> **Short-term plan (✅ Done 2026-06-19):** Builder decay implemented. `apply_tick_effects()` added to `BaseUnit` (no-op default). `Builder` overrides it to decrement `lifespan` by 1 every 2 ticks, marking dead when expired. `_process_unit_statuses` now dispatches to all units.
 >
 > **Long-term plan:** Extract into `statuses.py` or `tick_effects.py` with registration-based hooks when complexity grows.
 
