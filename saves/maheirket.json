@@ -1,0 +1,296 @@
+{
+    "name": "maheirket",
+    "turn": 1,
+    "next_unit_id": 3,
+    "levels": {
+        "1": {
+            "level_id": 1,
+            "name": "The Pulsing Obsidian Sanctum",
+            "aether_density": 19.8,
+            "guardian_power_level": 1.1,
+            "resource_nodes": {
+                "aether_crystals": 9,
+                "copper": 5,
+                "stone": 5,
+                "hard_rock": 3,
+                "soft_rock": 0,
+                "iron": 5
+            },
+            "structural_mods": [],
+            "active_events": []
+        },
+        "2": {
+            "level_id": 2,
+            "name": "The Shimmering Crystal Spire",
+            "aether_density": 27.2,
+            "guardian_power_level": 2.2,
+            "resource_nodes": {
+                "aether_crystals": 13,
+                "copper": 0,
+                "stone": 9,
+                "hard_rock": 1,
+                "soft_rock": 0,
+                "iron": 3
+            },
+            "structural_mods": [],
+            "active_events": []
+        },
+        "3": {
+            "level_id": 3,
+            "name": "The Forgotten Obsidian Abyss",
+            "aether_density": 38.2,
+            "guardian_power_level": 3.3,
+            "resource_nodes": {
+                "aether_crystals": 19,
+                "copper": 2,
+                "stone": 3,
+                "hard_rock": 4,
+                "soft_rock": 0,
+                "iron": 7
+            },
+            "structural_mods": [],
+            "active_events": []
+        }
+    },
+    "zones": {
+        "1": {
+            "zone_id": 1,
+            "name": "Fractured Fenlands",
+            "tier": 1,
+            "danger_rating": 10.413,
+            "resource_nodes": {
+                "wood": 10,
+                "fibre": 3,
+                "knowledge": 4
+            },
+            "is_discovered": true,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "2": {
+            "zone_id": 2,
+            "name": "Sunken Fenlands",
+            "tier": 1,
+            "danger_rating": 11.351,
+            "resource_nodes": {
+                "wood": 9,
+                "fibre": 7,
+                "knowledge": 4
+            },
+            "is_discovered": true,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "3": {
+            "zone_id": 3,
+            "name": "Forsaken Wastes",
+            "tier": 1,
+            "danger_rating": 12.991,
+            "resource_nodes": {
+                "wood": 9,
+                "fibre": 6,
+                "knowledge": 2
+            },
+            "is_discovered": true,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "4": {
+            "zone_id": 4,
+            "name": "Blighted Fenlands",
+            "tier": 2,
+            "danger_rating": 21.033,
+            "resource_nodes": {
+                "copper": 22,
+                "iron": 5,
+                "medicinal_plants": 2,
+                "knowledge": 11
+            },
+            "is_discovered": false,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "5": {
+            "zone_id": 5,
+            "name": "Ancient Rotwood",
+            "tier": 2,
+            "danger_rating": 23.313,
+            "resource_nodes": {
+                "copper": 14,
+                "iron": 10,
+                "medicinal_plants": 6,
+                "knowledge": 5
+            },
+            "is_discovered": false,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "6": {
+            "zone_id": 6,
+            "name": "Forsaken Rotwood",
+            "tier": 2,
+            "danger_rating": 23.663,
+            "resource_nodes": {
+                "copper": 24,
+                "iron": 10,
+                "medicinal_plants": 4,
+                "knowledge": 10
+            },
+            "is_discovered": false,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "7": {
+            "zone_id": 7,
+            "name": "Ancient Hollow",
+            "tier": 2,
+            "danger_rating": 22.077,
+            "resource_nodes": {
+                "copper": 25,
+                "iron": 7,
+                "medicinal_plants": 4,
+                "knowledge": 6
+            },
+            "is_discovered": false,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "8": {
+            "zone_id": 8,
+            "name": "Ancient Ashfield",
+            "tier": 3,
+            "danger_rating": 32.268,
+            "resource_nodes": {
+                "rare_metals": 12,
+                "knowledge": 13
+            },
+            "is_discovered": false,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "9": {
+            "zone_id": 9,
+            "name": "Fractured Rotwood",
+            "tier": 3,
+            "danger_rating": 30.315,
+            "resource_nodes": {
+                "rare_metals": 12,
+                "knowledge": 19
+            },
+            "is_discovered": false,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        },
+        "10": {
+            "zone_id": 10,
+            "name": "Forsaken Wastes",
+            "tier": 3,
+            "danger_rating": 31.655,
+            "resource_nodes": {
+                "rare_metals": 16,
+                "knowledge": 17
+            },
+            "is_discovered": false,
+            "threat_level": 0,
+            "event_creature_active": false,
+            "event_creature_name": null,
+            "event_creature_health": 0.0,
+            "event_creature_attack": 0.0
+        }
+    },
+    "known_zones": [
+        1,
+        2,
+        3
+    ],
+    "heroes": [
+        {
+            "unit_id": 2,
+            "name": "samson",
+            "health": 97.9174,
+            "is_alive": true,
+            "specialization": "Warrior",
+            "stamina": 95.8348,
+            "sanity": 98.0,
+            "level": 1,
+            "experience": 0,
+            "current_zone": 1,
+            "inventory": {},
+            "expeditions_completed": 0
+        }
+    ],
+    "guardians": [],
+    "builders": [],
+    "active_expeditions": [
+        {
+            "hero_id": 2,
+            "target_zone_id": 1,
+            "duration_turns": 5,
+            "turns_elapsed": 1,
+            "status": "active",
+            "has_engaged_event_creature": false,
+            "creature_defeated": false,
+            "loot": {}
+        }
+    ],
+    "event_zone_ids": [
+        1,
+        2,
+        3
+    ],
+    "event_progress": 0.2,
+    "event_triggered": false,
+    "event_creature_zone_id": null,
+    "stockpile": {
+        "aether_crystals": 0,
+        "aetherite": 0,
+        "blood": 0,
+        "cattle": 0,
+        "copper": 0,
+        "creatures": 0,
+        "fibre": 0,
+        "fruits": 0,
+        "guardian_cores": 0,
+        "hard_rock": 0,
+        "iron": 0,
+        "knowledge": 0,
+        "light_metals": 0,
+        "liquid_aether": 0,
+        "meat": 0,
+        "medicinal_plants": 0,
+        "rare_metals": 0,
+        "seeds": 0,
+        "soft_rock": 0,
+        "stone": 0,
+        "water": 0,
+        "wood": 0
+    },
+    "schema_version": 2
+}

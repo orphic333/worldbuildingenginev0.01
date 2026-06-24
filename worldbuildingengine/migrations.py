@@ -43,6 +43,7 @@ def migrate_v1_to_v2(data:dict[str,Any])->dict[str,Any]:
         "stockpile": {r.value: 0 for r in Resource}
     }
 
+
 # Dictionary mapping source version to the corresponding migration function
 MIGRATION_PIPELINE = {
     1: migrate_v1_to_v2,
