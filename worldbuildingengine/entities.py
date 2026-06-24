@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import random
+
 from .constants import Resource
 
 
@@ -297,7 +299,8 @@ class Expedition:
 
     def __init__(self, hero, target_zone, world,
                  duration_turns, turns_elapsed=0,
-                 status="active", loot=None):        #feature: add a residents parameter to the constructor, which could be a field for whatever entities are there.
+                 status="active", loot=None,
+                 has_engaged_event_creature=False):
         self.hero = hero
         self.target_zone = target_zone
         self.world = world
@@ -305,6 +308,7 @@ class Expedition:
         self.turns_elapsed = turns_elapsed
         self.status = status
         self.loot = loot if loot is not None else {}
+        self.has_engaged_event_creature = has_engaged_event_creature
 
     def advance(self) -> None:
         """Advance this expedition by one turn."""
@@ -313,6 +317,15 @@ class Expedition:
             return
 
         self.turns_elapsed += 1
+
+        if (
+            self.target_zone.event_creature_active
+            and not self.has_engaged_event_creature
+        ):
+            self._resolve_event_creature_encounter()
+
+        if self.status != "active":
+            return
 
         self._apply_zone_pressure()
 
@@ -334,14 +347,101 @@ class Expedition:
             self.target_zone.danger_rating * 0.2
         )
 
+        if self.target_zone.event_creature_active:
+            self.hero.lose_sanity(
+                self.target_zone.tier * 1.5
+            )
+            self.hero.take_damage(
+                self.target_zone.event_creature_attack * 0.25
+            )
+
         if not self.hero.is_alive:
             self.hero.current_zone = None
             self.status = "failed"
+
+    def _resolve_event_creature_encounter(self):
+        """Resolve the rare event creature encounter for this expedition."""
+
+        self.has_engaged_event_creature = True
+
+        zone = self.target_zone
+        if not zone.event_creature_active:
+            return
+
+        hero_power = (
+            self.hero.level * 8.0
+            + self.hero.health * 0.5
+            + self.hero.stamina * 0.3
+        )
+        creature_power = (
+            zone.event_creature_health * 0.6
+            + zone.event_creature_attack * 4.0
+        )
+        encounter_chance = hero_power / max(1.0, hero_power + creature_power)
+        encounter_chance = min(max(encounter_chance, 0.1), 0.9)
+
+        print(
+            f"\n  [EVENT] {self.hero.name} encounters "
+            f"{zone.event_creature_name}!"
+        )
+
+        if random.random() <= encounter_chance:
+            creature_damage = max(
+                1.0,
+                hero_power * random.uniform(0.25, 0.45)
+            )
+            zone.event_creature_health = max(
+                0.0,
+                zone.event_creature_health - creature_damage
+            )
+            self.hero.take_damage(
+                zone.event_creature_attack * random.uniform(0.8, 1.2)
+            )
+            self.hero.lose_sanity(zone.tier * 2.5)
+            print(
+                f"    [STRIKE] {self.hero.name} wounds "
+                f"{zone.event_creature_name} for {creature_damage:.1f} damage."
+            )
+        else:
+            hero_damage = max(
+                1.0,
+                zone.event_creature_attack * random.uniform(1.0, 1.6)
+            )
+            self.hero.take_damage(hero_damage)
+            self.hero.lose_sanity(zone.tier * 3.5)
+            print(
+                f"    [BACKLASH] {zone.event_creature_name} lashes out "
+                f"for {hero_damage:.1f} damage."
+            )
+
+        if not self.hero.is_alive:
+            self.hero.current_zone = None
+            self.status = "failed"
+            print(
+                f"    [DEATH] {self.hero.name} was killed by "
+                f"{zone.event_creature_name}."
+            )
+            return
+
+        if zone.event_creature_health <= 0.0:
+            zone.event_creature_active = False
+            self.world.event_creature_zone_id = None
+            print(
+                f"    [VICTORY] {self.hero.name} has defeated "
+                f"{zone.event_creature_name}!"
+            )
 
     def _resolve(self):
         """Finalise the expedition and award rewards."""
 
         self.loot = {}
+
+        if self.target_zone.event_creature_active:
+            print(
+                f"    [BLOCKED] {self.target_zone.event_creature_name} "
+                f"still holds {self.target_zone.name}; no resources can be looted."
+            )
+            return
 
         for resource, node_value in (
             self.target_zone.resource_nodes.items()
@@ -477,7 +577,11 @@ class WorldZone:
                  danger_rating: float,
                  resource_nodes: dict | None = None,
                  is_discovered: bool = False,
-                 threat_level: int = 0) -> None:
+                 threat_level: int = 0,
+                 event_creature_active: bool = False,
+                 event_creature_name: str | None = None,
+                 event_creature_health: float = 0.0,
+                 event_creature_attack: float = 0.0) -> None:
         self.zone_id = zone_id
         self.name = name
         self.tier = tier
@@ -485,6 +589,10 @@ class WorldZone:
         self.resource_nodes = resource_nodes if resource_nodes is not None else {}
         self.is_discovered = is_discovered
         self.threat_level = threat_level       #add an events side to this. It could describe possible events that could come from this zone.
+        self.event_creature_active = event_creature_active
+        self.event_creature_name = event_creature_name
+        self.event_creature_health = event_creature_health
+        self.event_creature_attack = event_creature_attack
 
     def to_dict(self):
         """Serialize zone to a JSON-safe dict."""
@@ -499,6 +607,10 @@ class WorldZone:
             },
             "is_discovered": self.is_discovered,
             "threat_level": self.threat_level,
+            "event_creature_active": self.event_creature_active,
+            "event_creature_name": self.event_creature_name,
+            "event_creature_health": self.event_creature_health,
+            "event_creature_attack": self.event_creature_attack,
         }
 
     @classmethod
@@ -516,6 +628,10 @@ class WorldZone:
             },
             is_discovered=data.get("is_discovered", False),
             threat_level=data.get("threat_level", 0),
+            event_creature_active=data.get("event_creature_active", False),
+            event_creature_name=data.get("event_creature_name"),
+            event_creature_health=data.get("event_creature_health", 0.0),
+            event_creature_attack=data.get("event_creature_attack", 0.0),
         )
 
 
@@ -526,7 +642,11 @@ class DungeonWorld:
                  turn: int = 0, zones: dict | None = None,
                  known_zones: list | None = None,
                  active_expeditions: list | None = None,
-                 stockpile: dict | None = None) -> None:
+                 stockpile: dict | None = None,
+                 event_zone_ids: list | None = None,
+                 event_progress: float = 0.0,
+                 event_triggered: bool = False,
+                 event_creature_zone_id: int | None = None) -> None:
         self.name = name   #of the dungeon world taken from the load.
         self.levels = levels if levels is not None else {}
         self.turn = turn
@@ -546,6 +666,10 @@ class DungeonWorld:
         self.guardians = []
         self.builders = []    #other units will follow
         self.next_unit_id = 1
+        self.event_zone_ids = event_zone_ids if event_zone_ids is not None else []
+        self.event_progress = event_progress
+        self.event_triggered = event_triggered
+        self.event_creature_zone_id = event_creature_zone_id
 
     def get_next_unit_id(self) -> int:
         uid = self.next_unit_id
@@ -597,6 +721,9 @@ class DungeonWorld:
             raise ValueError(f"No zone with ID {zone_id}.")
 
         hero.current_zone = zone_id
+        if not self.event_triggered and zone_id in self.event_zone_ids:
+            self._increase_event_progress(zone_id)
+
         expedition = Expedition(
             hero=hero,
             target_zone=target_zone,
@@ -605,6 +732,38 @@ class DungeonWorld:
         )
         self.active_expeditions.append(expedition)
         return expedition
+
+    def _increase_event_progress(self, zone_id: int) -> None:
+        """Increase the rare event progress for initial tier 1 zones."""
+        self.event_progress = min(1.0, self.event_progress + 0.2)
+        print(
+            f"  [EVENT] Expedition into initial zone {zone_id} "
+            f"raises the stirring chance to {self.event_progress:.1f}."
+        )
+
+        if self.event_progress >= 1.0:
+            self._trigger_event(zone_id)
+
+    def _trigger_event(self, zone_id: int) -> None:
+        """Activate the one-time creature event in a primary zone."""
+        self.event_triggered = True
+        self.event_creature_zone_id = zone_id
+
+        zone = self.zones.get(zone_id)
+        if zone is None:
+            return
+
+        zone.event_creature_active = True
+        zone.event_creature_name = "Roused Aberration"
+        zone.event_creature_health = 20.0 + zone.tier * 12.0 + zone.danger_rating
+        zone.event_creature_attack = 6.0 + zone.tier * 3.0 + zone.danger_rating * 0.25
+        zone.threat_level = max(zone.threat_level, 2)
+
+        print(
+            f"\n--- EVENT TRIGGERED ---"
+            f"\nA {zone.event_creature_name} has awakened in {zone.name}."
+            f"\nHeroes will face it on the next expedition there."
+        )
 
     def has_active_expeditions(self) -> bool:
         return bool(self.active_expeditions)
@@ -646,6 +805,7 @@ class DungeonWorld:
                         exp.turns_elapsed
                     ),
                     "status": exp.status,
+                    "has_engaged_event_creature": exp.has_engaged_event_creature,
                     "loot": {
                         (r.value if isinstance(r, Resource) else r): qty
                         for r, qty in exp.loot.items()
@@ -653,6 +813,10 @@ class DungeonWorld:
                 }
                 for exp in self.active_expeditions
             ],
+            "event_zone_ids": self.event_zone_ids,
+            "event_progress": self.event_progress,
+            "event_triggered": self.event_triggered,
+            "event_creature_zone_id": self.event_creature_zone_id,
             "stockpile": {
                 r.value: qty
                 for r, qty in self.stockpile.items()
@@ -689,7 +853,12 @@ class DungeonWorld:
 
         world = cls(name=name, levels=levels, turn=turn,
                     zones=zones, known_zones=known_zones,
-                    stockpile=stockpile)
+                    stockpile=stockpile,
+                    event_zone_ids=data.get("event_zone_ids", []),
+                    event_progress=data.get("event_progress", 0.0),
+                    event_triggered=data.get("event_triggered", False),
+                    event_creature_zone_id=data.get("event_creature_zone_id"),
+                    )
 
         # Reconstruct dynamic unit state and unique ID counter
         world.next_unit_id = data.get("next_unit_id", 1)
@@ -731,7 +900,10 @@ class DungeonWorld:
                     loot={
                         Resource(k): v
                         for k, v in exp_data.get("loot", {}).items()
-                    }
+                    },
+                    has_engaged_event_creature=exp_data.get(
+                        "has_engaged_event_creature", False
+                    ),
                 )
                 world.active_expeditions.append(exp)
 

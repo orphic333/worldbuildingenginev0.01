@@ -67,10 +67,12 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
     known_zones = []
 
     tier_configs = [
-        (1, 5),
-        (2, 3),
-        (3, 2),
+        (1, 3),
+        (2, 4),
+        (3, 3),
     ]
+
+    initial_event_zone_ids = []
 
     for tier, count in tier_configs:
 
@@ -87,6 +89,7 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
                     Resource.FIBRE: random.randint(3, 8),
                     Resource.KNOWLEDGE: random.randint(1, 5),
                 }
+                initial_event_zone_ids.append(zone_id_counter)
 
             elif tier == 2:
 
@@ -130,4 +133,5 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
         levels=levels,
         zones=zones,
         known_zones=known_zones,
+        event_zone_ids=initial_event_zone_ids,
     )

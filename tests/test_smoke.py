@@ -249,6 +249,38 @@ class TestExpeditionFlow(unittest.TestCase):
             self.assertEqual(exp.status, "failed")
             self.assertEqual(len(w.active_expeditions), 0)
 
+    def test_event_progression_triggers_creature(self):
+        w = generate_dungeon_world()
+        hero = w.create_hero("EventHero", "Warrior")
+
+        self.assertEqual(len(w.event_zone_ids), 3)
+        self.assertFalse(w.event_triggered)
+
+        for i in range(5):
+            zone_id = w.event_zone_ids[i % 3]
+            w.send_hero_on_expedition(hero.unit_id, zone_id, 1)
+            w.advance_turn()
+            hero.current_zone = None
+
+        self.assertTrue(w.event_triggered)
+        self.assertIsNotNone(w.event_creature_zone_id)
+        triggered_zone = w.zones[w.event_creature_zone_id]
+        self.assertTrue(triggered_zone.event_creature_active)
+        self.assertGreater(triggered_zone.event_creature_health, 0.0)
+
+    def test_event_creature_blocks_loot(self):
+        w = generate_dungeon_world()
+        hero = w.create_hero("LootHero", "Warrior")
+        zone_id = w.event_zone_ids[0]
+        w.event_progress = 1.0
+        w._trigger_event(zone_id)
+
+        exp = w.send_hero_on_expedition(hero.unit_id, zone_id, 1)
+        w.advance_turn()
+
+        self.assertEqual(exp.loot, {})
+        self.assertTrue(w.zones[zone_id].event_creature_active)
+
 
 class TestStockpileInitialization(unittest.TestCase):
     """Verify stockpile starts empty for every resource."""
