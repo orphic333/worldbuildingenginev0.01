@@ -134,6 +134,8 @@ def display_world_zones(world_data: DungeonWorld) -> None:
         print(f"   Tier: {zone.tier}")
         print(f"   Danger Rating: {zone.danger_rating}")
         print(f"   Threat Level: {zone.threat_level}")
+        if zone.event_creature_active:
+            print(f"   [ACTIVE CREATURE] {zone.event_creature_name}")
         if zone.resource_nodes:
             resources = ", ".join(
                 f"{r.value}: {qty}"

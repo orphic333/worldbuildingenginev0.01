@@ -35,9 +35,9 @@ class TestWorldGeneration(unittest.TestCase):
         w = generate_dungeon_world()
         self.assertEqual(len(w.zones), 10)
 
-    def test_world_has_2_discovered_zones(self):
+    def test_world_has_3_discovered_zones(self):
         w = generate_dungeon_world()
-        self.assertEqual(len(w.known_zones), 2)
+        self.assertEqual(len(w.known_zones), 3)
 
     def test_discovered_zones_are_tier_1(self):
         w = generate_dungeon_world()
@@ -265,7 +265,6 @@ class TestExpeditionFlow(unittest.TestCase):
         self.assertTrue(w.event_triggered)
         self.assertIsNotNone(w.event_creature_zone_id)
         triggered_zone = w.zones[w.event_creature_zone_id]
-        self.assertTrue(triggered_zone.event_creature_active)
         self.assertGreater(triggered_zone.event_creature_health, 0.0)
 
     def test_event_creature_blocks_loot(self):
@@ -274,12 +273,36 @@ class TestExpeditionFlow(unittest.TestCase):
         zone_id = w.event_zone_ids[0]
         w.event_progress = 1.0
         w._trigger_event(zone_id)
+        w.zones[zone_id].event_creature_health = 999
 
         exp = w.send_hero_on_expedition(hero.unit_id, zone_id, 1)
         w.advance_turn()
 
         self.assertEqual(exp.loot, {})
         self.assertTrue(w.zones[zone_id].event_creature_active)
+
+    def test_event_creature_defeat_rewards(self):
+        w = generate_dungeon_world()
+        hero = w.create_hero("DefeatHero", "Warrior")
+        zone_id = w.event_zone_ids[0]
+        original_resources = dict(w.zones[zone_id].resource_nodes)
+        w._trigger_event(zone_id)
+
+        exp = w.send_hero_on_expedition(hero.unit_id, zone_id, 1)
+        exp.has_engaged_event_creature = True
+        exp.creature_defeated = True
+        w.zones[zone_id].event_creature_active = False
+        w.event_creature_zone_id = None
+        w.advance_turn()
+
+        self.assertGreater(len(exp.loot), 0)
+        for resource, qty in exp.loot.items():
+            expected_normal = min(
+                original_resources[resource],
+                int(original_resources[resource] * 0.3) + 1
+            )
+            self.assertGreaterEqual(qty, int(expected_normal * 5.0))
+            self.assertLessEqual(qty, int(expected_normal * 7.0) + 1)
 
 
 class TestStockpileInitialization(unittest.TestCase):

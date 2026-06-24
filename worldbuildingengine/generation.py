@@ -118,12 +118,12 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
             zones[zone_id_counter] = zone
             zone_id_counter += 1
 
-    # Discover first 2 Tier 1 zones
+    # Discover first 3 Tier 1 zones
     discovered = 0
 
     for zone in zones.values():
 
-        if zone.tier == 1 and discovered < 2:
+        if zone.tier == 1 and discovered < 3:
 
             zone.is_discovered = True
             known_zones.append(zone.zone_id)

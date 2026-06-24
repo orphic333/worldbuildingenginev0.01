@@ -297,10 +297,11 @@ class Builder(BaseUnit):
 class Expedition:
     """Represents a hero expedition into a zone."""
 
-    def __init__(self, hero, target_zone, world,
-                 duration_turns, turns_elapsed=0,
-                 status="active", loot=None,
-                 has_engaged_event_creature=False):
+    def __init__(self, hero: Hero, target_zone: WorldZone, world: DungeonWorld,
+                 duration_turns: int, turns_elapsed: int = 0,
+                 status: str = "active", loot: dict | None = None,
+                 has_engaged_event_creature: bool = False,
+                 creature_defeated: bool = False) -> None:
         self.hero = hero
         self.target_zone = target_zone
         self.world = world
@@ -309,6 +310,7 @@ class Expedition:
         self.status = status
         self.loot = loot if loot is not None else {}
         self.has_engaged_event_creature = has_engaged_event_creature
+        self.creature_defeated = creature_defeated
 
     def advance(self) -> None:
         """Advance this expedition by one turn."""
@@ -318,12 +320,6 @@ class Expedition:
 
         self.turns_elapsed += 1
 
-        if (
-            self.target_zone.event_creature_active
-            and not self.has_engaged_event_creature
-        ):
-            self._resolve_event_creature_encounter()
-
         if self.status != "active":
             return
 
@@ -332,7 +328,7 @@ class Expedition:
         if self.status == "active" and self.turns_elapsed >= self.duration_turns:
             self._resolve()
 
-    def _apply_zone_pressure(self):
+    def _apply_zone_pressure(self) -> None:
         """Apply environmental damage from the zone."""
 
         self.hero.consume_stamina(
@@ -359,7 +355,7 @@ class Expedition:
             self.hero.current_zone = None
             self.status = "failed"
 
-    def _resolve_event_creature_encounter(self):
+    def _resolve_event_creature_encounter(self) -> None:
         """Resolve the rare event creature encounter for this expedition."""
 
         self.has_engaged_event_creature = True
@@ -426,12 +422,13 @@ class Expedition:
         if zone.event_creature_health <= 0.0:
             zone.event_creature_active = False
             self.world.event_creature_zone_id = None
+            self.creature_defeated = True
             print(
                 f"    [VICTORY] {self.hero.name} has defeated "
                 f"{zone.event_creature_name}!"
             )
 
-    def _resolve(self):
+    def _resolve(self) -> None:
         """Finalise the expedition and award rewards."""
 
         self.loot = {}
@@ -472,6 +469,15 @@ class Expedition:
             )
 
             self.loot[resource] = harvest
+
+        if self.creature_defeated:
+            multiplier = random.uniform(5.0, 7.0)
+            for resource in self.loot:
+                self.loot[resource] = int(self.loot[resource] * multiplier)
+            print(
+                f"    [BOUNTY] Creature defeated! Loot multiplied "
+                f"by {multiplier:.2f}x!"
+            )
 
         xp_gain = int(
             self.target_zone.danger_rating
@@ -806,6 +812,7 @@ class DungeonWorld:
                     ),
                     "status": exp.status,
                     "has_engaged_event_creature": exp.has_engaged_event_creature,
+                    "creature_defeated": exp.creature_defeated,
                     "loot": {
                         (r.value if isinstance(r, Resource) else r): qty
                         for r, qty in exp.loot.items()
@@ -904,6 +911,9 @@ class DungeonWorld:
                     has_engaged_event_creature=exp_data.get(
                         "has_engaged_event_creature", False
                     ),
+                    creature_defeated=exp_data.get(
+                        "creature_defeated", False
+                    ),
                 )
                 world.active_expeditions.append(exp)
 
@@ -914,11 +924,9 @@ class DungeonWorld:
 
         self.turn += 1
 
-        self._process_expeditions(self.heroes)
+        self._process_environmental_events()
 
-        self._process_environmental_events(
-            self.heroes, self.guardians
-        )
+        self._process_expeditions(self.heroes)
 
         self._process_unit_statuses(
             self.heroes, self.guardians, self.builders
@@ -961,15 +969,15 @@ class DungeonWorld:
 
             self.active_expeditions.remove(exp)
 
-    def _process_environmental_events(
-        self, heroes, guardians
-    ):
-        """Stub: process hazards and events."""
+    def _process_environmental_events(self) -> None:
+        """Dispatch environmental events each tick."""
 
-        print(
-            "  [Tick] Environmental events phase "
-            "(not yet implemented)"
-        )
+        for exp in self.active_expeditions:
+            if (
+                exp.target_zone.event_creature_active
+                and not exp.has_engaged_event_creature
+            ):
+                exp._resolve_event_creature_encounter()
 
     def _process_unit_statuses(
         self, heroes, guardians, builders
