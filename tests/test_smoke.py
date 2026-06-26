@@ -9,7 +9,9 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from worldbuildingengine.constants import Resource
+from worldbuildingengine.constants import (
+    Resource, EXPEDITION_COST_RESOURCES,
+)
 from worldbuildingengine.generation import generate_dungeon_world
 from worldbuildingengine.entities import (
     DungeonWorld, DungeonLevel, WorldZone, Expedition,
@@ -22,6 +24,13 @@ from worldbuildingengine.display import (
     display_level_summary, display_world_overview,
     display_random_level, display_specific_level,
 )
+
+
+def seed_expedition_costs(w: DungeonWorld) -> None:
+    """Give a test world enough supplies and stockpile to send expeditions."""
+    w.expedition_supplies = 200
+    for r in EXPEDITION_COST_RESOURCES:
+        w.stockpile[r] = 200
 
 
 class TestWorldGeneration(unittest.TestCase):
@@ -211,6 +220,7 @@ class TestExpeditionFlow(unittest.TestCase):
 
     def test_full_expedition_flow(self):
         w = generate_dungeon_world()
+        seed_expedition_costs(w)
         hero = w.create_hero("Tester", "Prospector")
 
         # Send to first discovered zone
@@ -234,6 +244,7 @@ class TestExpeditionFlow(unittest.TestCase):
 
     def test_hero_death_on_expedition(self):
         w = generate_dungeon_world()
+        seed_expedition_costs(w)
         hero = w.create_hero("Doomed", "Warrior")
         hero.health = 1.0  # One hit from death
 
@@ -251,6 +262,7 @@ class TestExpeditionFlow(unittest.TestCase):
 
     def test_event_progression_triggers_creature(self):
         w = generate_dungeon_world()
+        seed_expedition_costs(w)
         hero = w.create_hero("EventHero", "Warrior")
 
         self.assertEqual(len(w.event_zone_ids), 3)
@@ -269,6 +281,7 @@ class TestExpeditionFlow(unittest.TestCase):
 
     def test_event_creature_blocks_loot(self):
         w = generate_dungeon_world()
+        seed_expedition_costs(w)
         hero = w.create_hero("LootHero", "Warrior")
         zone_id = w.event_zone_ids[0]
         w.event_progress = 1.0
@@ -283,6 +296,8 @@ class TestExpeditionFlow(unittest.TestCase):
 
     def test_event_creature_defeat_rewards(self):
         w = generate_dungeon_world()
+        seed_expedition_costs(w)
+        import math
         hero = w.create_hero("DefeatHero", "Warrior")
         zone_id = w.event_zone_ids[0]
         original_resources = dict(w.zones[zone_id].resource_nodes)
@@ -297,9 +312,12 @@ class TestExpeditionFlow(unittest.TestCase):
 
         self.assertGreater(len(exp.loot), 0)
         for resource, qty in exp.loot.items():
+            max_turns = 5
+            t = 1 / max_turns
+            log_mult = math.log(1 + t * 9) / math.log(10)
             expected_normal = min(
                 original_resources[resource],
-                int(original_resources[resource] * 0.3) + 1
+                int(original_resources[resource] * 0.3 * log_mult) + 1
             )
             self.assertGreaterEqual(qty, int(expected_normal * 5.0))
             self.assertLessEqual(qty, int(expected_normal * 7.0) + 1)

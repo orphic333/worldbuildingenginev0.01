@@ -223,6 +223,11 @@ def process_user_command(
                 f"{world_data.stockpile[resource]}"
             )
 
+        print(
+            f"\n  Expedition Supplies: "
+            f"{world_data.expedition_supplies}"
+        )
+
         return True
 
     elif cleaned_command.startswith("send "):

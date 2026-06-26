@@ -1,7 +1,7 @@
-from .constants import Resource
+from .constants import Resource, INITIAL_SUPPLIES
 from typing import Any
 # The active version of the world save schema expected by the game codebase.
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 3
 
 def migrate_v1_to_v2(data:dict[str,Any])->dict[str,Any]:
     """
@@ -44,9 +44,17 @@ def migrate_v1_to_v2(data:dict[str,Any])->dict[str,Any]:
     }
 
 
+def migrate_v2_to_v3(data: dict[str, Any]) -> dict[str, Any]:
+    """Seed expedition_supplies for v2 saves that lack the field."""
+    print("  [Migration] Seeding expedition supplies: v2 to v3")
+    data.setdefault("expedition_supplies", 30)
+    data["schema_version"] = 3
+    return data
+
 # Dictionary mapping source version to the corresponding migration function
 MIGRATION_PIPELINE = {
     1: migrate_v1_to_v2,
+    2: migrate_v2_to_v3,
 }
 
 def migrate_data(data:dict)->dict:

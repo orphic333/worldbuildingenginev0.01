@@ -5,7 +5,7 @@ import random
 from .constants import (
     ADJECTIVES, MATERIALS, LOCATIONS,
     TERRAIN_TYPES, ZONE_MODIFIERS, MAX_LEVEL,
-    Resource,
+    Resource, INITIAL_SUPPLIES,
 )
 from .entities import DungeonLevel, WorldZone, DungeonWorld
 
@@ -134,4 +134,5 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
         zones=zones,
         known_zones=known_zones,
         event_zone_ids=initial_event_zone_ids,
+        expedition_supplies=INITIAL_SUPPLIES,
     )

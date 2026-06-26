@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import math
 import random
 
-from .constants import Resource
+from .constants import (
+    Resource, SUPPLY_COST_PER_TURN, MAX_EXPEDITION_TURNS_PER_TIER,
+    EXPEDITION_COST_RESOURCES,
+)
 
 
 # =========================
@@ -329,26 +333,29 @@ class Expedition:
             self._resolve()
 
     def _apply_zone_pressure(self) -> None:
-        """Apply environmental damage from the zone."""
+        """Apply escalating jittered damage from the zone."""
+
+        escalation = 1 + math.log(1 + self.turns_elapsed)
+        jitter = lambda: random.uniform(0.8, 1.2)
 
         self.hero.consume_stamina(
-            self.target_zone.danger_rating * 0.4
+            self.target_zone.danger_rating * 0.4 * escalation * jitter()
         )
 
         self.hero.lose_sanity(
-            self.target_zone.tier * 2.0
+            self.target_zone.tier * 2.0 * escalation * jitter()
         )
 
         self.hero.take_damage(
-            self.target_zone.danger_rating * 0.2
+            self.target_zone.danger_rating * 0.2 * escalation * jitter()
         )
 
         if self.target_zone.event_creature_active:
             self.hero.lose_sanity(
-                self.target_zone.tier * 1.5
+                self.target_zone.tier * 1.5 * escalation * jitter()
             )
             self.hero.take_damage(
-                self.target_zone.event_creature_attack * 0.25
+                self.target_zone.event_creature_attack * 0.25 * escalation * jitter()
             )
 
         if not self.hero.is_alive:
@@ -448,9 +455,15 @@ class Expedition:
 
                 continue
 
+            max_turns = MAX_EXPEDITION_TURNS_PER_TIER.get(
+                self.target_zone.tier, 10
+            )
+            t = self.duration_turns / max_turns
+            log_mult = math.log(1 + t * 9) / math.log(10)
+
             harvest = min(
                 node_value,
-                int(node_value * 0.3) + 1
+                int(node_value * 0.3 * log_mult) + 1
             )
 
             if (
@@ -652,7 +665,8 @@ class DungeonWorld:
                  event_zone_ids: list | None = None,
                  event_progress: float = 0.0,
                  event_triggered: bool = False,
-                 event_creature_zone_id: int | None = None) -> None:
+                 event_creature_zone_id: int | None = None,
+                 expedition_supplies: int = 50) -> None:
         self.name = name   #of the dungeon world taken from the load.
         self.levels = levels if levels is not None else {}
         self.turn = turn
@@ -676,6 +690,7 @@ class DungeonWorld:
         self.event_progress = event_progress
         self.event_triggered = event_triggered
         self.event_creature_zone_id = event_creature_zone_id
+        self.expedition_supplies = expedition_supplies
 
     def get_next_unit_id(self) -> int:
         uid = self.next_unit_id
@@ -725,6 +740,43 @@ class DungeonWorld:
         target_zone = self.find_zone(zone_id)
         if target_zone is None:
             raise ValueError(f"No zone with ID {zone_id}.")
+
+        # Duration cap check
+        max_turns = MAX_EXPEDITION_TURNS_PER_TIER.get(target_zone.tier, 10)
+        if duration > max_turns:
+            raise ValueError(
+                f"Max duration for tier {target_zone.tier} zones "
+                f"is {max_turns} turns."
+            )
+
+        # Expedition supply pool check
+        supply_cost = duration * SUPPLY_COST_PER_TURN
+        if self.expedition_supplies < supply_cost:
+            raise ValueError(
+                f"Not enough supplies. Need {supply_cost}, "
+                f"have {self.expedition_supplies}."
+            )
+
+        # Stockpile resource cost check
+        shortfalls: list[str] = []
+        for r in EXPEDITION_COST_RESOURCES:
+            cost = duration * target_zone.tier
+            if self.stockpile.get(r, 0) < cost:
+                shortfalls.append(
+                    f"{r.value} ({self.stockpile.get(r, 0)}/{cost})"
+                )
+        if shortfalls:
+            raise ValueError(
+                f"Missing resources: {', '.join(shortfalls)}"
+            )
+
+        # Deduct costs
+        self.expedition_supplies -= supply_cost
+        print(f"    [COST] Supplies: -{supply_cost} (remaining: {self.expedition_supplies})")
+        for r in EXPEDITION_COST_RESOURCES:
+            cost = duration * target_zone.tier
+            self.stockpile[r] -= cost
+            print(f"    [COST] {r.value}: -{cost}")
 
         hero.current_zone = zone_id
         if not self.event_triggered and zone_id in self.event_zone_ids:
@@ -824,6 +876,7 @@ class DungeonWorld:
             "event_progress": self.event_progress,
             "event_triggered": self.event_triggered,
             "event_creature_zone_id": self.event_creature_zone_id,
+            "expedition_supplies": self.expedition_supplies,
             "stockpile": {
                 r.value: qty
                 for r, qty in self.stockpile.items()
@@ -865,6 +918,7 @@ class DungeonWorld:
                     event_progress=data.get("event_progress", 0.0),
                     event_triggered=data.get("event_triggered", False),
                     event_creature_zone_id=data.get("event_creature_zone_id"),
+                    expedition_supplies=data.get("expedition_supplies", 0),
                     )
 
         # Reconstruct dynamic unit state and unique ID counter

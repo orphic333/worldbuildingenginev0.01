@@ -98,6 +98,11 @@ SPECIALIZATION_DESC = {
 
 }
 
+INITIAL_SUPPLIES = 50
+SUPPLY_COST_PER_TURN = 3
+MAX_EXPEDITION_TURNS_PER_TIER: dict[int, int] = {1: 5, 2: 10, 3: 15}
+EXPEDITION_COST_RESOURCES = [Resource.WOOD, Resource.FIBRE, Resource.MEAT, Resource.WATER]
+
 HERO_COSTS = {
     "Prospector": {Resource.AETHERITE: 10, Resource.BLOOD: 5},
     "Researcher": {Resource.AETHERITE: 15, Resource.KNOWLEDGE: 10},

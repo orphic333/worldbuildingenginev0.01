@@ -80,7 +80,10 @@ DungeonWorld
 
 - `SAVE_FOLDER = "saves"`
 - `MAX_LEVEL = 3`
-- `CURRENT_SCHEMA_VERSION = 2`
+- `CURRENT_SCHEMA_VERSION = 3`
+- `INITIAL_SUPPLIES = 50`, `SUPPLY_COST_PER_TURN = 3`
+- `MAX_EXPEDITION_TURNS_PER_TIER = {1: 5, 2: 10, 3: 15}`
+- Expedition costs consume `WOOD`, `FIBRE`, `MEAT`, `WATER` from stockpile + expedition_supplies pool
 
 ### Files in Project Root
 
@@ -104,17 +107,16 @@ out.gv / out.png   — architecture diagram artifacts
 - **Save/load is stable.** Transactional save writes and v1→v2 migration support are present.
 - **REPL commands are implemented.** `oracle.py` supports hero dispatch, zone listing, and save selection.
 - **Domain test coverage exists.** `tests/test_smoke.py` covers generation, serialization, save/load, expedition flow, and the new event behavior.
+- **Expedition cost system implemented.** Sending a hero on expedition now costs `expedition_supplies` + stockpile resources (`WOOD`, `FIBRE`, `MEAT`, `WATER`). Zone pressure escalates exponentially per turn with jittered damage. Harvest scales logarithmically with duration.
 
 ### 2.2 Remaining Issues
 
-- `_process_environmental_events()` in `entities.py` is still a stub and only prints a placeholder message.
 - `WorldZone` event handling is currently a one-shot encounter; a broader event system is not yet extracted into its own module.
 - Resource distribution across zones and levels is still ad hoc and marked by TODO comments in `generation.py`.
 - There is no `LICENSE` file in the repository.
 - There is no CI workflow configured.
 - Tests are still concentrated in a single smoke test module; coverage should be expanded to isolated unit tests.
 - `DungeonWorld` and `entities.py` are still monolithic; future refactoring should split domain concerns for maintainability.
-- Save schema migration supports only legacy v1; no upgrade path beyond v2 is implemented.
 
 ### 2.3 Code Quality
 
@@ -140,7 +142,6 @@ Current tests validate major world generation and event flow paths but do not co
 | Item | File | Severity |
 |---|---|---|
 | Event system not extracted | `entities.py` | Medium |
-| Environmental event phase stub | `entities.py` | Medium |
 | Resource distribution TODOs | `generation.py` | Low/Medium |
 | No CI workflow | repository root | Medium |
 | No LICENSE | repository root | Medium |
@@ -173,7 +174,7 @@ Current tests validate major world generation and event flow paths but do not co
 
 ### Next Weeks
 
-1. **Implement tick-phase game logic.** Replace `_process_environmental_events()` and `_process_unit_statuses()` with real hazards, recovery, and status updates.
+1. ~~**Implement tick-phase game logic.** Replace `_process_environmental_events()` and `_process_unit_statuses()` with real hazards, recovery, and status updates.~~ ✅ Done (env events dispatches creature encounters; unit status applies builder decay and per-tick effects)
 2. **Expand test coverage.** Add focused tests for generation rules, serialization round-trips, save migration, and expedition edge cases.
 3. **Normalize naming and type use.** Ensure naming conventions are consistent across levels, guardians, and expedition state, and widen type hint coverage in the domain layer.
 4. **Strengthen save/load validation.** Add tests and safeguards for corrupted save data and invalid migration inputs.
