@@ -10,7 +10,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from worldbuildingengine.constants import (
-    Resource, EXPEDITION_COST_RESOURCES,
+    Resource, EXPEDITION_COST_RESOURCES, GUARDIAN_BLOOD_COST,
 )
 from worldbuildingengine.generation import generate_dungeon_world
 from worldbuildingengine.entities import (
@@ -334,6 +334,67 @@ class TestStockpileInitialization(unittest.TestCase):
     def test_stockpile_all_resources_present(self):
         w = generate_dungeon_world()
         self.assertEqual(len(w.stockpile), len(list(Resource)))
+
+
+class TestGuardianMaintenance(unittest.TestCase):
+    """Guardian per-tick maintenance costs."""
+
+    def test_guardian_maintenance_deducts_blood_and_stone(self):
+        w = generate_dungeon_world()
+        g = Guardian(guardian_id=1, name="Sentry", level=1)
+        g.assigned_level_id = 1
+        w.guardians.append(g)
+        w.stockpile[Resource.BLOOD] = 10
+        w.stockpile[Resource.STONE] = 10
+        w.advance_turn()
+        level = w.levels[1]
+        expected_stone = int(level.aether_density ** (1/3))
+        self.assertEqual(w.stockpile[Resource.BLOOD], 10 - GUARDIAN_BLOOD_COST)
+        self.assertEqual(w.stockpile[Resource.STONE], 10 - expected_stone)
+
+    def test_dead_guardian_no_maintenance(self):
+        w = generate_dungeon_world()
+        g = Guardian(guardian_id=2, name="Corpse", level=1)
+        g.assigned_level_id = 1
+        g.is_alive = False
+        w.guardians.append(g)
+        w.stockpile[Resource.BLOOD] = 10
+        w.stockpile[Resource.STONE] = 10
+        w.advance_turn()
+        self.assertEqual(w.stockpile[Resource.BLOOD], 10)
+        self.assertEqual(w.stockpile[Resource.STONE], 10)
+
+    def test_unassigned_guardian_no_maintenance(self):
+        w = generate_dungeon_world()
+        g = Guardian(guardian_id=3, name="Loner", level=1)
+        w.guardians.append(g)
+        w.stockpile[Resource.BLOOD] = 10
+        w.stockpile[Resource.STONE] = 10
+        w.advance_turn()
+        self.assertEqual(w.stockpile[Resource.BLOOD], 10)
+        self.assertEqual(w.stockpile[Resource.STONE], 10)
+
+    def test_guardian_maintenance_round_trip_keeps_diet(self):
+        g = Guardian(guardian_id=4, name="StoneGuard", level=2,
+                     maintenance_resource=Resource.STONE)
+        data = g.to_dict()
+        restored = Guardian.from_dict(data)
+        self.assertEqual(restored.maintenance_resource, Resource.STONE)
+
+    def test_multiple_guardians_multiple_levels(self):
+        w = generate_dungeon_world()
+        g1 = Guardian(guardian_id=5, name="GuardA", level=1)
+        g1.assigned_level_id = 1
+        g2 = Guardian(guardian_id=6, name="GuardB", level=1)
+        g2.assigned_level_id = 2
+        w.guardians.extend([g1, g2])
+        w.stockpile[Resource.BLOOD] = 20
+        w.stockpile[Resource.STONE] = 20
+        lvl1_cost = int(w.levels[1].aether_density ** (1/3))
+        lvl2_cost = int(w.levels[2].aether_density ** (1/3))
+        w.advance_turn()
+        self.assertEqual(w.stockpile[Resource.BLOOD], 20 - 2 * GUARDIAN_BLOOD_COST)
+        self.assertEqual(w.stockpile[Resource.STONE], 20 - lvl1_cost - lvl2_cost)
 
 
 if __name__ == "__main__":

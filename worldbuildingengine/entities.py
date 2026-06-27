@@ -5,7 +5,7 @@ import random
 
 from .constants import (
     Resource, SUPPLY_COST_PER_TURN, MAX_EXPEDITION_TURNS_PER_TIER,
-    EXPEDITION_COST_RESOURCES,
+    EXPEDITION_COST_RESOURCES, GUARDIAN_BLOOD_COST,
 )
 
 
@@ -159,12 +159,14 @@ class Guardian(BaseUnit):
         level: int = 1,
         recruitment_type: str = "Standard",
         maintenance_costs: dict | None = None,
+        maintenance_resource: Resource = Resource.STONE,
     ) -> None:
         super().__init__(guardian_id, name)
         self.assigned_level_id = None
         self.level = max(1, level)
         self.recruitment_type = recruitment_type
         self.maintenance_costs = maintenance_costs if maintenance_costs is not None else {}
+        self.maintenance_resource = maintenance_resource
 
     @property
     def power_level(self) -> float:
@@ -185,8 +187,16 @@ class Guardian(BaseUnit):
                     for r, qty in self.maintenance_costs.items()
                 )
             )
+            print(
+                f"  Diet: -{GUARDIAN_BLOOD_COST} blood/tick, "
+                f"-{self.maintenance_resource.value}/tick (scales with aether density)"
+            )
         else:
             print("  Maintenance: None")
+            print(
+                f"  Diet: -{GUARDIAN_BLOOD_COST} blood/tick, "
+                f"-{self.maintenance_resource.value}/tick (scales with aether density)"
+            )
         print(f"  Assigned Level: {self.assigned_level_id}")
         print(f"  Health: {self.health:.1f}")
         print(f"  Status: {'Alive' if self.is_alive else 'Dead'}")
@@ -206,6 +216,7 @@ class Guardian(BaseUnit):
                 (r.value if isinstance(r, Resource) else r): qty
                 for r, qty in self.maintenance_costs.items()
             },
+            "maintenance_resource": self.maintenance_resource.value,
         }
 
     @classmethod
@@ -232,6 +243,7 @@ class Guardian(BaseUnit):
         g.health = data["health"]
         g.is_alive = data["is_alive"]
         g.assigned_level_id = data.get("assigned_level_id")
+        g.maintenance_resource = Resource(data.get("maintenance_resource", "stone"))
         return g
 
 
@@ -1043,6 +1055,20 @@ class DungeonWorld:
 
         for unit in guardians:
             unit.apply_tick_effects()
+
+        # Guardian per-tick maintenance costs
+        for unit in guardians:
+            if not unit.is_alive or unit.assigned_level_id is None:
+                continue
+            level = self.levels.get(unit.assigned_level_id)
+            if level is None:
+                continue
+            cost = int(level.aether_density ** (1/3))
+            rescale = unit.maintenance_resource
+            self.stockpile[Resource.BLOOD] -= GUARDIAN_BLOOD_COST
+            self.stockpile[rescale] -= cost
+            print(f"  [MAINTENANCE] {unit.name} on {level.name}: "
+                  f"-{GUARDIAN_BLOOD_COST} blood, -{cost} {rescale.value}")
 
         for unit in builders:
             unit.apply_tick_effects()

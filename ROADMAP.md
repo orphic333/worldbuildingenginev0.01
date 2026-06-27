@@ -1,6 +1,6 @@
 # ROADMAP.md — Worldbuilding Engine v0.01
 
-> Analysis date: 2026-06-24
+> Analysis date: 2026-06-27
 > Based on current repository state and implemented code changes.
 
 ---
@@ -84,6 +84,7 @@ DungeonWorld
 - `INITIAL_SUPPLIES = 50`, `SUPPLY_COST_PER_TURN = 3`
 - `MAX_EXPEDITION_TURNS_PER_TIER = {1: 5, 2: 10, 3: 15}`
 - Expedition costs consume `WOOD`, `FIBRE`, `MEAT`, `WATER` from stockpile + expedition_supplies pool
+- `GUARDIAN_BLOOD_COST = 1` flat per tick; second resource scales as `int(cuberoot(aether_density))`, defaults to `STONE`
 
 ### Files in Project Root
 
@@ -108,6 +109,7 @@ out.gv / out.png   — architecture diagram artifacts
 - **REPL commands are implemented.** `oracle.py` supports hero dispatch, zone listing, and save selection.
 - **Domain test coverage exists.** `tests/test_smoke.py` covers generation, serialization, save/load, expedition flow, and the new event behavior.
 - **Expedition cost system implemented.** Sending a hero on expedition now costs `expedition_supplies` + stockpile resources (`WOOD`, `FIBRE`, `MEAT`, `WATER`). Zone pressure escalates exponentially per turn with jittered damage. Harvest scales logarithmically with duration.
+- **Guardian per-tick maintenance implemented.** Each guardian assigned to a level pays 1 blood/tick (flat) plus a level-scaled resource (default `STONE`, cost = `int(cuberoot(aether_density))`) each tick. Dead or unassigned guardians are skipped.
 
 ### 2.2 Remaining Issues
 
@@ -135,7 +137,7 @@ Current tests validate major world generation and event flow paths but do not co
 - edge cases around save migration failures
 - multiple expedition interactions
 - resurrection/death state transitions
-- builder and guardian lifecycle behavior
+- builder lifecycle behavior
 
 ### 2.5 Technical Debt
 
