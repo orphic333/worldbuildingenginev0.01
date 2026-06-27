@@ -475,7 +475,7 @@ class Expedition:
 
             harvest = min(
                 node_value,
-                int(node_value * 0.3 * log_mult) + 1
+                int(node_value * 0.5 * log_mult) + 1
             )
 
             if (

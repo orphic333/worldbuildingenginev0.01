@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .constants import MAX_LEVEL, Resource
+from .constants import MAX_LEVEL, Resource, CONSUMABLE_RESOURCES
 from .display import (
     display_random_level, display_specific_level,
     display_world_zones,
@@ -216,7 +216,7 @@ def process_user_command(
 
         print("\n--- STOCKPILE ---")
 
-        for resource in Resource:
+        for resource in CONSUMABLE_RESOURCES:
 
             print(
                 f"  {resource.value}: "

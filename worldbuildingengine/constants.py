@@ -69,15 +69,36 @@ class Resource(enum.Enum):
     WATER = "water"
     WOOD = "wood"
 
-#create resource descriptions. For example, wood could be a resource that is used for crafting and construction, and it could be gathered from certain zones or obtained from certain creatures. It could have attributes such as flammability, durability, and flexibility.
-RESOURCE_DESCRIPTIONS = {
-    Resource.WOOD: "Wood - a versatile material used for crafting and construction, obtained from trees in various zones.",
-    Resource.STONE: "Stone - a durable material used for building and infrastructure, found in quarries and caves.",
-    Resource.IRON: "Iron - a strong metal used for crafting tools and weapons, mined from underground deposits.",
-    # Add more resource descriptions as needed
+
+class ResourceCategory(enum.Enum):
+    CONSUMABLE = "consumable"
+    STATIC = "static"
+
+
+RESOURCE_CATEGORIES: dict[Resource, ResourceCategory] = {
+    Resource.KNOWLEDGE: ResourceCategory.STATIC,
 }
 
-#create categories for resources. For instance renewable resources, where an attribute could exist called is_renewable.
+CONSUMABLE_RESOURCES: list[Resource] = [
+    r for r in Resource
+    if RESOURCE_CATEGORIES.get(r, ResourceCategory.CONSUMABLE)
+    == ResourceCategory.CONSUMABLE
+]
+
+INITIAL_STOCKPILE: dict[Resource, int] = {
+    Resource.STONE: 80,
+    Resource.WATER: 80,
+    Resource.WOOD: 80,
+    Resource.SOFT_ROCK: 80,
+    Resource.HARD_ROCK: 80,
+    Resource.IRON: 40,
+    Resource.COPPER: 40,
+    Resource.MEAT: 40,
+    Resource.BLOOD: 40,
+    Resource.AETHER_CRYSTALS: 40,
+    Resource.RARE_METALS: 15,
+    Resource.AETHERITE: 5,
+}
 
 SPECIALIZATIONS = [
     "Prospector",

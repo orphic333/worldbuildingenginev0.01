@@ -5,7 +5,7 @@ import random
 from .constants import (
     ADJECTIVES, MATERIALS, LOCATIONS,
     TERRAIN_TYPES, ZONE_MODIFIERS, MAX_LEVEL,
-    Resource, INITIAL_SUPPLIES,
+    Resource, INITIAL_SUPPLIES, INITIAL_STOCKPILE,
 )
 from .entities import DungeonLevel, WorldZone, DungeonWorld
 
@@ -129,10 +129,16 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
             known_zones.append(zone.zone_id)
             discovered += 1
 
-    return DungeonWorld(
+    world = DungeonWorld(
         levels=levels,
         zones=zones,
         known_zones=known_zones,
         event_zone_ids=initial_event_zone_ids,
         expedition_supplies=INITIAL_SUPPLIES,
     )
+
+    # Seed initial stockpile
+    for r, qty in INITIAL_STOCKPILE.items():
+        world.stockpile[r] = qty
+
+    return world

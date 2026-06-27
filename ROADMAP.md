@@ -85,6 +85,8 @@ DungeonWorld
 - `MAX_EXPEDITION_TURNS_PER_TIER = {1: 5, 2: 10, 3: 15}`
 - Expedition costs consume `WOOD`, `FIBRE`, `MEAT`, `WATER` from stockpile + expedition_supplies pool
 - `GUARDIAN_BLOOD_COST = 1` flat per tick; second resource scales as `int(cuberoot(aether_density))`, defaults to `STONE`
+- `INITIAL_STOCKPILE` tiers: Common (80): stone, water, wood, soft_rock, hard_rock; Uncommon (40): iron, copper, meat, blood, aether_crystals; Rare (15): rare_metals; Trace (5): aetherite
+- `CONSUMABLE_RESOURCES` = all resources except KNOWLEDGE (categorised as STATIC)
 
 ### Files in Project Root
 
@@ -110,6 +112,7 @@ out.gv / out.png   — architecture diagram artifacts
 - **Domain test coverage exists.** `tests/test_smoke.py` covers generation, serialization, save/load, expedition flow, and the new event behavior.
 - **Expedition cost system implemented.** Sending a hero on expedition now costs `expedition_supplies` + stockpile resources (`WOOD`, `FIBRE`, `MEAT`, `WATER`). Zone pressure escalates exponentially per turn with jittered damage. Harvest scales logarithmically with duration.
 - **Guardian per-tick maintenance implemented.** Each guardian assigned to a level pays 1 blood/tick (flat) plus a level-scaled resource (default `STONE`, cost = `int(cuberoot(aether_density))`) each tick. Dead or unassigned guardians are skipped.
+- **Initial stockpile seeded on new worlds.** New games start with tiered resources (80/40/15/5). Knowledge categorised as STATIC (not shown in stockpile display). Harvest multiplier bumped to 0.5 for ~2–4 wood per expedition turn.
 
 ### 2.2 Remaining Issues
 
@@ -173,6 +176,8 @@ Current tests validate major world generation and event flow paths but do not co
 3. ~~**Refresh documentation.** Update `README.md` and `AGENTS.md` to match the current command set, world loading flow, and domain API.~~ ✅ Done
 4. ~~**Remove or implement `display_world_zones()`.** Either provide zone detail output or remove the placeholder entirely.~~ ✅ Done
 5. **Clean up stale comments/TODOs.** Focus first on resource generation comments and domain API notes in `generation.py` and `entities.py`.
+6. **Write full resource descriptions.** Expand `RESOURCE_DESCRIPTIONS` in `constants.py` with origin and use notes for all resources. (Deferred — player to write)
+7. **Balance hero, builder, and guardian costs.** Review and adjust `HERO_COSTS` and add missing cost tables for builders and guardians across all resources.
 
 ### Next Weeks
 

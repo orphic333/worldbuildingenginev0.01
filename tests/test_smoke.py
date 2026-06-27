@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from worldbuildingengine.constants import (
     Resource, EXPEDITION_COST_RESOURCES, GUARDIAN_BLOOD_COST,
+    INITIAL_STOCKPILE, CONSUMABLE_RESOURCES,
 )
 from worldbuildingengine.generation import generate_dungeon_world
 from worldbuildingengine.entities import (
@@ -317,23 +318,40 @@ class TestExpeditionFlow(unittest.TestCase):
             log_mult = math.log(1 + t * 9) / math.log(10)
             expected_normal = min(
                 original_resources[resource],
-                int(original_resources[resource] * 0.3 * log_mult) + 1
+                int(original_resources[resource] * 0.5 * log_mult) + 1
             )
             self.assertGreaterEqual(qty, int(expected_normal * 5.0))
             self.assertLessEqual(qty, int(expected_normal * 7.0) + 1)
 
 
 class TestStockpileInitialization(unittest.TestCase):
-    """Verify stockpile starts empty for every resource."""
-
-    def test_fresh_world_stockpile(self):
-        w = generate_dungeon_world()
-        for resource in Resource:
-            self.assertEqual(w.stockpile[resource], 0)
+    """Verify stockpile is seeded with correct initial values."""
 
     def test_stockpile_all_resources_present(self):
         w = generate_dungeon_world()
         self.assertEqual(len(w.stockpile), len(list(Resource)))
+
+    def test_initial_stockpile_values(self):
+        w = generate_dungeon_world()
+        for r, qty in INITIAL_STOCKPILE.items():
+            self.assertEqual(
+                w.stockpile[r], qty,
+                f"Expected {qty} of {r.value}, got {w.stockpile[r]}"
+            )
+
+    def test_non_initial_resources_start_at_zero(self):
+        w = generate_dungeon_world()
+        for r in Resource:
+            if r not in INITIAL_STOCKPILE:
+                self.assertEqual(
+                    w.stockpile[r], 0,
+                    f"Expected 0 of {r.value}, got {w.stockpile[r]}"
+                )
+
+    def test_consumable_resources_excludes_knowledge(self):
+        self.assertNotIn(Resource.KNOWLEDGE, CONSUMABLE_RESOURCES)
+        self.assertIn(Resource.STONE, CONSUMABLE_RESOURCES)
+        self.assertIn(Resource.BLOOD, CONSUMABLE_RESOURCES)
 
 
 class TestGuardianMaintenance(unittest.TestCase):
