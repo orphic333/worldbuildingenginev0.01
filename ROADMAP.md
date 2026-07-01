@@ -113,6 +113,7 @@ out.gv / out.png   — architecture diagram artifacts
 - **Expedition cost system implemented.** Sending a hero on expedition now costs `expedition_supplies` + stockpile resources (`WOOD`, `FIBRE`, `MEAT`, `WATER`). Zone pressure escalates exponentially per turn with jittered damage. Harvest scales logarithmically with duration.
 - **Guardian per-tick maintenance implemented.** Each guardian assigned to a level pays 1 blood/tick (flat) plus a level-scaled resource (default `STONE`, cost = `int(cuberoot(aether_density))`) each tick. Dead or unassigned guardians are skipped.
 - **Initial stockpile seeded on new worlds.** New games start with tiered resources (80/40/15/5). Knowledge categorised as STATIC (not shown in stockpile display). Harvest multiplier bumped to 0.5 for ~2–4 wood per expedition turn.
+- **Aether crystal growth system implemented.** Each dungeon level has a set of aether crystal nodes (2/3/4 for levels 1/2/3) that grow at `level` crystals/tick up to a per-node cap (5/7/10). `harvest <level_id>` extracts all node contents into stockpile. `nodes <level_id>` displays node details. Nodes shown in level summary and specific level view.
 
 ### 2.2 Remaining Issues
 

@@ -69,7 +69,34 @@ class Resource(enum.Enum):
     WATER = "water"
     WOOD = "wood"
 
-
+RESOURCE_DESCRIPTIONS={
+    Resource.AETHER_CRYSTALS: "Aether crystals : Found exclusively in the dungeon. Aether crystals grow from aether flow\n"
+                              "in the dungeon. It can be obtained on every level. It is a consumable resource. Resource nodes\n"
+                              "are slowly replenished as ticks pass. It is primarily processed into purer forms like\n"
+                              "aetherite and liquid aether for permanent upgrades on unit stats, as well as the creation of units.",
+    Resource.WOOD: "Wood : Found exclusively outside the dungeon, within the world zones. Used in building and construction. Also\n"
+                   "as an integral resource for expeditions and research tools.",
+    Resource.BLOOD: "Blood : Obtained from living creatures up above and fresh carcasses in the dungeon depths. Used for\n"
+                    "feeding guardians and creating units.",
+    Resource.MEAT: "Meat : Obtained from living creatures up above and fresh carcasses in the dungeon depths. Used for\n"
+                   "feeding guardians, creating units and a useful resource for expeditions.",
+    Resource.KNOWLEDGE: "Knowledge : Obtained from research and expeditions. Used for creating new recipes and unlocking\n"
+                        "new technologies. It is a static resource that is not consumed, but rather accumulated. It is unlocked in pieces,\n"
+                        "as in, you can only unlock certain technologies with certain pieces of knowledge.",
+    Resource.STONE: "Stone : Can be found in the dungeon and outside the dungeon. Integral for building and construction, as well as feeding some\n"
+                    " units. It is a consumable resource.",
+    Resource.SOFT_ROCK: "Soft Rock : Can be found in the dungeon and outside the dungeon. Integral for building and construction, as well as feeding some\n"
+                        " guardians. It is a consumable resource.",
+    Resource.HARD_ROCK: "Hard Rock : Can be found in the dungeon and outside the dungeon. Integral for building and construction, as well as feeding some\n"
+                        " guardians. It is a consumable resource.",
+    Resource.IRON: "Iron : Can be found in the dungeon and outside the dungeon. Integral for building and construction, as well as feeding some\n"
+                    " guardians. It is a consumable resource. It is an integral resource in research tools and better expedition equipment.",
+    Resource.COPPER: "Copper : Can be found in the dungeon and outside the dungeon. Integral for research tools.\n"
+                    " It is a consumable resource.",
+    Resource.AETHERITE: "Aetherite : Found exclusively in the dungeon. Aetherite is a purer form of aether crystals, and is used for permanent upgrades on unit stats\n"
+                    " as well as the creation of units. It is a consumable resource.",
+    #will add more resource descriptions later
+}
 class ResourceCategory(enum.Enum):
     CONSUMABLE = "consumable"
     STATIC = "static"

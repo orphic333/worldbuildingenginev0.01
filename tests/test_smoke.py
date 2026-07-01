@@ -415,5 +415,85 @@ class TestGuardianMaintenance(unittest.TestCase):
         self.assertEqual(w.stockpile[Resource.STONE], 20 - lvl1_cost - lvl2_cost)
 
 
+class TestAetherCrystalNodes(unittest.TestCase):
+    """Aether crystal node growth and harvest mechanics."""
+
+    def test_aether_nodes_exist_per_level(self):
+        w = generate_dungeon_world()
+        self.assertEqual(len(w.levels[1].aether_crystal_nodes), 2)
+        self.assertEqual(len(w.levels[2].aether_crystal_nodes), 3)
+        self.assertEqual(len(w.levels[3].aether_crystal_nodes), 4)
+
+    def test_aether_nodes_start_full(self):
+        w = generate_dungeon_world()
+        for level in w.levels.values():
+            for node in level.aether_crystal_nodes:
+                self.assertEqual(node["current"], node["max_capacity"])
+
+    def test_aether_nodes_grow_on_tick(self):
+        w = generate_dungeon_world()
+        for level in w.levels.values():
+            for node in level.aether_crystal_nodes:
+                node["current"] = 0
+
+        before = {
+            lid: [n["current"] for n in w.levels[lid].aether_crystal_nodes]
+            for lid in w.levels
+        }
+        w.advance_turn()
+        for lid in w.levels:
+            for i, node in enumerate(w.levels[lid].aether_crystal_nodes):
+                self.assertGreaterEqual(node["current"], before[lid][i])
+                self.assertLessEqual(
+                    node["current"],
+                    before[lid][i] + node["growth_rate"],
+                )
+
+    def test_aether_nodes_stop_at_max_capacity(self):
+        w = generate_dungeon_world()
+        for _ in range(20):
+            w.advance_turn()
+        for level in w.levels.values():
+            for node in level.aether_crystal_nodes:
+                self.assertLessEqual(node["current"], node["max_capacity"])
+
+    def test_harvest_depletes_and_deposits(self):
+        w = generate_dungeon_world()
+        level = w.levels[1]
+        expected = sum(n["current"] for n in level.aether_crystal_nodes)
+        from worldbuildingengine.oracle import process_user_command
+        process_user_command(f"harvest 1", w)
+        self.assertEqual(sum(n["current"] for n in level.aether_crystal_nodes), 0)
+        self.assertGreaterEqual(
+            w.stockpile[Resource.AETHER_CRYSTALS], expected
+        )
+
+    def test_harvest_on_empty_level_prints_message(self):
+        w = generate_dungeon_world()
+        for node in w.levels[1].aether_crystal_nodes:
+            node["current"] = 0
+        from worldbuildingengine.oracle import process_user_command
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            process_user_command("harvest 1", w)
+        self.assertIn("No aether crystals", buf.getvalue())
+
+    def test_aether_node_round_trip(self):
+        w = generate_dungeon_world()
+        level = w.levels[1]
+        data = level.to_dict()
+        restored = DungeonLevel.from_dict(data)
+        self.assertEqual(
+            len(restored.aether_crystal_nodes),
+            len(level.aether_crystal_nodes),
+        )
+        for orig, rest in zip(
+            level.aether_crystal_nodes,
+            restored.aether_crystal_nodes,
+        ):
+            self.assertEqual(orig, rest)
+
+
 if __name__ == "__main__":
     unittest.main()

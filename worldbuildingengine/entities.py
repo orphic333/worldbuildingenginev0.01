@@ -559,14 +559,18 @@ class DungeonLevel:
                  aether_density: float, guardian_power_level: float,
                  resource_nodes: dict | None = None,
                  structural_mods: list | None = None,
-                 active_events: list | None = None) -> None:
+                 active_events: list | None = None,
+                 aether_crystal_nodes: list | None = None) -> None:
         self.level_id = level_id
         self.name = name
         self.aether_density = aether_density
         self.guardian_power_level = guardian_power_level
-        self.resource_nodes = resource_nodes if resource_nodes is not None else {}  #consider changing resource nodes to 'surrounding resource nodes', referring to materials that can be gained in surrounding levels
+        self.resource_nodes = resource_nodes if resource_nodes is not None else {}
         self.structural_mods = structural_mods if structural_mods is not None else []
         self.active_events = active_events if active_events is not None else []
+        self.aether_crystal_nodes = (
+            aether_crystal_nodes if aether_crystal_nodes is not None else []
+        )
 
     def to_dict(self) -> dict:
         """Serialize level to a JSON-safe dict."""
@@ -580,7 +584,8 @@ class DungeonLevel:
                 for r, qty in self.resource_nodes.items()
             },
             "structural_mods": self.structural_mods,
-            "active_events": self.active_events,    #referring to events that are affecting this level directly.
+            "active_events": self.active_events,
+            "aether_crystal_nodes": list(self.aether_crystal_nodes),
         }
 
     @classmethod
@@ -598,6 +603,7 @@ class DungeonLevel:
             },
             structural_mods=data.get("structural_mods", []),
             active_events=data.get("active_events", []),
+            aether_crystal_nodes=data.get("aether_crystal_nodes", []),
         )
 
 
@@ -998,6 +1004,8 @@ class DungeonWorld:
             self.heroes, self.guardians, self.builders
         )
 
+        self._process_dungeon_resources()
+
         print(f"\n--- Turn {self.turn} ---")
 
     def _process_expeditions(self, heroes):
@@ -1072,3 +1080,15 @@ class DungeonWorld:
 
         for unit in builders:
             unit.apply_tick_effects()
+
+    def _process_dungeon_resources(self) -> None:
+        """Regenerate aether crystal nodes across all dungeon levels."""
+        for level in self.levels.values():
+            for node in level.aether_crystal_nodes:
+                if node["current"] >= node["max_capacity"]:
+                    continue
+                gain = min(
+                    node["growth_rate"],
+                    node["max_capacity"] - node["current"],
+                )
+                node["current"] += gain

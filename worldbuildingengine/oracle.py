@@ -3,7 +3,7 @@ from __future__ import annotations
 from .constants import MAX_LEVEL, Resource, CONSUMABLE_RESOURCES
 from .display import (
     display_random_level, display_specific_level,
-    display_world_zones,
+    display_world_zones, display_aether_nodes,
 )
 from .entities import Expedition, DungeonWorld
 from .recruitment import recruit_hero, recruit_builder
@@ -230,6 +230,54 @@ def process_user_command(
 
         return True
 
+    elif cleaned_command.startswith("harvest "):
+
+        parts = cleaned_command.split()
+        if len(parts) != 2:
+            print("Usage: harvest <level_id>")
+            return True
+        try:
+            level_id = int(parts[1])
+        except ValueError:
+            print("Level ID must be a number.")
+            return True
+
+        level = world_data.levels.get(level_id)
+        if level is None:
+            print(f"Level {level_id} not found.")
+            return True
+
+        total = 0
+        for node in level.aether_crystal_nodes:
+            total += node["current"]
+            node["current"] = 0
+
+        if total > 0:
+            world_data.stockpile[Resource.AETHER_CRYSTALS] += total
+            print(
+                f"Harvested {total} aether crystals "
+                f"from level {level_id}."
+            )
+        else:
+            print(f"No aether crystals to harvest on level {level_id}.")
+
+        return True
+
+    elif cleaned_command.startswith("nodes "):
+
+        parts = cleaned_command.split()
+        if len(parts) != 2:
+            print("Usage: nodes <level_id>")
+            return True
+        try:
+            level_id = int(parts[1])
+        except ValueError:
+            print("Level ID must be a number.")
+            return True
+
+        display_aether_nodes(world_data, level_id)
+        return True
+
     elif cleaned_command.startswith("send "):
 
         parts = cleaned_command.split()
@@ -354,6 +402,8 @@ def run_oracle_system(world_data: DungeonWorld) -> None:
         f"'send <hero_id> <zone_id> <duration>', "
         f"'expeditions', "
         f"'stockpile', "
+        f"'harvest <level_id>', "
+        f"'nodes <level_id>', "
         f"'save', "
         f"or 'exit'."
     )

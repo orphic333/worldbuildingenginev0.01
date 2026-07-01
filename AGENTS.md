@@ -60,6 +60,8 @@ pyproject.toml          # Packaging and dev tooling metadata
 | `expeditions` | Show active expedition status |
 | `tick` | Advance one turn and process expeditions |
 | `stockpile` | Show accumulated dungeon stockpile resources |
+| `harvest <level_id>` | Collect aether crystals from a dungeon level's nodes |
+| `nodes <level_id>` | Show detailed aether crystal node status for a level |
 | `save` | Save the current world |
 | `exit` | Save and quit the game |
 
@@ -88,3 +90,4 @@ pyproject.toml          # Packaging and dev tooling metadata
 - **Resource categories:** `ResourceCategory` enum (`CONSUMABLE`/`STATIC`). `KNOWLEDGE` is the only STATIC resource. `CONSUMABLE_RESOURCES` list drives stockpile display filtering.
 - **`_process_unit_statuses()`** handles builder decay (lifespan −1 every 2 ticks), guardian `apply_tick_effects()`, and guardian maintenance cost deduction.
 - **`_process_environmental_events()`** dispatches creature encounters for active expeditions targeting event-occupied zones before expedition resolution.
+- **Aether crystal nodes:** `DungeonLevel.aether_crystal_nodes` is a list of `{"current", "max_capacity", "growth_rate"}` dicts. Number of nodes, max per node, and growth rate all scale with level number. Nodes grow each tick in `_process_dungeon_resources()` (called after unit statuses). `harvest <level_id>` empties nodes into stockpile.

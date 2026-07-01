@@ -28,6 +28,16 @@ def display_save_files(save_files: list[str]) -> None:
         print(f"{index}. {save_name}")
 
 
+def _node_summary(level: DungeonLevel) -> str:
+    """Build a one-line aether crystal node summary."""
+    if not level.aether_crystal_nodes:
+        return ""
+    total_current = sum(n["current"] for n in level.aether_crystal_nodes)
+    total_max = sum(n["max_capacity"] for n in level.aether_crystal_nodes)
+    count = len(level.aether_crystal_nodes)
+    return f"  > Aether Nodes: {count} ({total_current}/{total_max})"
+
+
 def display_level_summary(level_data: DungeonLevel) -> None:
     """
     Display formatted level data.
@@ -47,6 +57,10 @@ def display_level_summary(level_data: DungeonLevel) -> None:
         f"  > Guardian: "
         f"Pwr Lvl {level_data.guardian_power_level}"
     )
+
+    summary = _node_summary(level_data)
+    if summary:
+        print(summary)
 
     print("-" * 30)
 
@@ -116,6 +130,45 @@ def display_specific_level(
         f"Density {level_data.aether_density} | "
         f"Power {level_data.guardian_power_level}"
     )
+
+    if level_data.aether_crystal_nodes:
+        print(f"\n  Aether Crystal Nodes ({len(level_data.aether_crystal_nodes)}):")
+        for idx, node in enumerate(level_data.aether_crystal_nodes, 1):
+            status = "full" if node["current"] >= node["max_capacity"] else "growing"
+            print(
+                f"    Node {idx}: {node['current']}/{node['max_capacity']} "
+                f"({status}, +{node['growth_rate']}/tick)"
+            )
+
+def display_aether_nodes(
+    world_data: DungeonWorld,
+    level_number: int,
+) -> None:
+    """Show detailed aether crystal node status for a specific level."""
+
+    if level_number not in world_data.levels:
+        print(f"Level {level_number} not found.")
+        return
+
+    level = world_data.levels[level_number]
+
+    if not level.aether_crystal_nodes:
+        print(f"No aether crystal nodes on level {level_number}.")
+        return
+
+    print(f"\nLevel {level_number} - Aether Crystal Nodes:")
+    total_current = 0
+    total_max = 0
+    for idx, node in enumerate(level.aether_crystal_nodes, 1):
+        total_current += node["current"]
+        total_max += node["max_capacity"]
+        status = "full" if node["current"] >= node["max_capacity"] else "growing"
+        print(
+            f"  Node {idx}: {node['current']}/{node['max_capacity']} "
+            f"({status}, +{node['growth_rate']}/tick)"
+        )
+    print(f"  Total: {total_current}/{total_max}")
+
 
 def display_world_zones(world_data: DungeonWorld) -> None:
     """Display all known world zones and their details."""

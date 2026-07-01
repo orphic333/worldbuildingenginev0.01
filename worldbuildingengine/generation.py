@@ -37,21 +37,35 @@ def generate_level_name() -> str:
 
 def create_level_data(level_number: int) -> DungeonLevel:
 
+    density = calculate_aether_density(level_number)
+
+    node_specs = {
+        1: {"nodes": 2, "max_per_node": 5},
+        2: {"nodes": 3, "max_per_node": 7},
+        3: {"nodes": 4, "max_per_node": 10},
+    }
+    spec = node_specs.get(level_number, {"nodes": 2, "max_per_node": 5})
+    growth = max(1, level_number)
+
+    aether_crystal_nodes = [
+        {"current": spec["max_per_node"], "max_capacity": spec["max_per_node"],
+         "growth_rate": growth}
+        for _ in range(spec["nodes"])
+    ]
+
     return DungeonLevel(
         level_id=level_number,
         name=generate_level_name(),
-        aether_density=calculate_aether_density(level_number),
+        aether_density=density,
         guardian_power_level=calculate_guardian_power(level_number),
         resource_nodes={
-            Resource.AETHER_CRYSTALS: int(
-                calculate_aether_density(level_number) * 0.5
-            ),
-            Resource.COPPER: random.randint(0, 5),  #fix resource definitions and distributions.
-            Resource.STONE: random.randint(2, 10),   #Resources could be renewable, foundational types like varieties of rocks and ores in area around the level.
+            Resource.COPPER: random.randint(0, 5),
+            Resource.STONE: random.randint(2, 10),
             Resource.HARD_ROCK: random.randint(1, 5),
             Resource.SOFT_ROCK: random.randint(0, 3),
             Resource.IRON: random.randint(3, 8),
         },
+        aether_crystal_nodes=aether_crystal_nodes,
     )
 
 
