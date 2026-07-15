@@ -443,7 +443,7 @@ class TestAetherCrystalNodes(unittest.TestCase):
         w.advance_turn()
         for lid in w.levels:
             for i, node in enumerate(w.levels[lid].aether_crystal_nodes):
-                self.assertGreaterEqual(node["current"], before[lid][i])
+                self.assertGreaterEqual(node["current"], before[lid][i], msg=f"Level {lid} node {i} did not grow.")
                 self.assertLessEqual(
                     node["current"],
                     before[lid][i] + node["growth_rate"],

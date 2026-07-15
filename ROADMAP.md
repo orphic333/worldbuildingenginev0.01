@@ -1,6 +1,6 @@
 # ROADMAP.md — Worldbuilding Engine v0.01
 
-> Analysis date: 2026-06-27
+> Analysis date: 2026-07-12 
 > Based on current repository state and implemented code changes.
 
 ---
@@ -168,41 +168,48 @@ Current tests validate major world generation and event flow paths but do not co
 
 ---
 
-## 3. Roadmap
+## 3. Structured Implementation Phases
 
-### Next Days
+### Phase 1: Terminal Screen Engine & Navigation (2–3 Hours)
+* **Goal:** Transition from a scrolling command-line REPL to a multi-screen terminal dashboard.
+* **Core Actions:**
+  - Create a custom terminal frame rendering engine (`ScreenManager` in `display.py`) using raw ANSI escape codes.
+  - Implement Windows-compatible Virtual Terminal Processing setup via `ctypes` at launch.
+  - Support instant screen navigation via keyboard keypresses (e.g., `D` for Dungeon, `Z` for Zone Map, `S` for Stockpile, `A` for Advisors).
+* **Rationale:** Establishes crucial UI infrastructure, preventing flickering/scrolling and enabling complex drawing interfaces.
 
-1. **Add a LICENSE file.** A simple MIT license is the best low-friction choice for an open project.
-2. **Add CI coverage.** Start with a GitHub Actions workflow that runs `python -m unittest` and optionally `python -m py_compile`.
-3. ~~**Refresh documentation.** Update `README.md` and `AGENTS.md` to match the current command set, world loading flow, and domain API.~~ ✅ Done
-4. ~~**Remove or implement `display_world_zones()`.** Either provide zone detail output or remove the placeholder entirely.~~ ✅ Done
-5. **Clean up stale comments/TODOs.** Focus first on resource generation comments and domain API notes in `generation.py` and `entities.py`.
-6. **Write full resource descriptions.** Expand `RESOURCE_DESCRIPTIONS` in `constants.py` with origin and use notes for all resources. (Deferred — player to write)
-7. **Balance hero, builder, and guardian costs.** Review and adjust `HERO_COSTS` and add missing cost tables for builders and guardians across all resources.
+### Phase 2: Eldritch Title Screen & Procedural Dungeon Map (6–8 Hours)
+* **Goal:** Elevate player first impression and generate procedurally unique dungeon levels.
+* **Core Actions:**
+  - Build an animated splash screen cycling rotating cryptic symbols/runes via standard library timers.
+  - Upgrade dungeon generation to procedurally map out walls, corridors, rooms, and aether nodes onto 2D ASCII grids using the world's name or a unique ID as a seed.
+  - Animate active units (builders, researchers, miners) as color-coded symbols moving within the map.
+  - Expand level cap from 3 to 15.
+* **Rationale:** Delivers the primary thematic atmosphere (eldritch/cryptic) and visual dungeon simulation.
 
-### Next Weeks
+### Phase 3: Outside Zone Map & Expedition Viewer (8–10 Hours)
+* **Goal:** Visualise world exploration and unit actions in outside regions.
+* **Core Actions:**
+  - Generate a regional world map layout mapping known and unknown zones.
+  - Apply fog of war, distinct color bounds, and background wind/aether hazard animations.
+  - Show active expedition paths and zoom-in views tracking individual unit dots (warriors, scouts, researchers) traversing zone grids.
+* **Rationale:** Replaces scrolling logs with clear spatial context and real-time visual progress.
 
-1. ~~**Implement tick-phase game logic.** Replace `_process_environmental_events()` and `_process_unit_statuses()` with real hazards, recovery, and status updates.~~ ✅ Done (env events dispatches creature encounters; unit status applies builder decay and per-tick effects)
-2. **Expand test coverage.** Add focused tests for generation rules, serialization round-trips, save migration, and expedition edge cases.
-3. **Normalize naming and type use.** Ensure naming conventions are consistent across levels, guardians, and expedition state, and widen type hint coverage in the domain layer.
-4. **Strengthen save/load validation.** Add tests and safeguards for corrupted save data and invalid migration inputs.
-5. **Harden the CLI flow.** Verify command parsing and error messages across the `oracle.py` command set.
+### Phase 4: Dynamic Stockpile & Advisor Intelligence (5–7 Hours)
+* **Goal:** Visualise internal logistics and implement contextual strategic guidance.
+* **Core Actions:**
+  - Divide stockpile into visual cells/bins, animating carrier dots transferring resources back and forth.
+  - Format the Advisor Reports screen as virtual sheets/documents summarizing turn activities.
+  - Write intelligence logic for Advisor specializations, providing contextual hints and warnings (e.g., resource shortages, maintenance alerts).
+* **Rationale:** Implements a living economic simulation and turns abstract logs into structured, strategic gameplay advice.
 
-### Next Months
-
-1. **Formalize the resource economy.** Define which resources belong to dungeon levels versus outside zones and begin a crafting/refining system.
-2. **Add specialization effects.** Make hero specializations meaningfully affect expedition loot, survival, and return rates.
-3. **Introduce wider unit systems.** Add builder task progress, guardian assignments, and deeper hero progression mechanics.
-4. **Modularize domain code.** Consider splitting `entities.py` into more focused modules such as `units.py`, `expeditions.py`, and `resources.py` once the core rules stabilize.
-5. **Add more tests and linting.** Use `pyproject.toml` to enable `pytest` and `mypy` or linting in CI.
-
-### Next Years
-
-1. **Turn this prototype into a fully playable experience.** Expand the current domain into a richer game loop with deeper persistent progression.
-2. **Add a more polished interface.** Once core systems are stable, build a better terminal UI or a minimal graphical frontend.
-3. **Establish release hygiene.** Add CI, packaging metadata, contribution documentation, and a LICENSE file.
-4. **Extend the unit ecosystem.** Add more meaningful builder, guardian, and hero specialization gameplay, including distinct roles and task assignments.
-5. **Grow the resource and crafting system.** Implement resource refinement, recipes, and more distinct item flows between zones and the dungeon.
+### Phase 5: Code Architecture & Packaging Hygiene (3–4 Hours)
+* **Goal:** Eliminate tech debt and secure the repository layout.
+* **Core Actions:**
+  - Refactor and decompose the large `entities.py` monolith into focused domain files (e.g., `units.py`, `zones.py`, `world.py`).
+  - Add standard MIT licensing file.
+  - Configure GitHub Actions CI workflow to run test suites automatically.
+* **Rationale:** Prevents circular dependency issues and ensures structural maintainability for advanced gameplay loops.
 
 ---
 
@@ -214,3 +221,6 @@ Current tests validate major world generation and event flow paths but do not co
 | `guardian_power` vs `guardian_power_level` in display.py | No | No | Conditional | Yes (if player runs `random`) |
 | `Scholar` removed from specializations | No | No | No | No (silent dead path) |
 | No tests | No | No | No | No — but every fix is blind |
+
+## Vision  
+Let me tell you how I envision the game: a player opens the game; a minimalist screen shows up; black background, the name of the game and a cryptic symbol in a pixel-like/ASCII-like fashion, rotating. He loads his save and a screen appears showing his developing dungeon. The dungeon itself has a cryptic design, like the workmanship of some eldritch entity (interesting note: no two player dungeons will ever look the same). The player currently has 15 levels and hundreds of units, builders, researchers, miners and so on. He changes screens and selects one of the many expeditions that are running on a tick/turn-based system for a number of turns. The screen changes and shows him a zoomed out zone. Some parts of the zone are coloured (animated, too) some parts are dark. An indicator rests on a specific portion of the coloured part. The player clicks it and it reveals the units on an expedition. He sees tiny dots of different colours, indicating different unit types moving around, seemingly doing things. He returns to his dungeon's home screen and selects a button that takes him to another screen showing the dungeon's stockpile. Here too, there are little dots seemingly in action, moving around, carrying resources in and out of several sections. He returns to his home screen and clicks another button that selects that takes him to a certain screen where several sheets are before him. Those documents are show information on recent dungeon activities, current dungeon state, internal and external affairs, and so on. Entities called advisors summarise the information for him and reccommend best next actions. This is just a bit of how I'm visualising the end-product, though there's more.
