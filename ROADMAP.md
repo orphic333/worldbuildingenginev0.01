@@ -1,6 +1,6 @@
 # ROADMAP.md — Worldbuilding Engine v0.01
 
-> Analysis date: 2026-07-12 
+> Analysis date: 2026-07-18 
 > Based on current repository state and implemented code changes.
 
 ---
@@ -165,6 +165,36 @@ Current tests validate major world generation and event flow paths but do not co
 | `pyproject.toml` | Yes |
 | CI config | No |
 | Test config | No |
+
+---
+
+### 2.7 Design Doc Disparities (vs `GAME_DETAILS_AND_PLANNING.md`)
+
+Cross-reference between features described in the design document and their current implementation state in the codebase.
+
+#### ❌ Not Implemented
+
+| Feature | In Document | Codebase Gap | Implementation Approach |
+|---------|-------------|-------------|------------------------|
+| **Warder unit class** | 3 unit types: Heroes, Builders, Warders. Warders defend the dungeon. | No `Warder` class exists anywhere. | Create `Warder` class in `entities.py` (extends `BaseUnit`), add `warders` list to `DungeonWorld`, add `recruit_warder()` to `recruitment.py`, display in `heroes` command. |
+| **3 initial guardians (1 per level)** | "3 Guardians present at start, each on their own level, each spawning a unit type." | No guardians at world creation. | In `generate_dungeon_world()`, create 3 guardians with `maintenance_resource` set per type, assign to levels 1/2/3. Add starting stockpile to cover their costs during grace period. |
+| **Guardian-as-producer** | "Guardians use Aether to create Units (Builders, Heroes, Warders)." | No guardian production mechanic exists. | Add `produce_unit()` method to `Guardian` that costs Aether Crystals (and other resources depending on guardian type). Player issues `produce <guardian_id> <unit_type>` from Oracle. |
+| **Unit-creation recipes** | Builder: 1 Aether + 1 Stone. Warder: 1 Aether + 1 Blood. Hero: 5 Aether + 2 Blood + 3 Water + 3 Wood. | `HERO_COSTS` uses AETHERITE instead of AETHER_CRYSTALS and is a flat dict, not a recipe system. No Builder or Warder cost tables. | Replace `HERO_COSTS` with a `RECIPES` dict mapping `(guardian_type, unit_type)` → `{Resource: int}`. Resources consumed from stockpile on creation. Initial recipes use AETHER_CRYSTALS (not AETHERITE) as universal catalyst. |
+| **Zero-waste starting stockpile** | "Spawning starting units consumes stockpile to exactly 0." | `INITIAL_STOCKPILE` is 80/40/15/5 tiers — not calibrated. | Recalculate `INITIAL_STOCKPILE` to equal exactly the sum of starting unit costs (1 Hero + 5 Builders + 5 Warders). Pre-spawn those units on world creation. Player starts with 0 stockpile on tick 1. |
+| **Guardian grace period (sated/dormant)** | "Guardians do not demand immediate upkeep — start sated, giving grace period." | Guardian maintenance deducts every tick from turn 1. | Add `ticks_since_maintenance` counter to `Guardian`. In `_process_unit_statuses()`, skip maintenance if ticks insufficient. After grace period, begin deductions with accumulated back-pay (or just begin fresh). |
+| **Knowledge-as-unlock / fragment system** | "Knowledge is permanent & unlocking — fragments in two categories (directly applicable vs requires research). Deciphered to unlock new resources." | Knowledge is a numeric value in stockpile, harvested like any other resource. No fragment system, no unlocking. | Create a `KnowledgeFragment` class with fields: `name`, `category` (`DIRECT_APPLY` / `REQUIRES_RESEARCH`), `description`, `unlocked` bool. Add `known_fragments` list to `DungeonWorld`. On expedition resolution, rolling knowledge yields a random fragment instead of a quantity. Player uses `research <fragment_name>` at Oracle to decipher. |
+| **Lose conditions** | Soft Bleed (stagnation) and Hard Wipe (raids / rogue guardians). | No detection of unrecoverable states. No raid or rogue guardian events. | Add `check_soft_bleed()` to `DungeonWorld.tick()`: if no aether growth possible AND no expeditions possible AND stockpile of aether/blood = 0 for N ticks, trigger game-over. Hard Wipe implemented as event type in `_process_environmental_events()`. |
+| **Hero sentience / trauma / collapse** | "High sentience makes heroes vulnerable to trauma, panic, psychological collapse." | Heroes have HP/ST/SN stats that drain, but no personality, trauma, or collapse mechanics. | Add `trauma` float field to `Hero`, incremented by zone hazards and creature encounters. Add thresholds: trauma > 50 → panic (stats drain faster), trauma > 80 → collapse (hero withdraws from expedition). Add `rest` command to let heroes recover between missions. |
+
+#### 🟡 Partially Implemented
+
+| Feature | In Document | Codebase State | Path to Full Implementation |
+|---------|-------------|----------------|----------------------------|
+| **Expedition interface** | "Semi-terminal command interface with ASCII radar screen, colored dots, telemetry feed." | Oracle REPL prints text logs. No visual radar, no dots, no telemetry. | Phase 1–3 (terminal screen engine, zone map, expedition viewer) in the existing roadmap. Start with a minimal `display_expedition_telemetry()` using ANSI frame rendering. |
+| **Hero expense calibration** | "Incredibly expensive to create — requires 5 Aether + 2 Blood + 3 Water + 3 Wood." | Heroes cost AETHERITE 10–25 + BLOOD 5–15 / KNOWLEDGE 10–20. No water or wood costs. | Replace `HERO_COSTS` with `RECIPES` as above. Starting stockpile should make creating even one hero a significant decision. |
+| **Zone resources by biome** | "Woodlands = wood/blood/water. Sunken Ruins = knowledge fragments + water. Arid Wastes = surface minerals + fossilized wood + water." | Zone resources assigned by tier number only — all Tier 1 zones have identical loot pools (wood, fibre, knowledge). | Map `TERRAIN_TYPES` to biome resource tables. Each biome type has a distinct loot profile and danger vector. `create_zone_data()` selects resource nodes based on terrain keyword. |
+| **Health/Sanity attrition differentiation** | "Woodlands: high physical risk (health). Ruins: high psychological risk (sanity). Wastes: accelerated balanced attrition." | Zone pressure applies identical formula to all 3 stats regardless of zone type. | Add `primary_danger` field to `WorldZone` (`"physical"`, `"mental"`, `"balanced"`). In `_apply_zone_pressure()`, weight damage distribution based on primary danger type. |
+| **Knowledge value model** | "Found as rare fragments in outside world. Deciphered to unlock new resources and strategic options." | Knowledge is a numeric value harvested alongside wood/fibre. It displays in stockpile as STATIC (hidden from `stockpile` command) but is still harvested and tracked numerically internally. | Migrate to fragment system (see ❌ row above). Keep numerical knowledge in stockpile as intermediate state but build fragment discovery logic alongside it. |
 
 ---
 
