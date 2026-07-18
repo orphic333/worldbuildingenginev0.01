@@ -101,7 +101,7 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
                 zone_resources = {
                     Resource.WOOD: random.randint(5, 15), #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
                     Resource.FIBRE: random.randint(3, 8),
-                    Resource.KNOWLEDGE: random.randint(1, 5),
+                    Resource.KNOWLEDGE: random.randint(1, 5), #KNOWLEDGE IS NOT A CONSUMABLE RESOURCE. IT IS RATHER IN SPECIFIC FRAGMENTS WHICH CAN BE FOUND, LOST AND RETURNED.
                 }
                 initial_event_zone_ids.append(zone_id_counter)
 
@@ -111,14 +111,14 @@ def generate_dungeon_world(max_level: int = MAX_LEVEL) -> DungeonWorld:
                     Resource.COPPER: random.randint(10, 25),     #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
                     Resource.IRON: random.randint(5, 15),
                     Resource.MEDICINAL_PLANTS: random.randint(2, 8),
-                    Resource.KNOWLEDGE: random.randint(5, 12),
+                    Resource.KNOWLEDGE: random.randint(5, 12),   #KNOWLEDGE IS NOT A CONSUMABLE RESOURCE. IT IS RATHER IN SPECIFIC FRAGMENTS WHICH CAN BE FOUND, LOST AND RETURNED.
                 }
 
             else:
 
                 zone_resources = {                              #NEED TO FIX ZONE RESOURCE DISTRIBUTIONS ACC. TO TIERS
                     Resource.RARE_METALS: random.randint(8, 20),
-                    Resource.KNOWLEDGE: random.randint(10, 20),
+                    Resource.KNOWLEDGE: random.randint(10, 20),   #KNOWLEDGE IS NOT A CONSUMABLE RESOURCE. IT IS RATHER IN SPECIFIC FRAGMENTS WHICH CAN BE FOUND, LOST AND RETURNED.
                 }
 
             zone = WorldZone(

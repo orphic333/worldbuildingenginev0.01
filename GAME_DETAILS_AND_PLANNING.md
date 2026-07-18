@@ -103,11 +103,11 @@ To create these units, the player utilizes four core resources. Every recipe is 
 
 To ensure the player spawns exactly their starting units and is left with an empty inventory, the recipes and starting bank are balanced as follows:
 
-* **Builder Recipe:** $1\text{ Aether} + 1\text{ Wood}$ (Creates 5 $\rightarrow$ Costs **$5\text{ Aether}, 5\text{ Wood}$**)
+* **Builder Recipe:** $1\text{ Aether} + 1\text{ Stone}$ (Creates 5 $\rightarrow$ Costs **$5\text{ Aether}, 5\text{ Stone}$**)
 * **Warder Recipe:** $1\text{ Aether} + 1\text{ Blood}$ (Creates 5 $\rightarrow$ Costs **$5\text{ Aether}, 5\text{ Blood}$**)
 * **Hero Recipe:** $5\text{ Aether} + 2\text{ Blood} + 3\text{ Water} + 3\text{ Wood}$ (Creates 1 $\rightarrow$ Costs **$5\text{ Aether}, 2\text{ Blood}, 3\text{ Water}, 3\text{ Wood}$**)
 
-> **Starting Player Stockpile:** $15\text{ Aether}$, $7\text{ Blood}$, $8\text{ Wood}$, and $3\text{ Water}$.
+> **Starting Player Stockpile:** $15\text{ Aether}$, $7\text{ Blood}$, $3\text{ Wood}$, $3\text{ Water}$ and $5\text{ Stone}$.
 > Spawning the starting units consumes this stockpile to exactly **0**.
 
 ---
@@ -115,6 +115,37 @@ To ensure the player spawns exactly their starting units and is left with an emp
 ## 🧠 Design Rationales & Strategic Decisions
 
 * **Instant Engagement (The "Zero-Waste" Principle):** Because spawning the starting units completely drains the player's initial stockpile, they cannot sit idle. On tick one, they are immediately forced to interact with the core loop: tasking their 5 Builders to mine Aether and preparing their 1 Hero for a surface expedition.
-* **Thematic Plausibility of Wood:** To keep the subterranean theme intact, "Wood" is conceptualized as hard underground lichen-stalks, fossilized fungus, or salvaged scrap, preventing players from wondering how trees are growing in a deep dungeon.
+* **Thematic Plausibility of Wood:** To keep the subterranean theme intact, "Wood" is conceptualized as hard underground lichen-stalks, fossilized fungus, or salvaged scrap, preventing players from wondering how trees are growing in a deep dungeon. On top of that "Prime Wood" is a resource which points to real trees on the surface. 
 * **Preventing the Chicken-and-Egg Blood Trap:** Because Blood is required for Warders, but Warders are needed to kill humans to harvest Blood, the Guardians do not demand immediate upkeep. They start in a **"sated" or "dormant"** state, giving the player a grace period of ticks to establish their economy before internal maintenance costs kick in.
 * **Water Isolation:** Water is treated strictly as an expedition consumable rather than a dungeon-wide resource to prevent complex, early-game logistical bottlenecks like plumbing or well-management.
+
+## 🗺️ Summary of Outside Zones, Nature, and Resources
+
+*Documented on: July 18, 2026 at 18:27 GMT*
+
+---
+
+### 1. Structure of the Initial Surface World
+
+* **Procedural Dispositions:** At the start of a new save, **3 initial Tier 1 zones** are unlocked around the dungeon. The specific biomes, resource node distributions, and locations are entirely randomized, forcing players to adapt their strategies rather than relying on a static meta-strategy.
+* **The Threat Profile Framework:** The ticking clock of expeditions relies on a dual-axis attrition system (**Health and Sanity**), which decays faster the longer a Hero remains in a zone. Hazards are tailored to specific biomes to transition exploration from a numbers grind to a calculated psychological gamble.
+
+---
+
+### 2. Ecological Mapping of Biomes & Plausible Nodes
+
+Resource nodes are divided into logical categories (Biological, Geological, and Anthropological) to ensure structural plausibility. There are also two main categories already present; consumable resources and static resources. The distribution creates distinct strategic trade-offs:
+
+| Zone Type | Dominant Resource Plausibility | Primary Danger Vector | Strategic Role & Rationale |
+| --- | --- | --- | --- |
+| **Woodland Zone** | Abundant **Wood** (timber), **Blood/Meat** (game trails/predators), and **Water** (clean springs). | **High Physical Risk** (Health drain from predators/rough flora). | The low-risk economic engine. Ideal for gathering raw materials to scale basic unit infrastructure. |
+| **Sunken Ruins** | High-density **Knowledge Fragments** (archives/vaults), **Scrap** (wood alternative), and corrupted/stagnant **Water**. | **High Psychological Risk** (Sanity drain from haunting isolation/claustrophobia). | The technological goldmine. Necessary for progression, but highly taxing on a Hero's sanity. |
+| **Arid Wastes** | Rare **Surface Minerals** (ores/Aether dust), scarce **Fossilized Wood**, and deeply hidden **Water** aquifers. | **Accelerated Attrition** (Fast, balanced drain on both Health and Sanity). | The survival bottleneck. Demands logistical planning due to extreme water scarcity and high exposure. |
+
+---
+
+### 3. Design Rationales & Suggestions
+
+* **Intuitive Strategy:** Grounding resource distribution in environmental logic makes the macro-management intuitive. Players instinctively know where to look for specific materials (e.g., Woodlands for construction materials, Ruins for research data) without requiring heavy hand-holding.
+* **Static Core vs. Dynamic Regional Nodes:** To ensure the procedural generation never accidentally triggers an unwinnable opening loop (softlock), it was established that all starting zones must carry a guaranteed baseline of **Knowledge fragments, Water sources, and basic crafting materials**, while regional biomes dictate the abundance and unique danger profiles.
+* **MVP-Friendly Scalability:** Restricting the environment's hazards to just Health and Sanity interactions in the codebase fits the pure Python template perfectly. It creates a robust base logic that can later be expanded to handle complex attributes like movement speed or survival penalties seamlessly.

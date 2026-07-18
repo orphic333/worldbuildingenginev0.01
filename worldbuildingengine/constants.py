@@ -113,18 +113,11 @@ CONSUMABLE_RESOURCES: list[Resource] = [
 ]
 
 INITIAL_STOCKPILE: dict[Resource, int] = {
-    Resource.STONE: 80,
-    Resource.WATER: 80,
-    Resource.WOOD: 80,
-    Resource.SOFT_ROCK: 80,
-    Resource.HARD_ROCK: 80,
-    Resource.IRON: 40,
-    Resource.COPPER: 40,
-    Resource.MEAT: 40,
-    Resource.BLOOD: 40,
-    Resource.AETHER_CRYSTALS: 40,
-    Resource.RARE_METALS: 15,
-    Resource.AETHERITE: 5,
+    Resource.BLOOD: 7,
+    Resource.WATER: 3,
+    Resource.STONE: 5,
+    Resource.AETHER_CRYSTALS: 15,
+    Resource.WOOD: 3,
 }
 
 SPECIALIZATIONS = [
@@ -150,10 +143,15 @@ INITIAL_SUPPLIES = 50
 SUPPLY_COST_PER_TURN = 3
 MAX_EXPEDITION_TURNS_PER_TIER: dict[int, int] = {1: 5, 2: 10, 3: 15}
 EXPEDITION_COST_RESOURCES = [Resource.WOOD, Resource.FIBRE, Resource.MEAT, Resource.WATER]
+#Expeditions should be free for a set number of successful ones; maybe 5 or 6 or something.
+#Like how players get free DNA in Plague Inc. at the beginning of the game. Costs don't scale significantly until mid-game.
 
 GUARDIAN_BLOOD_COST = 1
+#Guardian blood costs should set in after the set number of times mentioned in the comment above.
 
-HERO_COSTS = {
+HERO_COSTS = {"Base Hero Cost": {Resource.AETHER_CRYSTALS: 5, Resource.WATER: 3, Resource.BLOOD: 2,  Resource.WOOD: 3},
+              #The base hero cost is the cost without specializations, mentioned in GAME_DETAILS_AND_PLANNING.md
+              #I'm thinking of further defining specialised hero costs, to make things clearer.
     "Prospector": {Resource.AETHERITE: 10, Resource.BLOOD: 5},
     "Researcher": {Resource.AETHERITE: 15, Resource.KNOWLEDGE: 10},
     "Warrior": {Resource.AETHERITE: 20, Resource.BLOOD: 15},
@@ -161,3 +159,9 @@ HERO_COSTS = {
     "Adventurer": {Resource.AETHERITE: 18, Resource.BLOOD: 12},
     "Advisor": {Resource.AETHERITE: 25, Resource.KNOWLEDGE: 20}
 }
+
+WARDER_COST = {Resource.BLOOD: 1, Resource.AETHER_CRYSTALS: 1}
+#Five of them can be created initially.
+
+BUILDER_COST = {Resource.STONE: 1, Resource.AETHER_CRYSTALS: 1}
+#Five of them can be created initially.
